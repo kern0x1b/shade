@@ -7,6 +7,10 @@
 #include "host/resource_usage.hpp"
 
 #include <array>
+#if defined(__APPLE__)
+#include <mach/mach.h>
+#include <sys/sysctl.h>
+#endif
 #include <filesystem>
 #include <fstream>
 #include <limits>
@@ -70,6 +74,23 @@ namespace {
             snapshot.file_mapped_bytes = bytes;
             snapshot.file_mapped_known = true;
         }
+    }
+#elif defined(__APPLE__)
+    // Darwin keeps this in the task rather than in a file: the kernel answers
+    // for the process itself, and what it calls resident and virtual is what
+    // /proc/self/status calls VmRSS and VmSize. How much of the resident set is
+    // file-mapped it does not say, so that stays unknown rather than guessed.
+    mach_task_basic_info_data_t task_memory { };
+    mach_msg_type_number_t task_memory_count = MACH_TASK_BASIC_INFO_COUNT;
+    if (::task_info(mach_task_self(), MACH_TASK_BASIC_INFO,
+                    reinterpret_cast<task_info_t>(&task_memory),
+                    &task_memory_count) == KERN_SUCCESS) {
+        snapshot.rss_bytes = task_memory.resident_size;
+        snapshot.rss_known = true;
+        snapshot.peak_rss_bytes = task_memory.resident_size_max;
+        snapshot.peak_rss_known = true;
+        snapshot.virtual_bytes = task_memory.virtual_size;
+        snapshot.virtual_known = true;
     }
 #endif
     return snapshot;
@@ -168,6 +189,37 @@ namespace {
             snapshot.physical_bytes * std::uint64_t { 2U }) {
         snapshot.cgroup_limit_bytes = 0U;
         snapshot.cgroup_limit_known = false;
+    }
+#elif defined(__APPLE__)
+    // Darwin has no /proc/meminfo: the machine's memory is a sysctl, and what
+    // of it is available the kernel reports as page counts. Free and inactive
+    // pages are the ones a new mapping can have without pushing anything out,
+    // and the speculative ones are read-ahead the kernel drops first, so those
+    // three are what "available" means here. Without them the JIT sizes its
+    // code cache from a machine it believes has no memory at all.
+    {
+        std::uint64_t physical = 0;
+        std::size_t physical_size = sizeof physical;
+        if (::sysctlbyname("hw.memsize", &physical, &physical_size, nullptr,
+                           0) == 0 &&
+            physical != 0U) {
+            snapshot.physical_bytes = physical;
+            snapshot.physical_known = true;
+        }
+        vm_statistics64_data_t pages { };
+        mach_msg_type_number_t page_count = HOST_VM_INFO64_COUNT;
+        if (::host_statistics64(mach_host_self(), HOST_VM_INFO64,
+                                reinterpret_cast<host_info64_t>(&pages),
+                                &page_count) == KERN_SUCCESS) {
+            const auto page_size =
+                static_cast<std::uint64_t>(::vm_kernel_page_size);
+            snapshot.available_bytes =
+                (static_cast<std::uint64_t>(pages.free_count) +
+                 static_cast<std::uint64_t>(pages.inactive_count) +
+                 static_cast<std::uint64_t>(pages.speculative_count)) *
+                page_size;
+            snapshot.available_known = true;
+        }
     }
 #endif
     return snapshot;
