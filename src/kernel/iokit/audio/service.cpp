@@ -889,8 +889,10 @@ std::vector<std::uint32_t> ensure_services_locked(KernelSharedState& state)
 
         std::map<std::string, KernelSharedState::IOKitRegistryProperty>
             properties;
-        properties.emplace(
-            profile.registry.device_name, string_property(device.name));
+        if (device.name) {
+            properties.emplace(
+                profile.registry.device_name, string_property(*device.name));
+        }
         properties.emplace(profile.registry.device_manufacturer,
             string_property(device.manufacturer));
         properties.emplace(
@@ -907,12 +909,21 @@ std::vector<std::uint32_t> ensure_services_locked(KernelSharedState& state)
             number_property(~std::uint32_t { 0 }));
         properties.emplace(profile.registry.io_buffer_frame_size,
             number_property(device.io_buffer_frame_size));
-        properties.emplace(profile.registry.input_safety_offset,
-            number_property(device.input_safety_offset));
+        // A device without inputs publishes no input keys at all.
+        const auto has_input = std::ranges::any_of(device.streams,
+            [](const IOAudio2StreamDescription& stream) {
+                return stream.direction == IOAudio2StreamDirection::Input;
+            });
+        if (has_input) {
+            properties.emplace(profile.registry.input_safety_offset,
+                number_property(device.input_safety_offset));
+        }
         properties.emplace(profile.registry.output_safety_offset,
             number_property(device.output_safety_offset));
-        properties.emplace(profile.registry.input_latency,
-            number_property(device.input_latency));
+        if (has_input) {
+            properties.emplace(profile.registry.input_latency,
+                number_property(device.input_latency));
+        }
         properties.emplace(profile.registry.output_latency,
             number_property(device.output_latency));
         if (!device.streams.empty()) {
@@ -922,8 +933,11 @@ std::vector<std::uint32_t> ensure_services_locked(KernelSharedState& state)
         }
         properties.emplace(
             profile.registry.is_running, boolean_property(false));
-        properties.emplace(profile.registry.input_streams,
-            streams_property(profile, device, IOAudio2StreamDirection::Input));
+        if (has_input) {
+            properties.emplace(profile.registry.input_streams,
+                streams_property(
+                    profile, device, IOAudio2StreamDirection::Input));
+        }
         properties.emplace(profile.registry.output_streams,
             streams_property(profile, device, IOAudio2StreamDirection::Output));
         properties.emplace(

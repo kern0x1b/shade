@@ -525,6 +525,282 @@ namespace {
         },
     };
 
+    // The call path between the modem and the DSP (AppleSecondaryAudio
+    // "Baseband Voice"): mono at 8 or 16 kHz in 16, 20 or 24 bits.
+    constexpr std::array iphone_4s_baseband_voice_formats {
+        i2s_format(8000U, 1U, 16U),
+        i2s_format(8000U, 1U, 20U),
+        i2s_format(8000U, 1U, 24U),
+        i2s_format(16000U, 1U, 16U),
+        i2s_format(16000U, 1U, 20U),
+        i2s_format(16000U, 1U, 24U),
+    };
+
+    constexpr std::array iphone_4s_baseband_voice_streams {
+        IOAudio2StreamDescription {
+            .identifier = 100,
+            .direction = IOAudio2StreamDirection::Input,
+            .starting_channel = 1,
+            .buffer_mapping_options = 1,
+            .buffer_size = voice_io_buffer_frame_size * 4U,
+            .format = i2s_format(8000U, 1U, 16U),
+            .available_formats = iphone_4s_baseband_voice_formats,
+        },
+        IOAudio2StreamDescription {
+            .identifier = 200,
+            .direction = IOAudio2StreamDirection::Output,
+            .starting_channel = 1,
+            .buffer_mapping_options = 1,
+            .buffer_size = voice_io_buffer_frame_size * 4U,
+            .format = i2s_format(8000U, 1U, 16U),
+            .available_formats = iphone_4s_baseband_voice_formats,
+        },
+    };
+
+    constexpr auto baseband_voice_source = four_cc('a', 'p', '2', 'b');
+    constexpr std::array iphone_4s_baseband_voice_sources {
+        IOAudio2SelectorItemDescription { baseband_voice_source, "Baseband" },
+        IOAudio2SelectorItemDescription { dsp_voice_source, "DSP" },
+    };
+    constexpr std::array iphone_4s_baseband_voice_clock_sources {
+        IOAudio2SelectorItemDescription {
+            baseband_to_codec_route_control_class, "Baseband" },
+        IOAudio2SelectorItemDescription { system_clock, "System" },
+    };
+    constexpr std::array iphone_4s_baseband_voice_controls {
+        IOAudio2ControlDescription { 300U, selector_control_base_class,
+            data_source_control_class, global_scope, 0U, baseband_voice_source,
+            false, { }, iphone_4s_baseband_voice_sources },
+        IOAudio2ControlDescription { 301U, selector_control_base_class,
+            four_cc('d', 'e', 's', 't'), playthrough_scope, 0U, voice_dsp,
+            false, { }, voice_destinations, voice_destination_properties },
+        IOAudio2ControlDescription { 302U, selector_control_base_class,
+            four_cc('c', 'l', 'c', 'k'), global_scope, 0U,
+            baseband_to_codec_route_control_class, false, { },
+            iphone_4s_baseband_voice_clock_sources },
+    };
+
+    // The voice DSP (HighlandParkAudioDevice "HighlandPark", no name): mono
+    // 16-bit at every rate, with its processing modes as selectors.
+    constexpr auto iphone_4s_highland_park_formats = [] {
+        std::array<IOAudio2StreamFormatDescription, i2s_sample_rates.size()>
+            formats { };
+        for (std::size_t index = 0; index < formats.size(); ++index)
+            formats[index] = i2s_format(i2s_sample_rates[index], 1U, 16U);
+        return formats;
+    }();
+
+    constexpr std::array iphone_4s_highland_park_streams {
+        IOAudio2StreamDescription {
+            .identifier = 100,
+            .direction = IOAudio2StreamDirection::Input,
+            .starting_channel = 1,
+            .buffer_mapping_options = 1,
+            .buffer_size = iphone_4s_io_buffer_frame_size * 4U,
+            .format = i2s_format(44100U, 1U, 16U),
+            .available_formats = iphone_4s_highland_park_formats,
+        },
+        IOAudio2StreamDescription {
+            .identifier = 200,
+            .direction = IOAudio2StreamDirection::Output,
+            .starting_channel = 1,
+            .buffer_mapping_options = 1,
+            .buffer_size = iphone_4s_io_buffer_frame_size * 4U,
+            .format = i2s_format(44100U, 1U, 16U),
+            .available_formats = iphone_4s_highland_park_formats,
+        },
+    };
+
+    constexpr std::array iphone_4s_highland_park_fine_range {
+        IOAudio2ControlRangeDescription {
+            0xffffffa60000021cULL, 1200U, 0U, 0x0000000019999999ULL },
+    };
+    constexpr std::array iphone_4s_highland_park_input_fine_range {
+        IOAudio2ControlRangeDescription {
+            0xffffffa60000021cULL, 1800U, 0U, 0x0000000019999999ULL },
+    };
+    constexpr std::array iphone_4s_highland_park_coarse_range {
+        IOAudio2ControlRangeDescription {
+            0xffffffa600000000ULL, 180U, 0U, 0x0000000100000000ULL },
+    };
+
+    constexpr std::array iphone_4s_highland_park_modes {
+        IOAudio2SelectorItemDescription {
+            four_cc('u', 'n', 'd', 'f'), "Undefined mode" },
+        IOAudio2SelectorItemDescription {
+            four_cc('n', 'd', 's', 'p'), "No DSP mode" },
+        IOAudio2SelectorItemDescription {
+            four_cc('i', 'm', 'c', 'r'), "Internal Mic - Receiver" },
+        IOAudio2SelectorItemDescription {
+            four_cc('i', 'm', 'c', 's'), "Internal Mic - Speaker" },
+        IOAudio2SelectorItemDescription { four_cc('i', 'm', 'd', 'h'),
+            "Internal Mic - default wired Headset" },
+        IOAudio2SelectorItemDescription {
+            four_cc('w', 'm', 'd', 'h'), "Wired Mic - default Headset" },
+        IOAudio2SelectorItemDescription {
+            four_cc('w', 'm', 'a', 'h'), "Wired Mic - A36 Headset" },
+        IOAudio2SelectorItemDescription {
+            four_cc('b', 'm', 'b', 'h'), "BT Mic - BT Headset" },
+        IOAudio2SelectorItemDescription {
+            four_cc('b', 'n', 'o', 'd'), "BT Mic - BT Headset - No DSP" },
+        IOAudio2SelectorItemDescription { four_cc('t', 't', 'y', 'c'), "TTYCall" },
+        IOAudio2SelectorItemDescription { four_cc('b', 'b', 'a', 'p'), "BB to AP" },
+        IOAudio2SelectorItemDescription { four_cc('f', 'l', 'u', 'e'), "Fluence" },
+    };
+    constexpr std::array iphone_4s_highland_park_input_sets {
+        IOAudio2SelectorItemDescription { 0U, "AIS0" },
+        IOAudio2SelectorItemDescription { 1U, "AIS1" },
+        IOAudio2SelectorItemDescription { 2U, "AIS2" },
+        IOAudio2SelectorItemDescription { 3U, "AIS3" },
+        IOAudio2SelectorItemDescription { 4U, "AIS4" },
+    };
+    constexpr std::array iphone_4s_highland_park_networks {
+        IOAudio2SelectorItemDescription { four_cc('g', 's', 'm', ' '), "GSM" },
+        IOAudio2SelectorItemDescription { four_cc('c', 'd', 'm', 'a'), "CDMA" },
+        IOAudio2SelectorItemDescription { four_cc('w', 'g', 's', 'm'), "GSM_WB" },
+    };
+    constexpr std::array iphone_4s_highland_park_mix_modes {
+        IOAudio2SelectorItemDescription { four_cc('i', 'n', 't', ' '), "Internal" },
+        IOAudio2SelectorItemDescription { four_cc('e', 'x', 't', ' '), "External" },
+        IOAudio2SelectorItemDescription {
+            four_cc('i', 'n', 'u', 'l'), "Internal with UL mixing" },
+        IOAudio2SelectorItemDescription {
+            four_cc('i', 'n', 'e', 'c'), "Internal with Echo ref" },
+        IOAudio2SelectorItemDescription { four_cc('l', 'o', 'o', 'p'), "Loopback" },
+    };
+    constexpr std::array iphone_4s_highland_park_downlink_eq {
+        IOAudio2SelectorItemDescription { 1U, "DL EQ index 1" },
+        IOAudio2SelectorItemDescription { 2U, "DL EQ index 2" },
+        IOAudio2SelectorItemDescription { 3U, "DL EQ index 3" },
+        IOAudio2SelectorItemDescription { 4U, "DL EQ index 4" },
+        IOAudio2SelectorItemDescription { 5U, "DL EQ index 5" },
+    };
+    constexpr std::array iphone_4s_highland_park_uplink_eq {
+        IOAudio2SelectorItemDescription { 1U, "UL EQ index 1" },
+        IOAudio2SelectorItemDescription { 2U, "UL EQ index 2" },
+        IOAudio2SelectorItemDescription { 3U, "UL EQ index 3" },
+        IOAudio2SelectorItemDescription { 4U, "UL EQ index 4" },
+        IOAudio2SelectorItemDescription { 5U, "UL EQ index 5" },
+    };
+    constexpr std::array iphone_4s_highland_park_input_set_properties {
+        four_cc('n', 's', 'l', '0'), four_cc('n', 's', 'l', '1'),
+        four_cc('n', 's', 'l', '2'),
+    };
+    constexpr std::array iphone_4s_highland_park_power_properties {
+        four_cc('p', 'w', 'r', '1') };
+    constexpr std::array iphone_4s_highland_park_network_properties {
+        four_cc('n', 't', 'm', '0'), four_cc('n', 't', 'm', '1'),
+        four_cc('n', 't', 'm', '2'),
+    };
+    constexpr std::array iphone_4s_highland_park_mix_properties {
+        four_cc('m', 'i', 'x', '0'), four_cc('m', 'i', 'x', '1'),
+        four_cc('m', 'i', 'x', '2'),
+    };
+    constexpr std::array iphone_4s_highland_park_downlink_eq_properties {
+        four_cc('b', 't', 'e', 'd'), four_cc('b', 't', 'e', '1'),
+        four_cc('b', 't', 'e', '2'),
+    };
+    constexpr std::array iphone_4s_highland_park_uplink_eq_properties {
+        four_cc('b', 't', 'e', 'u'), four_cc('b', 't', 'e', '3'),
+        four_cc('b', 't', 'e', '4'),
+    };
+    constexpr std::array iphone_4s_highland_park_agc_properties {
+        four_cc('a', 'g', 'c', '0') };
+
+    constexpr std::array iphone_4s_highland_park_controls {
+        IOAudio2ControlDescription { 17U, boolean_control_base_class,
+            mute_control_class, output_scope, 0U, 0U, false, { }, { } },
+        IOAudio2ControlDescription { 12U, level_control_base_class,
+            volume_control_class, output_scope, 0U, 0U, false,
+            iphone_4s_highland_park_fine_range, { } },
+        IOAudio2ControlDescription { 16U, boolean_control_base_class,
+            mute_control_class, output_scope, 1U, 0U, false, { }, { } },
+        IOAudio2ControlDescription { 11U, level_control_base_class,
+            volume_control_class, output_scope, 1U, 0U, false,
+            iphone_4s_highland_park_coarse_range, { } },
+        IOAudio2ControlDescription { 18U, boolean_control_base_class,
+            mute_control_class, output_scope, 2U, 0U, false, { }, { } },
+        IOAudio2ControlDescription { 13U, level_control_base_class,
+            volume_control_class, output_scope, 2U, 0U, false,
+            iphone_4s_highland_park_coarse_range, { } },
+        IOAudio2ControlDescription { 20U, boolean_control_base_class,
+            mute_control_class, input_scope, 0U, 0U, false, { }, { } },
+        IOAudio2ControlDescription { 15U, level_control_base_class,
+            volume_control_class, input_scope, 0U, 0U, false,
+            iphone_4s_highland_park_input_fine_range, { } },
+        IOAudio2ControlDescription { 19U, boolean_control_base_class,
+            mute_control_class, input_scope, 1U, 0U, false, { }, { } },
+        IOAudio2ControlDescription { 14U, level_control_base_class,
+            volume_control_class, input_scope, 1U, 0U, false,
+            iphone_4s_highland_park_coarse_range, { } },
+        IOAudio2ControlDescription { 10U, selector_control_base_class,
+            data_source_control_class, global_scope, 0U,
+            four_cc('u', 'n', 'd', 'f'), false, { },
+            iphone_4s_highland_park_modes },
+        IOAudio2ControlDescription { 21U, selector_control_base_class,
+            four_cc('n', 's', 'l', '0'), global_scope, 0U, 0U, false, { },
+            iphone_4s_highland_park_input_sets,
+            iphone_4s_highland_park_input_set_properties },
+        IOAudio2ControlDescription { 22U, boolean_control_base_class,
+            four_cc('p', 'w', 'r', '0'), global_scope, 0U, 0U, false, { }, { },
+            iphone_4s_highland_park_power_properties },
+        IOAudio2ControlDescription { 23U, selector_control_base_class,
+            four_cc('n', 't', 'w', 'k'), global_scope, 0U, 0U, false, { },
+            iphone_4s_highland_park_networks,
+            iphone_4s_highland_park_network_properties },
+        IOAudio2ControlDescription { 24U, selector_control_base_class,
+            four_cc('m', 'i', 'x', 'm'), global_scope, 0U, 0U, false, { },
+            iphone_4s_highland_park_mix_modes,
+            iphone_4s_highland_park_mix_properties },
+        IOAudio2ControlDescription { 25U, selector_control_base_class,
+            four_cc('b', 't', 'e', 'd'), global_scope, 0U, 0U, false, { },
+            iphone_4s_highland_park_downlink_eq,
+            iphone_4s_highland_park_downlink_eq_properties },
+        IOAudio2ControlDescription { 26U, selector_control_base_class,
+            four_cc('b', 't', 'e', 'u'), global_scope, 0U, 0U, false, { },
+            iphone_4s_highland_park_uplink_eq,
+            iphone_4s_highland_park_uplink_eq_properties },
+        IOAudio2ControlDescription { 27U, boolean_control_base_class,
+            four_cc('a', 'g', 'c', '0'), global_scope, 0U, 0U, false, { }, { },
+            iphone_4s_highland_park_agc_properties },
+    };
+
+    // The dock's digital audio out (AppleUSBMike "USB Audio Output"): one
+    // stereo 16-bit output at every rate, non-mixable.
+    constexpr std::uint32_t iphone_4s_usb_io_buffer_frame_size = 14112U;
+    constexpr IOAudio2StreamFormatDescription usb_output_format(
+        std::uint32_t sample_rate)
+    {
+        return {
+            .sample_rate = sample_rate,
+            .format_id = linear_pcm_format,
+            .format_flags = 0x4cU,
+            .bytes_per_packet = 4,
+            .frames_per_packet = 1,
+            .bytes_per_frame = 4,
+            .channels_per_frame = 2,
+            .bits_per_channel = 16,
+        };
+    }
+    constexpr auto iphone_4s_usb_formats = [] {
+        std::array<IOAudio2StreamFormatDescription, i2s_sample_rates.size()>
+            formats { };
+        for (std::size_t index = 0; index < formats.size(); ++index)
+            formats[index] = usb_output_format(i2s_sample_rates[index]);
+        return formats;
+    }();
+    constexpr std::array iphone_4s_usb_streams {
+        IOAudio2StreamDescription {
+            .identifier = 1,
+            .direction = IOAudio2StreamDirection::Output,
+            .starting_channel = 1,
+            .buffer_mapping_options = 1,
+            .buffer_size = iphone_4s_usb_io_buffer_frame_size * 4U,
+            .format = usb_output_format(44100U),
+            .available_formats = iphone_4s_usb_formats,
+        },
+    };
+
     constexpr std::array device_catalog {
         IOAudio2DeviceDescription {
             .name = "Built-in Audio",
@@ -588,6 +864,47 @@ namespace {
             .input_safety_offset = 48,
             .output_safety_offset = 48,
             .clock_domain = i2s_clock_domain,
+        },
+        IOAudio2DeviceDescription {
+            .name = "Baseband Voice",
+            .manufacturer = "Apple Inc.",
+            .uid = "Baseband Voice",
+            .transport_type = 0U,
+            .io_buffer_frame_size = voice_io_buffer_frame_size,
+            .streams = iphone_4s_baseband_voice_streams,
+            .controls = iphone_4s_baseband_voice_controls,
+            .input_latency = 4,
+            .output_latency = 4,
+            .input_safety_offset = 48,
+            .output_safety_offset = 48,
+            .clock_domain = 0U,
+        },
+        IOAudio2DeviceDescription {
+            .name = std::nullopt,
+            .manufacturer = "Apple Inc.",
+            .uid = "HighlandPark",
+            .transport_type = 0U,
+            .io_buffer_frame_size = iphone_4s_io_buffer_frame_size,
+            .streams = iphone_4s_highland_park_streams,
+            .controls = iphone_4s_highland_park_controls,
+            .input_latency = 23,
+            .output_latency = 23,
+            .input_safety_offset = 96,
+            .output_safety_offset = 96,
+            .clock_domain = i2s_clock_domain,
+        },
+        IOAudio2DeviceDescription {
+            .name = "USB Audio Output",
+            .manufacturer = "Apple Computer, Inc.",
+            .uid = "USB Audio Output",
+            .transport_type = four_cc('u', 's', 'b', ' '),
+            .io_buffer_frame_size = iphone_4s_usb_io_buffer_frame_size,
+            .streams = iphone_4s_usb_streams,
+            .controls = { },
+            .input_latency = 0,
+            .output_latency = 0,
+            .input_safety_offset = 0,
+            .output_safety_offset = 2816,
         },
     };
 

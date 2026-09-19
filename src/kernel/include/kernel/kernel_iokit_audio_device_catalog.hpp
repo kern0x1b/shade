@@ -71,7 +71,8 @@ struct IOAudio2ControlDescription {
 };
 
 struct IOAudio2DeviceDescription {
-    std::string_view name;
+    // Absent for a driver that publishes no name (HighlandPark's).
+    std::optional<std::string_view> name;
     std::string_view manufacturer;
     std::string_view uid;
     // AudioHardware transport four-character code (for example, 'bltn' for a
