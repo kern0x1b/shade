@@ -837,7 +837,8 @@ void CompatibilityKernel::dispatch_bsd_descriptor_memory(
         return;
     }
     case 73: // munmap
-        if (registers[1] == 0 || !memory_.unmap(registers[0], registers[1])) {
+        if (registers[1] == 0 ||
+            !unmap_memory(cpu, registers[0], registers[1])) {
             bsd_error(cpu, bsd_support::invalid_argument);
         } else {
             bsd_success(cpu, 0);
@@ -1229,7 +1230,7 @@ void CompatibilityKernel::dispatch_bsd_descriptor_memory(
                 bsd_error(cpu, bsd_support::invalid_argument);
                 return;
             }
-            memory_.unmap(address, mapped_size);
+            unmap_memory(cpu, address, mapped_size);
         }
         MemoryPermission permissions = MemoryPermission::None;
         if ((protection & 1U) != 0)

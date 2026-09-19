@@ -53,6 +53,10 @@
 namespace ilemu {
 namespace {
 
+    // The armv7 shared region of the releases this emulator boots.
+    constexpr std::uint32_t shared_region_first_address = 0x20000000U;
+    constexpr std::uint32_t shared_region_end_address = 0x40000000U;
+
     [[nodiscard]] bool jit_env_flag(const char* name) noexcept
     {
         const char* value = std::getenv(name);
@@ -627,6 +631,13 @@ public:
     {
         if (ir.block.CycleCount() == 0) {
             performance_counters().record_translation_block();
+            // The dyld shared cache is the same read-only code at the same
+            // addresses in every process, so its blocks are the ones every
+            // process translates again.
+            if (address >= shared_region_first_address &&
+                address < shared_region_end_address) {
+                performance_counters().record_translation_block_shared_region();
+            }
             translation_block_ = &ir.block;
             translation_code_pages_.clear();
             translation_constant_dependencies_.clear();

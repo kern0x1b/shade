@@ -465,17 +465,38 @@ bool AddressSpace::map(
     return true;
 }
 
-bool AddressSpace::unmap(std::uint32_t address, std::uint32_t size)
+AddressSpace::UnmapResult AddressSpace::unmap_with_result(
+    std::uint32_t address, std::uint32_t size)
 {
     if (size == 0 || range_overflows(address, size)) {
-        return size == 0;
+        return UnmapResult { .succeeded = size == 0 };
     }
     const auto first = page_base(address);
     const auto end = page_range_end(address, size);
     auto lock = write_lock();
+    bool executable_unmapped = false;
+    for (std::uint64_t cursor = first; cursor < end;) {
+        const auto region =
+            vm_map_.region_at_or_after(static_cast<std::uint32_t>(cursor));
+        if (!region || region->address >= end)
+            break;
+        if (has_permission(region->permissions, MemoryPermission::Execute)) {
+            executable_unmapped = true;
+            break;
+        }
+        cursor = region->end;
+    }
     invalidate_mapping_leases_locked(first, end);
     unmap_range_locked(first, end);
-    return true;
+    return UnmapResult {
+        .succeeded = true,
+        .executable_unmapped = executable_unmapped,
+    };
+}
+
+bool AddressSpace::unmap(std::uint32_t address, std::uint32_t size)
+{
+    return unmap_with_result(address, size).succeeded;
 }
 
 void AddressSpace::unmap_range_locked(

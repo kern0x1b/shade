@@ -13,7 +13,7 @@ namespace ilemu {
 
 namespace {
 
-    constexpr std::array<DeviceModel, 9> models {
+    constexpr std::array<DeviceModel, 10> models {
         DeviceModel {
             .identity = {
                 .product_type = "iPhone1,1",
@@ -282,6 +282,45 @@ namespace {
                 },
             },
             .keybag = legacy_keybag_capabilities,
+            .baseband = {
+                .transport = BasebandTransport::Offline,
+                .device_available = false,
+            },
+        },
+        DeviceModel {
+            .identity = {
+                .product_type = "iPod4,1",
+                .board_config = "N81AP",
+                .activation_hardware_model = "N81DEV",
+                .model_number = "MC540",
+            },
+            .processor = {
+                .soc = "Apple A4 (S5L8930)",
+                .model = ArmCpuModelKind::CortexA8,
+                .bus_hz = 100'000'000,
+                .topology = GuestCpuTopology::single_core(1'000'000'000U,
+                    GuestCpuPerformanceClass::Performance,
+                    guest_cpu_isa::armv7 | guest_cpu_isa::thumb |
+                        guest_cpu_isa::thumb2,
+                    10U),
+            },
+            .memory = {
+                .ram_bytes = 256ULL * 1024ULL * 1024ULL,
+                .storage_bytes = 8ULL * 1024ULL * 1024ULL * 1024ULL,
+            },
+            .screen = {
+                .panel = DisplayGeometry { 640U, 960U },
+                .user_interface = DisplayGeometry { 320U, 480U },
+                .accelerator = GraphicsAcceleratorKind::Sgx535,
+                .framebuffer_service_class = "AppleCLCD",
+                .graphics_services = {
+                    .device_name = "iPod",
+                    .marketing_name = "iPod touch",
+                    .supports_multitasking = true,
+                    .supports_cellular_data = false,
+                },
+            },
+            .keybag = virtual_keybag_capabilities,
             .baseband = {
                 .transport = BasebandTransport::Offline,
                 .device_available = false,

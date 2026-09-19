@@ -22,6 +22,11 @@ namespace {
             "[clock]",
             "[process]",
             "[cpu] fatal",
+            // What a verdict reads: the scale a run used, who ended a process
+            // and what a thread was still waiting for when the run stopped.
+            "[time]",
+            "[signal]",
+            "[mach] stalled",
             "[display]",
             "[baseband]",
             "[watch]",

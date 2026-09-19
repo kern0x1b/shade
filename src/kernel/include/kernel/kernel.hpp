@@ -378,6 +378,12 @@ public:
         return shared_state_->clock.wall_time();
     }
     [[nodiscard]] std::size_t bootstrap_checked_in_service_count() const;
+    // Report the threads of this process still waiting for a mach reply that
+    // has not come within the given guest time. A run that ends while a thread
+    // waits names what it waited on, which no message-level line can: a
+    // request the kernel does not answer looks exactly like one a guest server
+    // answers slowly until the reply never arrives.
+    void report_stalled_receives(std::uint64_t threshold_nanoseconds) const;
     void set_wall_time(std::uint64_t unix_time_nanoseconds)
     {
         shared_state_->clock.set_wall_time(unix_time_nanoseconds);
@@ -652,6 +658,9 @@ private:
     void bsd_success(
         Cpu& cpu, std::uint32_t value, std::uint32_t second_value = 0);
     void bsd_error(Cpu& cpu, std::uint32_t error);
+    // Unmaps guest memory and retires translated code of any executable
+    // mapping it removed.
+    bool unmap_memory(Cpu& cpu, std::uint32_t address, std::uint32_t size);
     [[nodiscard]] bool protect_memory(Cpu& cpu, std::uint32_t address,
         std::uint32_t size, MemoryPermission permissions);
     void trace_unknown(Cpu& cpu, std::string kind, std::uint32_t number);

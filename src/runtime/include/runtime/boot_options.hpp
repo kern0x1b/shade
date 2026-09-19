@@ -48,6 +48,10 @@ struct BootOptions {
     bool quiet_output { };
     bool control_enabled { };
     bool disable_scheduler_preemption { };
+    // The guest's clock runs this many times slower than the host's, so a
+    // host that cannot emulate the device in real time still meets the
+    // guest's own watchdogs and RPC deadlines.
+    double time_scale { 1.0 };
     bool jit_observer_only { };
     bool report_performance { };
     std::optional<std::uint64_t> ticks;

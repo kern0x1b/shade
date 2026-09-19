@@ -66,7 +66,7 @@ bool CompatibilityKernel::dispatch_mach_vm_deallocate_message(
     if (address && size && targets_current_task) {
         // vm_deallocate treats an already-unmapped subrange as success; unmap
         // whatever currently overlaps the requested page range.
-        static_cast<void>(memory_.unmap(*address, *size));
+        static_cast<void>(unmap_memory(cpu, *address, *size));
         result = darwin::mach::success;
     }
 

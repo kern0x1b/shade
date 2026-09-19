@@ -14,10 +14,24 @@
 
 namespace ilemu {
 
-RealtimePacer::RealtimePacer(DeviceMonotonicTime initial_device_monotonic_time)
+RealtimePacer::RealtimePacer(
+    DeviceMonotonicTime initial_device_monotonic_time, double time_scale)
     : initial_device_monotonic_time_ { initial_device_monotonic_time }
     , initial_host_time_ { std::chrono::steady_clock::now() }
+    , time_scale_ { time_scale >= 1.0 ? time_scale : 1.0 }
 {
+}
+
+std::uint64_t RealtimePacer::host_duration_for(
+    std::uint64_t guest_nanoseconds) const
+{
+    if (time_scale_ <= 1.0)
+        return guest_nanoseconds;
+    const auto scaled = static_cast<double>(guest_nanoseconds) * time_scale_;
+    return scaled >= static_cast<double>(
+               std::numeric_limits<std::uint64_t>::max())
+        ? std::numeric_limits<std::uint64_t>::max()
+        : static_cast<std::uint64_t>(scaled);
 }
 
 DeviceMonotonicTime RealtimePacer::allowed_device_monotonic_time() const
@@ -29,8 +43,10 @@ DeviceMonotonicTime RealtimePacer::allowed_device_monotonic_time() const
             std::chrono::steady_clock::duration::zero());
     const auto elapsed_nanoseconds =
         std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed).count();
-    const auto positive_elapsed =
-        static_cast<std::uint64_t>(elapsed_nanoseconds);
+    const auto positive_elapsed = time_scale_ > 1.0
+        ? static_cast<std::uint64_t>(
+              static_cast<double>(elapsed_nanoseconds) / time_scale_)
+        : static_cast<std::uint64_t>(elapsed_nanoseconds);
     if (positive_elapsed > std::numeric_limits<DeviceMonotonicTime>::max() -
                                initial_device_monotonic_time_) {
         return std::numeric_limits<std::uint64_t>::max();
@@ -45,7 +61,7 @@ std::chrono::nanoseconds RealtimePacer::delay_until(
     if (device_monotonic_time <= allowed) {
         return std::chrono::nanoseconds::zero();
     }
-    const auto delay = device_monotonic_time - allowed;
+    const auto delay = host_duration_for(device_monotonic_time - allowed);
     const auto maximum =
         static_cast<std::uint64_t>(std::chrono::nanoseconds::max().count());
     return std::chrono::nanoseconds {
@@ -58,7 +74,8 @@ std::chrono::steady_clock::time_point RealtimePacer::host_deadline_for(
 {
     if (device_monotonic_time <= initial_device_monotonic_time_)
         return initial_host_time_;
-    const auto delta = device_monotonic_time - initial_device_monotonic_time_;
+    const auto delta =
+        host_duration_for(device_monotonic_time - initial_device_monotonic_time_);
     const auto maximum = static_cast<std::uint64_t>(
         std::chrono::steady_clock::duration::max().count());
     if (delta >= maximum)

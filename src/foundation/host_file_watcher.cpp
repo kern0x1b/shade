@@ -25,6 +25,12 @@
 #include <sys/inotify.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#if defined(__APPLE__)
+#define st_atim st_atimespec
+#define st_mtim st_mtimespec
+#define st_ctim st_ctimespec
+#endif
 #endif
 
 namespace ilemu {

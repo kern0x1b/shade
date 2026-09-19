@@ -295,6 +295,7 @@ struct PerformanceSnapshot {
     std::uint64_t scheduler_preemption_deferred_consumes { };
     std::uint64_t scheduler_quantum_expirations { };
     std::uint64_t translation_blocks { };
+    std::uint64_t translation_blocks_shared_region { };
     std::uint64_t cpu_executions { };
     std::uint64_t cpu_ticks { };
     std::uint64_t svc_calls { };
@@ -471,6 +472,10 @@ public:
     void record_scheduler_preemption_deferred_consume();
     void record_scheduler_quantum_expiry();
     void record_translation_block();
+    // Blocks first read from the dyld shared cache's address range. The cache
+    // is the same read-only code at the same addresses in every process, so
+    // this counts the work every process repeats for it.
+    void record_translation_block_shared_region();
     void record_cpu_execution(std::uint64_t ticks);
     void record_svc();
     void record_page_miss();
@@ -676,6 +681,7 @@ private:
     std::atomic<std::uint64_t> scheduler_preemption_deferred_consumes_ { };
     std::atomic<std::uint64_t> scheduler_quantum_expirations_ { };
     std::atomic<std::uint64_t> translation_blocks_ { };
+    std::atomic<std::uint64_t> translation_blocks_shared_region_ { };
     std::atomic<std::uint64_t> cpu_executions_ { };
     std::atomic<std::uint64_t> cpu_ticks_ { };
     std::atomic<std::uint64_t> svc_calls_ { };
