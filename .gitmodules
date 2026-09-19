@@ -1,6 +1,6 @@
 [submodule "external/dynarmic"]
 	path = external/dynarmic
-	url = https://github.com/MC-XiaoXiao/dynarmic.git
+	url = https://github.com/kern0x1b/shade-dynarmic.git
 
 [submodule "external/ext-boost"]
 	path = external/ext-boost
