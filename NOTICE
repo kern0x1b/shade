@@ -1,53 +1,24 @@
 Shade
 =====
 
-Shade is a Charon distribution of an ARM/iOS userland emulator. It is based on
-iLEmu with Charon's patches applied as a proper source tree (not patches applied
-at build time). It descends from upstream iLEmu and preserves its git history.
+Shade is Charon's emulator for legacy iPhone OS and iOS userlands on macOS
+arm64 hosts. It is licensed under the Mozilla Public License 2.0; see LICENSE.
 
-Provenance
-----------
+The JIT core, kept as a separate submodule, is licensed under the BSD Zero
+Clause License; see the LICENSE.txt in its tree.
 
-  Shade  = iLEmu @ 411248cdd309b3018c41dbcc2eb59cdaea2aa8e3
-           + Charon's ilemu.patch          (applied at the tree root)
-           + dynarmic @ 21944ab87740a957c39ddd73cd4ecaeb700f7e73
-             + Charon's dynarmic.patch      (arm64 backend, in external/dynarmic)
+Third-party components
+----------------------
 
-Charon's patches are the ones carried in the Charon package recipe
-(packages/i/ilemu). Shade reproduces exactly the source Charon builds; only the
-form differs (a committed fork tree instead of build-time patches).
+These carry their own licenses and notices, which each keeps in its own tree.
+This file only summarizes them.
 
-Upstream components and their licenses
---------------------------------------
-
-All upstream LICENSE files and per-file license headers are retained unchanged
-in this tree. This NOTICE only summarizes them.
-
-iLEmu
-  Copyright (c) MC-XiaoXiao
-  License: Mozilla Public License 2.0 (MPL-2.0) -- see ./LICENSE
-  Source:  https://github.com/MC-XiaoXiao/iLEmu
-  Pinned:  411248cdd309b3018c41dbcc2eb59cdaea2aa8e3
-
-dynarmic  (external/dynarmic -- kept as a separate submodule)
-  Copyright (c) 2017 merryhime <git@mary.rs>
-  License: 0BSD -- see external/dynarmic/LICENSE.txt
-  Source:  https://github.com/MC-XiaoXiao/dynarmic
-  Pinned:  21944ab87740a957c39ddd73cd4ecaeb700f7e73
-
-ext-boost  (external/ext-boost -- separate submodule, Boost libraries)
-  License: Boost Software License 1.0 (BSL-1.0) -- see external/ext-boost/LICENSE_1_0.txt
-  Source:  https://github.com/MC-XiaoXiao/ext-boost
-  Pinned:  717900f94b5e9acbc69377cdeee9d7f952ff725c
-
-Third-party libraries vendored inside dynarmic (external/dynarmic/externals/)
-  fmt         MIT             (c) Victor Zverovich and {fmt} contributors
-  xbyak       BSD-3-Clause    (c) 2007 MITSUNARI Shigeo
-  robin-map   MIT             Tessil
-  mcl         MIT             merryhime
-  oaknut      MIT             merryhime
-  zycore      MIT             (c) Florian Bernd, Joel Hoener (Zydis core)
-  biscuit     MIT             (c) 2021 Lioncash
-  catch       BSL-1.0         Catch2, Two Blue Cubes Ltd.
-
-Each of these retains its own LICENSE file in its subdirectory.
+  Boost libraries (external/ext-boost)     BSL-1.0
+  fmt          MIT           (c) Victor Zverovich and {fmt} contributors
+  xbyak        BSD-3-Clause  (c) 2007 MITSUNARI Shigeo
+  robin-map    MIT           Tessil
+  mcl          MIT           merryhime
+  oaknut       MIT           merryhime
+  zycore       MIT           (c) Florian Bernd, Joel Hoener
+  biscuit      MIT           (c) 2021 Lioncash
+  Catch2       BSL-1.0       Two Blue Cubes Ltd.
