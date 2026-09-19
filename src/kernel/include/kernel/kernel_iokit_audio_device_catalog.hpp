@@ -59,11 +59,15 @@ struct IOAudio2ControlDescription {
     std::uint32_t element;
     std::uint32_t value;
     bool read_only;
-    std::optional<IOAudio2ControlRangeDescription> range;
+    // A level control's range map, one segment per dB step size.
+    std::span<const IOAudio2ControlRangeDescription> ranges;
     std::span<const IOAudio2SelectorItemDescription> items;
     // The device properties a change of this selector also changes; the
     // driver publishes them so the HAL knows which listeners to notify.
     std::span<const std::uint32_t> property_selectors { };
+    // A selector whose value is the array of selected items; it starts with
+    // none selected.
+    bool multi_selector { };
 };
 
 struct IOAudio2DeviceDescription {
@@ -72,7 +76,8 @@ struct IOAudio2DeviceDescription {
     std::string_view uid;
     // AudioHardware transport four-character code (for example, 'bltn' for a
     // device integrated into the platform).  It is part of the firmware-facing
-    // registry contract, independent of the host audio backend.
+    // registry contract, independent of the host audio backend.  Zero leaves
+    // the property out, as the drivers of an iPhone 4S's built-in devices do.
     std::uint32_t transport_type;
     std::uint32_t io_buffer_frame_size;
     std::span<const IOAudio2StreamDescription> streams;
@@ -83,6 +88,8 @@ struct IOAudio2DeviceDescription {
     std::uint32_t output_latency { };
     std::uint32_t input_safety_offset { };
     std::uint32_t output_safety_offset { };
+    // The clock the device runs from, published only by drivers that do.
+    std::optional<std::uint32_t> clock_domain { };
 };
 
 // A device catalog models hardware endpoints. Firmware-facing ABI details
@@ -93,7 +100,8 @@ public:
     [[nodiscard]] static std::span<const IOAudio2DeviceDescription> devices(
         AudioHardwareProfile profile = AudioHardwareProfile::CodecBaseband);
     [[nodiscard]] static const IOAudio2DeviceDescription* find(
-        std::string_view uid);
+        std::string_view uid,
+        AudioHardwareProfile profile = AudioHardwareProfile::CodecBaseband);
 };
 
 } // namespace shade::kernel_iokit::audio

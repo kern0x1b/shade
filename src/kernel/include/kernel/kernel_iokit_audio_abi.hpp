@@ -24,6 +24,7 @@ struct IOKitAudioAbi {
         // Newer IOAudio2 clients use this numeric capability to classify the
         // physical transport before constructing their route database.
         std::string_view transport_type;
+        std::string_view clock_domain;
         std::string_view exclusive_access_owner;
         std::string_view io_buffer_frame_size;
         std::string_view input_safety_offset;
@@ -56,6 +57,7 @@ struct IOKitAudioAbi {
         std::string_view control_element;
         std::string_view control_read_only;
         std::string_view control_variant;
+        std::string_view control_multi_selector;
         std::string_view control_name;
         std::string_view control_value;
         std::string_view control_selectors;

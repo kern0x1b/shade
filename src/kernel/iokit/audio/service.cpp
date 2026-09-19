@@ -145,12 +145,15 @@ namespace {
                     return item.value == value;
                 });
         }
-        if (control.range) {
-            const auto maximum =
-                static_cast<std::uint64_t>(control.range->start_integer_value) +
-                control.range->integer_steps;
-            return value >= control.range->start_integer_value &&
-                   value <= maximum;
+        if (!control.ranges.empty()) {
+            return std::ranges::any_of(control.ranges,
+                [value](const IOAudio2ControlRangeDescription& range) {
+                    const auto maximum =
+                        static_cast<std::uint64_t>(range.start_integer_value) +
+                        range.integer_steps;
+                    return value >= range.start_integer_value &&
+                           value <= maximum;
+                });
         }
         return value <= 1U;
     }
@@ -304,8 +307,15 @@ namespace {
                 boolean_property(control.read_only));
             properties.emplace(
                 profile.registry.control_variant, number_property(0));
-            properties.emplace(
-                profile.registry.control_value, number_property(control.value));
+            if (control.multi_selector) {
+                properties.emplace(profile.registry.control_multi_selector,
+                    number_property(1));
+                properties.emplace(
+                    profile.registry.control_value, array_property({ }));
+            } else {
+                properties.emplace(profile.registry.control_value,
+                    number_property(control.value));
+            }
             if (!selector_items.empty()) {
                 properties.emplace(profile.registry.control_selectors,
                     array_property(std::move(selector_items)));
@@ -318,26 +328,32 @@ namespace {
                 properties.emplace(profile.registry.control_property_selectors,
                     array_property(std::move(selectors)));
             }
-            if (control.range) {
-                std::map<std::string, KernelSharedState::IOKitRegistryProperty>
-                    range_properties;
-                range_properties.emplace(
-                    profile.registry.control_range_start_integer,
-                    number_property(control.range->start_integer_value));
-                range_properties.emplace(
-                    profile.registry.control_range_start_db,
-                    number64_property(control.range->start_db_value));
-                range_properties.emplace(
-                    profile.registry.control_range_integer_steps,
-                    number_property(control.range->integer_steps));
-                range_properties.emplace(
-                    profile.registry.control_range_db_per_step,
-                    number64_property(control.range->db_per_step));
+            if (!control.ranges.empty()) {
+                std::vector<KernelSharedState::IOKitRegistryProperty> segments;
+                segments.reserve(control.ranges.size());
+                for (const auto& range : control.ranges) {
+                    std::map<std::string,
+                        KernelSharedState::IOKitRegistryProperty>
+                        range_properties;
+                    range_properties.emplace(
+                        profile.registry.control_range_start_integer,
+                        number_property(range.start_integer_value));
+                    range_properties.emplace(
+                        profile.registry.control_range_start_db,
+                        number64_property(range.start_db_value));
+                    range_properties.emplace(
+                        profile.registry.control_range_integer_steps,
+                        number_property(range.integer_steps));
+                    range_properties.emplace(
+                        profile.registry.control_range_db_per_step,
+                        number64_property(range.db_per_step));
+                    segments.push_back(
+                        dictionary_property(std::move(range_properties)));
+                }
                 properties.emplace(profile.registry.control_transfer_function,
                     number_property(0));
                 properties.emplace(profile.registry.control_range_map,
-                    array_property(
-                        { dictionary_property(std::move(range_properties)) }));
+                    array_property(std::move(segments)));
             }
             controls.push_back(dictionary_property(std::move(properties)));
         }
@@ -380,7 +396,8 @@ namespace {
         const auto connection = state.iokit_connections.find(connection_object);
         for (const auto& [uid, service_object] : state.ioaudio2_services) {
             if (service_object == connection->second.service_port)
-                return IOAudio2DeviceCatalog::find(uid);
+                return IOAudio2DeviceCatalog::find(
+                    uid, state.audio_hardware_profile);
         }
         return nullptr;
     }
@@ -878,8 +895,14 @@ std::vector<std::uint32_t> ensure_services_locked(KernelSharedState& state)
             string_property(device.manufacturer));
         properties.emplace(
             profile.registry.device_uid, string_property(device.uid));
-        properties.emplace(profile.registry.transport_type,
-            number_property(device.transport_type));
+        if (device.transport_type != 0U) {
+            properties.emplace(profile.registry.transport_type,
+                number_property(device.transport_type));
+        }
+        if (device.clock_domain) {
+            properties.emplace(profile.registry.clock_domain,
+                number_property(*device.clock_domain));
+        }
         properties.emplace(profile.registry.exclusive_access_owner,
             number_property(~std::uint32_t { 0 }));
         properties.emplace(profile.registry.io_buffer_frame_size,
