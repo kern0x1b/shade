@@ -370,6 +370,7 @@ bool CompatibilityKernel::dispatch_mach_task_vm_message(
             state, guest_cpsr, creates_suspended_thread, create_error);
         if (!created)
             return write_create_error(create_error);
+        start_thread_signals(created->processor, cpu.processor_id());
         const std::array<std::uint32_t, 10> reply {
             0x80000012U,
             40,

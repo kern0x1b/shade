@@ -903,8 +903,19 @@ void CompatibilityKernel::prepare_exec(std::size_t processor_id)
     mobile_framebuffer_hle_.reset();
     layerkit_hle_.reset();
     next_display_scanout_deadline_.reset();
-    signal_actions_ = { };
-    signal_mask_ = 0;
+    // execve resets caught signals to their default and keeps ignored ones
+    // ignored; the thread that execs keeps its mask and every pending
+    // signal, and the other threads are gone.
+    for (auto& action : signal_actions_) {
+        if (action[0] != darwin::signal::ignore_action)
+            action = { };
+    }
+    {
+        const auto mask = signal_mask(processor_id);
+        const auto pending = thread_pending_signals_[processor_id];
+        thread_signal_masks_ = { { processor_id, mask } };
+        thread_pending_signals_ = { { processor_id, pending } };
+    }
     pthread_runtime_.prepare_exec();
     shared_state_->psynch_runtime->clear_process(process_.pid);
     process_.waiting_for_events = false;
@@ -2675,7 +2686,7 @@ CompatibilityKernel::take_guest_file_mutations(std::size_t maximum_events)
 
 void CompatibilityKernel::inherit_process_state(
     const CompatibilityKernel& parent, std::uint32_t child_pid,
-    ProcessInheritance inheritance)
+    ProcessInheritance inheritance, std::size_t parent_processor)
 {
     const auto inherit_fork_state = inheritance == ProcessInheritance::Fork;
     shared_state_ = parent.shared_state_;
@@ -2773,7 +2784,22 @@ void CompatibilityKernel::inherit_process_state(
     if (inherit_fork_state) {
         vm_purgable_states_ = parent.vm_purgable_states_;
         signal_actions_ = parent.signal_actions_;
-        signal_mask_ = parent.signal_mask_;
+    } else {
+        // posix_spawn starts the child as execve would: the parent's caught
+        // signals at their default, its ignored ones still ignored.
+        for (std::size_t signal = 0; signal < signal_actions_.size(); ++signal) {
+            if (parent.signal_actions_[signal][0] ==
+                darwin::signal::ignore_action)
+                signal_actions_[signal] = parent.signal_actions_[signal];
+        }
+    }
+    // The child's one thread runs with the mask of the thread that forked or
+    // spawned it.
+    {
+        const auto mask = parent.thread_signal_masks_.find(parent_processor);
+        thread_signal_masks_ = { { 0, mask != parent.thread_signal_masks_.end()
+                                             ? mask->second
+                                             : 0U } };
     }
     kqueues_ = parent.kqueues_;
     // Guarded opens are close-on-fork; inherited ordinary descriptors keep

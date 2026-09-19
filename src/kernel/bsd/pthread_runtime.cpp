@@ -369,6 +369,8 @@ bool CompatibilityKernel::service_bsd_workqueue(Cpu* requesting_cpu)
     const auto cpsr = pthread_start_cpsr(registration->workqueue_thread_start);
     std::uint32_t create_error { };
     const auto created = create_guest_thread(state, cpsr, false, create_error);
+    if (created)
+        start_thread_signals(created->processor, std::nullopt, true);
     if (!created) {
         static_cast<void>(memory_.unmap(*base, total_size));
         static_cast<void>(pthread_runtime_.enqueue_workitem(*next_item, true));
@@ -511,6 +513,8 @@ bool CompatibilityKernel::dispatch_bsd_pthread(Cpu& cpu, std::uint32_t number)
         std::uint32_t create_error { };
         const auto created =
             create_guest_thread(state, cpsr, false, create_error);
+        if (created)
+            start_thread_signals(created->processor, cpu.processor_id());
         if (!created) {
             if (allocation)
                 static_cast<void>(
@@ -574,6 +578,7 @@ bool CompatibilityKernel::dispatch_bsd_pthread(Cpu& cpu, std::uint32_t number)
 
         pthread_runtime_.remove_worker(processor);
         thread_ports_.erase(processor);
+        end_thread_signals(processor);
         pending_mach_receives_.erase(processor);
         pending_psynch_waits_.erase(processor);
         shared_state_->psynch_runtime->cancel_wait(

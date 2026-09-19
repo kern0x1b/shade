@@ -84,10 +84,9 @@ std::uint32_t CompatibilityKernel::deliver_signal(std::uint32_t signal)
         return 0;
     }
     if (!unmaskable && handler != darwin::signal::default_action) {
-        // A complete ARM signal frame/trampoline is a later signal-subsystem
-        // milestone. Preserve the accepted delivery without applying the
-        // default action; this is also the observable result for a masked
-        // pending signal.
+        // A thread runs the handler on its way back to user mode
+        // (deliver_pending_signals).
+        pending_signals_ |= 1U << (signal - 1U);
         output_.write(
             "[signal] caught-pending pid=" + std::to_string(process_.pid) +
             " signal=" + std::to_string(signal) + "\n");
@@ -97,7 +96,14 @@ std::uint32_t CompatibilityKernel::deliver_signal(std::uint32_t signal)
         }
         return 0;
     }
-    if (!unmaskable && (signal_mask_ & (1U << (signal - 1U))) != 0) {
+    // A signal sent to the process waits only while every thread blocks it.
+    const auto bit = 1U << (signal - 1U);
+    const bool blocked_everywhere = !thread_signal_masks_.empty() &&
+        std::all_of(thread_signal_masks_.begin(), thread_signal_masks_.end(),
+            [bit](const auto& thread) { return (thread.second & bit) != 0U; });
+    if (!unmaskable && blocked_everywhere) {
+        // Blocked: it waits until a mask lets it through.
+        pending_signals_ |= 1U << (signal - 1U);
         output_.write(
             "[signal] masked-pending pid=" + std::to_string(process_.pid) +
             " signal=" + std::to_string(signal) + "\n");
@@ -121,6 +127,14 @@ std::uint32_t CompatibilityKernel::deliver_signal(std::uint32_t signal)
 
 void CompatibilityKernel::dispatch_bsd_signal(Cpu& cpu, std::uint32_t number)
 {
+    if (number == 184U) {
+        dispatch_sigreturn(cpu);
+        return;
+    }
+    if (number == 53U) {
+        dispatch_sigaltstack(cpu);
+        return;
+    }
     if (number == 111U) { // sigsuspend
         constexpr std::uint32_t unblockable =
             (1U << (darwin::signal::kill - 1U)) |
@@ -157,15 +171,30 @@ void CompatibilityKernel::dispatch_bsd_signal(Cpu& cpu, std::uint32_t number)
             return;
         }
         if (signal != 0) {
-            const auto error = deliver_signal(signal);
-            if (error != 0) {
-                bsd_error(cpu, error);
-                return;
+            // pthread_kill directs the signal at one thread: only it takes a
+            // caught or blocked one; a default action is the process's.
+            const auto slot = static_cast<std::size_t>(target->second);
+            const auto handler = signal_actions_[signal][0];
+            const bool caught = handler != darwin::signal::default_action &&
+                                handler != darwin::signal::ignore_action;
+            const bool blocked =
+                (signal_mask(slot) & (1U << (signal - 1U))) != 0U;
+            if ((caught || blocked) && signal != darwin::signal::kill &&
+                signal != darwin::signal::stop) {
+                thread_pending_signals_[slot] |= 1U << (signal - 1U);
+            } else {
+                const auto error = deliver_signal(signal);
+                if (error != 0) {
+                    bsd_error(cpu, error);
+                    return;
+                }
             }
         }
         bsd_success(cpu, 0);
         if (process_.exited)
             cpu.halt(Umbra::HaltReason::UserDefined1);
+        else
+            deliver_pending_signals(cpu);
         return;
     }
     if (number != darwin::syscall::kill) {
@@ -266,6 +295,8 @@ void CompatibilityKernel::dispatch_bsd_signal(Cpu& cpu, std::uint32_t number)
         }
         if (signal_stopped)
             cpu.request_guest_preemption();
+        else
+            deliver_pending_signals(cpu);
     }
 }
 

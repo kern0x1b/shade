@@ -102,6 +102,7 @@ bool CompatibilityKernel::dispatch_mach_thread_lifecycle_message(
                 process_.thread_disk_io_policies.erase(*target_object);
                 pending_psynch_waits_.erase(target->second);
                 thread_ports_.erase(target->second);
+                end_thread_signals(target->second);
             }
             std::lock_guard mach_lock { shared_state_->mach_mutex };
             auto task =
@@ -126,6 +127,7 @@ bool CompatibilityKernel::dispatch_mach_thread_lifecycle_message(
                   " result=" + std::to_string(kernel_result) + "\n");
     if (self_termination) {
         thread_ports_.erase(cpu.processor_id());
+        end_thread_signals(cpu.processor_id());
         pending_mach_receives_.erase(cpu.processor_id());
         pending_psynch_waits_.erase(cpu.processor_id());
         cpu.registers()[0] = darwin::mach::success;

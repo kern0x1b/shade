@@ -1470,6 +1470,8 @@ public:
         message << "ARM exception " << static_cast<unsigned>(exception)
                 << " at 0x" << std::hex << pc;
         exception_ = message.str();
+        exception_kind_ = exception;
+        exception_pc_ = pc;
         jit_->HaltExecution(Umbra::HaltReason::UserDefined3);
     }
 
@@ -1501,6 +1503,8 @@ public:
         fault_.reset();
         breakpoint_.reset();
         exception_.clear();
+        exception_kind_.reset();
+        exception_pc_ = 0;
         cooperative_execution_ = cooperative_execution && ticks != 0U;
         host_yield_requested_ = false;
         host_yield_probe_count_ = 0;
@@ -1519,7 +1523,7 @@ public:
     {
         return CpuRunResult { reason, consumed_, svc_, svc_calls_, fault_,
             breakpoint_, exception_, host_yield_requested_,
-            host_yield_checks_ };
+            host_yield_checks_, exception_kind_, exception_pc_ };
     }
 
     [[nodiscard]] const ArmCpuModel& cpu_model() const { return cpu_model_; }
@@ -1981,6 +1985,8 @@ private:
     std::optional<MemoryFault> fault_;
     std::optional<std::uint32_t> breakpoint_;
     std::string exception_;
+    std::optional<Umbra::A32::Exception> exception_kind_;
+    std::uint32_t exception_pc_ { };
     std::shared_ptr<JitTranslationProfile> translation_profile_;
     std::shared_ptr<JitArtifactStore> artifact_store_;
     JitArtifactRetention artifact_retention_ { JitArtifactRetention::Normal };

@@ -526,6 +526,7 @@ void CompatibilityKernel::dispatch_bsd_process(Cpu& cpu, std::uint32_t number)
     case darwin::syscall::pthread_sigmask: { // __pthread_sigmask
         constexpr std::uint32_t unblockable =
             (1U << (9U - 1U)) | (1U << (17U - 1U));
+        auto& signal_mask_ = signal_mask(cpu.processor_id());
         if (registers[2] != 0 && !memory_.write32(registers[2], signal_mask_)) {
             bsd_error(cpu, bsd_support::bad_address);
             return;

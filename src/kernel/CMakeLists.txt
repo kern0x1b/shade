@@ -79,6 +79,7 @@ add_library(Shade::kernel_bsd_sysctl ALIAS
 shade_configure_module(shade_kernel_bsd_sysctl)
 
 add_library(shade_kernel_bsd_signal STATIC
+    bsd/signal/frame.cpp
     bsd/signal/signal.cpp)
 add_library(Shade::kernel_bsd_signal ALIAS
     shade_kernel_bsd_signal)

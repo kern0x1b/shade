@@ -281,6 +281,30 @@ public:
         task_memory_share_query_ = std::move(query);
     }
     [[nodiscard]] std::uint32_t deliver_signal(std::uint32_t signal);
+    // A fault taken by the guest thread on a processor, as the CPU reported
+    // it: what an ARM exception is before XNU turns it into a signal.
+    struct GuestFault {
+        enum class Kind : std::uint8_t {
+            DataAccess,       // load or store the page does not allow
+            InstructionFetch, // execution from a page that is not executable
+            Undefined,        // an instruction the processor does not decode
+            Breakpoint,       // BKPT with no debugger attached
+        };
+        Kind kind { };
+        std::uint32_t pc { };      // the instruction that faulted
+        std::uint32_t address { }; // the address it touched
+        bool write { };
+    };
+    // Delivers the signal a device raises for this fault: SIGSEGV for an
+    // unmapped address, SIGBUS for one the page's protection forbids,
+    // SIGILL, SIGTRAP. The thread continues in its handler, or the process
+    // has to die of the returned signal (blocked, ignored or defaulted, or no
+    // room for the signal frame), as XNU's threadsignal does.
+    [[nodiscard]] std::optional<std::uint32_t> deliver_fault_signal(
+        Cpu& cpu, const GuestFault& fault);
+    // Runs the handlers of signals that became deliverable while this thread
+    // was away: XNU delivers them on the thread's way back to user mode.
+    void deliver_pending_signals(Cpu& cpu);
     [[nodiscard]] std::optional<SchedulerYieldRequest> consume_scheduler_yield(
         std::size_t processor_id);
     [[nodiscard]] std::optional<XnuThreadId> consume_scheduler_handoff(
@@ -429,7 +453,8 @@ public:
     [[nodiscard]] std::vector<std::byte> take_baseband_output();
     void inherit_process_state(const CompatibilityKernel& parent,
         std::uint32_t child_pid,
-        ProcessInheritance inheritance = ProcessInheritance::Fork);
+        ProcessInheritance inheritance = ProcessInheritance::Fork,
+        std::size_t parent_processor = 0);
     void prepare_exec(std::size_t processor_id);
     void install_main_image_hle(
         Cpu& cpu, std::string_view mapped_guest_path = { });
@@ -928,7 +953,46 @@ private:
     std::map<std::uint32_t, std::uint32_t> vm_purgable_states_;
     std::set<std::size_t> disabled_thread_signals_;
     std::array<std::array<std::uint32_t, 4>, 32> signal_actions_ { };
-    std::uint32_t signal_mask_ { };
+    // Each thread's signal mask, by the processor slot it runs on: on XNU the
+    // mask belongs to the uthread, and sigprocmask and __pthread_sigmask
+    // change the calling thread's.
+    std::map<std::size_t, std::uint32_t> thread_signal_masks_;
+    [[nodiscard]] std::uint32_t& signal_mask(std::size_t processor)
+    {
+        return thread_signal_masks_[processor];
+    }
+    // A thread starts with its creator's mask (uthread_alloc); a workqueue
+    // thread with every asynchronous signal blocked (~workq_threadmask).
+    void start_thread_signals(std::size_t processor,
+        std::optional<std::size_t> creator, bool workqueue = false);
+    void end_thread_signals(std::size_t processor);
+    // Signals sent to the process, caught by a handler or blocked in every
+    // thread when they arrived, for whichever thread lets them through first.
+    std::uint32_t pending_signals_ { };
+    // Signals sent to one thread - pthread_kill - that only it may take.
+    std::map<std::size_t, std::uint32_t> thread_pending_signals_;
+    struct AlternateSignalStack {
+        std::uint32_t base { };
+        std::uint32_t size { };
+        bool disabled { true };
+        bool active { };
+    };
+    std::map<std::size_t, AlternateSignalStack> alternate_signal_stacks_;
+    struct GuestSignalInfo {
+        std::int32_t code { };
+        std::uint32_t address { };
+        std::uint32_t sender { };
+        std::uint32_t sender_uid { };
+        // __darwin_arm_exception_state: exception, fsr, far.
+        std::array<std::uint32_t, 3> exception_state { };
+    };
+    // Builds the signal frame on the thread's stack and enters the handler
+    // through the trampoline sigaction registered. False when there is no
+    // handler to run or the frame does not fit.
+    bool send_signal_frame(
+        Cpu& cpu, std::uint32_t signal, const GuestSignalInfo& info);
+    void dispatch_sigreturn(Cpu& cpu);
+    void dispatch_sigaltstack(Cpu& cpu);
     std::uint64_t random_state_ { 0x69a5'1e8d'4c3b'2701ULL };
     std::shared_ptr<KernelSharedState> shared_state_ {
         std::make_shared<KernelSharedState>()

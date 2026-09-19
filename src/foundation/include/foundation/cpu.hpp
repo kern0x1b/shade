@@ -163,6 +163,10 @@ struct CpuRunResult {
     // host slice boundary from a guest AST/deferred-SVC stop.
     bool host_yielded { };
     std::uint64_t host_yield_checks { };
+    // The architectural exception behind `exception`, and the address of the
+    // instruction that raised it, for a kernel that turns it into a signal.
+    std::optional<Umbra::A32::Exception> exception_kind;
+    std::uint32_t exception_pc { };
 };
 
 enum class SvcDispatchMode : std::uint8_t {

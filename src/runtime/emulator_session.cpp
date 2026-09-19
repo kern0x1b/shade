@@ -96,6 +96,45 @@
 namespace shade {
 using namespace runtime_detail;
 namespace {
+
+    // What the CPU reported, as the ARM exception a kernel sees: nothing for a
+    // stop that is not the guest's fault (an interpreter fallback).
+    std::optional<CompatibilityKernel::GuestFault> guest_fault_of(
+        const CpuRunResult& result, const Cpu& cpu)
+    {
+        using Kind = CompatibilityKernel::GuestFault::Kind;
+        using Exception = Umbra::A32::Exception;
+        if (result.exception_kind) {
+            switch (*result.exception_kind) {
+            case Exception::NoExecuteFault:
+                return CompatibilityKernel::GuestFault { Kind::InstructionFetch,
+                    result.exception_pc,
+                    result.fault ? result.fault->address : result.exception_pc,
+                    false };
+            case Exception::UndefinedInstruction:
+            case Exception::UnpredictableInstruction:
+            case Exception::DecodeError:
+                return CompatibilityKernel::GuestFault {
+                    Kind::Undefined, result.exception_pc, result.exception_pc,
+                    false };
+            case Exception::Breakpoint:
+                return CompatibilityKernel::GuestFault {
+                    Kind::Breakpoint, result.exception_pc, result.exception_pc,
+                    false };
+            default:
+                return std::nullopt;
+            }
+        }
+        if (!result.fault)
+            return std::nullopt;
+        if (has_permission(result.fault->access, MemoryPermission::Execute)) {
+            return CompatibilityKernel::GuestFault { Kind::InstructionFetch,
+                result.fault->address, result.fault->address, false };
+        }
+        return CompatibilityKernel::GuestFault { Kind::DataAccess,
+            cpu.registers()[15], result.fault->address,
+            has_permission(result.fault->access, MemoryPermission::Write) };
+    }
     // Mixed host-control and debugger sessions use a bounded poll fallback.
     constexpr auto host_event_poll_fallback = std::chrono::milliseconds { 4 };
     struct PreparedGuestSlice {
@@ -1728,13 +1767,15 @@ void EmulatorSession::run()
                     PerfLatencyKind::ProcessInheritSpawnKernel
                 };
                 child->kernel->inherit_process_state(
-                    *runtime_ptr->kernel, child_pid, inheritance);
+                    *runtime_ptr->kernel, child_pid, inheritance,
+                    parent_cpu ? parent_cpu->processor_id() : 0U);
             } else {
                 PerformanceLatencyScope latency {
                     PerfLatencyKind::ProcessInheritKernel
                 };
                 child->kernel->inherit_process_state(
-                    *runtime_ptr->kernel, child_pid, inheritance);
+                    *runtime_ptr->kernel, child_pid, inheritance,
+                    parent_cpu ? parent_cpu->processor_id() : 0U);
             }
             child->cpus->set_process_id(child_pid);
             child->allocated.assign(initial_guest_thread_slots, false);
@@ -3615,6 +3656,11 @@ void EmulatorSession::run()
                 static_cast<std::size_t>(scheduled_value.thread.thread);
             auto& cpu = selected_runtime->cpus->cpu(index);
             cpu.clear_halt();
+            // Signals that became deliverable while this thread was away run
+            // their handlers now, as on XNU's way back to user mode.
+            selected_runtime->kernel->deliver_pending_signals(cpu);
+            if (selected_runtime->kernel->process().exited)
+                continue;
             const auto host_slice_budget = guest_execution_policy.budget(
                 scheduler,
                 GuestExecutionBudgetRequest {
@@ -3906,10 +3952,20 @@ void EmulatorSession::run()
                                        : gdb_signal::illegal_instruction;
                 } else if (runtime.kernel->process().pid !=
                            initial_runtime->kernel->process().pid) {
-                    runtime.kernel->exit_process(
-                        0, result.fault ? gdb_signal::segmentation_fault
-                                        : gdb_signal::illegal_instruction);
-                    completion = XnuSliceCompletion::Terminate;
+                    // The fault becomes the signal a device raises for it; the
+                    // thread goes on in its handler or the process dies of it.
+                    const auto fault = guest_fault_of(result, cpu);
+                    const auto fatal_signal = fault
+                        ? runtime.kernel->deliver_fault_signal(cpu, *fault)
+                        : std::optional<std::uint32_t> {
+                              result.fault ? gdb_signal::segmentation_fault
+                                           : gdb_signal::illegal_instruction };
+                    if (fatal_signal) {
+                        runtime.kernel->exit_process(0, *fatal_signal);
+                        completion = XnuSliceCompletion::Terminate;
+                    } else {
+                        completion = XnuSliceCompletion::Continue;
+                    }
                 } else {
                     completion = XnuSliceCompletion::Terminate;
                     hard_stop = true;
