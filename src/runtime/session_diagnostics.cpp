@@ -142,8 +142,12 @@ void SessionDiagnostics::threads(std::string_view filter) const
                   << " pid-suspended=" << process.pid_suspended
                   << " signal-stopped=" << process.signal_stopped
                   << " wait=" << std::quoted(runtime->kernel->wait_reason(index));
+            if (const auto id = runtime->kernel->guest_thread_id(index))
+                reply << " tid=0x" << std::hex << *id << std::dec;
             const auto& registers = runtime->cpus->cpu(index).registers();
-            reply << std::hex << " pc=0x" << registers[15]
+            reply << std::hex << " r0=0x" << registers[0]
+                  << " r1=0x" << registers[1] << " r2=0x" << registers[2]
+                  << " r3=0x" << registers[3] << " pc=0x" << registers[15]
                   << " lr=0x" << registers[14]
                   << " sp=0x" << registers[13] << " frames=";
             auto frame = registers[7];

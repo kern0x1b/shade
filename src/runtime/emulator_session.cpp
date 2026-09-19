@@ -1495,7 +1495,28 @@ void EmulatorSession::run()
                                     << source.registers()[register_index];
                         }
                         message << " sp=0x" << source.registers()[13]
-                                << " lr=0x" << source.registers()[14];
+                                << " lr=0x" << source.registers()[14]
+                                << " frames=";
+                        // The writer is usually a library routine; the frame
+                        // chain says who called it.
+                        const auto stack = source.registers()[13];
+                        auto frame = source.registers()[7];
+                        for (unsigned depth = 0; depth < 16; ++depth) {
+                            if ((frame & 3U) != 0 || frame < stack ||
+                                frame - stack > 1024U * 1024U)
+                                break;
+                            const auto next = runtime_ptr->memory->read32(frame);
+                            const auto link =
+                                runtime_ptr->memory->read32(frame + 4U);
+                            if (!next || !link)
+                                break;
+                            if (depth != 0)
+                                message << ',';
+                            message << "0x" << *link;
+                            if (*next <= frame)
+                                break;
+                            frame = *next;
+                        }
                         output.line(message.str());
                     });
             }
