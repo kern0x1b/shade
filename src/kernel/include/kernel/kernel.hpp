@@ -493,6 +493,13 @@ public:
     // advancing the shared clock through one representative kernel.
     void service_time_dependent_devices(std::uint64_t deadline);
     [[nodiscard]] std::string wait_reason(std::size_t processor) const;
+    // The id thread_selfid gives the guest thread on this processor: what
+    // libpthread records as a mutex owner, so a dump can name the holder.
+    [[nodiscard]] std::optional<std::uint32_t> guest_thread_id(
+        std::size_t processor) const
+    {
+        return thread_object_for_processor(processor);
+    }
 
 private:
     struct CreatedGuestThread {
