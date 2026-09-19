@@ -111,7 +111,7 @@ std::optional<std::vector<std::byte>> KeyStore::transform(
     // Domain-separated class keys keep protection classes independent while
     // retaining one durable device secret. No guest process shares scratch.
     std::array<unsigned char, 22> label {
-        'i', 'L', 'E', 'm', 'u', ' ', 'c', 'l', 'a', 's', 's', ' ',
+        'S', 'h', 'a', 'd', 'e', ' ', 'c', 'l', 'a', 's', 's', ' ',
         'k', 'e', 'y', ' ', 'v', '1', 0, 0, 0, 0
     };
     for (unsigned byte = 0; byte < 4U; ++byte)
