@@ -8,6 +8,7 @@
 #pragma once
 
 #include <array>
+#include <atomic>
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
@@ -182,6 +183,28 @@ class CpuExecutionPool;
 class JitExecutor;
 class JitCallbacks;
 
+// Code of a guest range that every process maps the same way - the dyld shared
+// cache, one file at a fixed address - is translated once for the machine
+// instead of once per process. The range is learned from the cache before any
+// guest code runs; a process that makes the region private stops sharing it.
+class SharedImageCode {
+public:
+    [[nodiscard]] static SharedImageCode& instance();
+
+    void set_region(std::uint32_t first_address, std::uint32_t end_address);
+    [[nodiscard]] std::uint32_t first_address() const noexcept;
+    [[nodiscard]] std::uint32_t end_address() const noexcept;
+    [[nodiscard]] bool active() const noexcept;
+    [[nodiscard]] Dynarmic::A32::NativeCodeSlab* slab();
+
+private:
+    SharedImageCode();
+
+    std::atomic<std::uint32_t> first_address_ { };
+    std::atomic<std::uint32_t> end_address_ { };
+    std::unique_ptr<Dynarmic::A32::NativeCodeSlab> slab_;
+};
+
 class Cpu {
 public:
     using SvcHandler = std::function<void(Cpu&, std::uint32_t)>;
@@ -243,6 +266,9 @@ public:
     void set_memory_write_watchpoint(
         std::uint32_t address, MemoryWriteHandler handler);
     void set_debug_breakpoints_enabled(bool enabled);
+    // The guest made the shared image region private for this process, so its
+    // code is no longer the code every other process runs.
+    void diverge_shared_images();
     void set_translation_profile(std::shared_ptr<JitTranslationProfile> profile,
         bool record = true, bool precompile = true);
     // The scheduler calls this when a different guest thread is dispatched on

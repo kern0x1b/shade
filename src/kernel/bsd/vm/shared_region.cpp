@@ -633,6 +633,25 @@ const DyldSharedCache* CompatibilityKernel::dyld_shared_cache_for(
                 " images=" +
                 std::to_string(dyld_shared_cache_->images().size()) + "\n");
         }
+        // Every process maps this cache from the same file at the same
+        // addresses, so its code is translated once for the machine.
+        std::uint64_t first_address = std::numeric_limits<std::uint64_t>::max();
+        std::uint64_t end_address = 0;
+        for (const auto& file : dyld_shared_cache_->files()) {
+            for (const auto& mapping : file.mappings) {
+                constexpr std::uint32_t vm_protection_execute = 0x04U;
+                if ((mapping.initial_protection & vm_protection_execute) == 0)
+                    continue;
+                first_address = std::min(first_address, mapping.address);
+                end_address = std::max(end_address, mapping.address + mapping.size);
+            }
+        }
+        if (end_address > first_address &&
+            end_address <= std::numeric_limits<std::uint32_t>::max()) {
+            SharedImageCode::instance().set_region(
+                static_cast<std::uint32_t>(first_address),
+                static_cast<std::uint32_t>(end_address));
+        }
         userland_hle_.prepare_shared_cache_plan(*dyld_shared_cache_,
             arm_architecture_for_model(device_model_.processor.model));
     }
@@ -668,6 +687,9 @@ bool CompatibilityKernel::dispatch_bsd_shared_region(
             bsd_error(cpu, parsed.error);
             return true;
         }
+        // From here this process no longer holds the shared region every other
+        // process holds, so it stops using the code translated for all of them.
+        cpu.diverge_shared_images();
         const auto release = ranges_to_release(memory_, parsed.ranges, bounds);
         for (const auto& range : release) {
             static_cast<void>(

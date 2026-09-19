@@ -2139,7 +2139,8 @@ public:
         const ArmCpuModel& cpu_model,
         std::shared_ptr<JitArtifactStore> artifact_store,
         std::shared_ptr<ExecutionContext> execution_context,
-        std::shared_ptr<JitNativePreimportTracker> native_preimport_tracker)
+        std::shared_ptr<JitNativePreimportTracker> native_preimport_tracker,
+        std::shared_ptr<std::atomic<bool>> shared_images_diverged = { })
         : processor_id_ { processor_id }
         , execution_slot_ { execution_slot }
         , memory_ { memory }
@@ -2149,6 +2150,7 @@ public:
         , cp15_ { std::make_unique<ArmSystemControlCoprocessor>(*callbacks_) }
         , execution_context_ { std::move(execution_context) }
         , native_preimport_tracker_ { std::move(native_preimport_tracker) }
+        , shared_images_diverged_ { std::move(shared_images_diverged) }
     {
         if (!execution_context_) {
             throw std::invalid_argument {
@@ -2963,6 +2965,20 @@ private:
         }
         Dynarmic::A32::UserConfig config { callbacks_.get() };
         config.native_code_slab = execution_context_->native_code_slab();
+        // Code of the region every process maps the same way is translated
+        // once for the machine and served from the shared slab.
+        // Work in progress: the shared slab collapses the translation work but
+        // serializes every process on one lock, so it is opt-in until that is
+        // fixed (see docs/shared-translation-design.md).
+        static const bool shared_images_enabled =
+            std::getenv("ILEMU_SHARED_IMAGE_CODE") != nullptr;
+        if (auto& images = SharedImageCode::instance();
+            shared_images_enabled && images.active()) {
+            config.image_code_slab = images.slab();
+            config.image_region_start = images.first_address();
+            config.image_region_end = images.end_address();
+            config.image_region_diverged = shared_images_diverged_.get();
+        }
         config.callbacks_link = runtime_link_cell_address_;
         if (performance_counters().native_lookup_diagnostics_enabled()) {
             config.native_code_block_lookup_callback =
@@ -3214,6 +3230,7 @@ private:
     std::size_t processor_id_ { };
     std::size_t execution_slot_ { };
     std::uint32_t process_id_ { };
+    std::shared_ptr<std::atomic<bool>> shared_images_diverged_;
     AddressSpace& memory_;
     Dynarmic::ExclusiveMonitor& monitor_;
     std::unique_ptr<JitCallbacks> callbacks_;
@@ -3349,7 +3366,8 @@ public:
         for (std::size_t slot = 0; slot < execution_slot_count; ++slot) {
             executors_.push_back(std::make_unique<JitExecutor>(
                 first_processor_id + slot, slot, memory, monitor, cpu_model,
-                artifact_store_, execution_context_, nullptr));
+                artifact_store_, execution_context_, nullptr,
+                shared_images_diverged_));
         }
         if (precompile_lane_count == 0U) {
             throw std::invalid_argument {
@@ -3367,7 +3385,8 @@ public:
             precompile_executors_.push_back(
                 std::make_unique<JitExecutor>(first_processor_id,
                     execution_slot_count + lane, memory_, monitor_, cpu_model_,
-                    artifact_store_, execution_context_, nullptr));
+                    artifact_store_, execution_context_, nullptr,
+                    shared_images_diverged_));
         }
     }
 
@@ -3539,6 +3558,17 @@ public:
         }
         for (const auto& range : coalesced)
             invalidate_cache_range(range.address, range.length);
+    }
+
+    void diverge_shared_images() noexcept
+    {
+        shared_images_diverged_->store(true, std::memory_order_release);
+    }
+
+    [[nodiscard]] std::shared_ptr<std::atomic<bool>> shared_images_diverged()
+        const noexcept
+    {
+        return shared_images_diverged_;
     }
 
     void disable_jit_page_table() { memory_.disable_jit_page_table(); }
@@ -4862,6 +4892,11 @@ private:
 
     AddressSpace& memory_;
     std::shared_ptr<ExecutionContext> execution_context_;
+    // One flag per process: the guest made the shared image region private, so
+    // its code is no longer the code every other process runs.
+    std::shared_ptr<std::atomic<bool>> shared_images_diverged_ {
+        std::make_shared<std::atomic<bool>>(false)
+    };
     std::shared_ptr<JitNativePreimportTracker> native_preimport_tracker_;
     Dynarmic::ExclusiveMonitor& monitor_;
     const ArmCpuModel& cpu_model_;
@@ -5122,6 +5157,52 @@ void Cpu::set_memory_write_watchpoint(
     memory_write_watch_address_ = address;
     memory_write_handler_ = std::move(handler);
 }
+SharedImageCode::SharedImageCode()
+    : slab_ { std::make_unique<Dynarmic::A32::NativeCodeSlab>() }
+{
+}
+
+SharedImageCode& SharedImageCode::instance()
+{
+    static SharedImageCode shared;
+    return shared;
+}
+
+void SharedImageCode::set_region(
+    std::uint32_t first_address, std::uint32_t end_address)
+{
+    if (end_address <= first_address)
+        return;
+    first_address_.store(first_address, std::memory_order_release);
+    end_address_.store(end_address, std::memory_order_release);
+}
+
+std::uint32_t SharedImageCode::first_address() const noexcept
+{
+    return first_address_.load(std::memory_order_acquire);
+}
+
+std::uint32_t SharedImageCode::end_address() const noexcept
+{
+    return end_address_.load(std::memory_order_acquire);
+}
+
+bool SharedImageCode::active() const noexcept
+{
+    return end_address() > first_address();
+}
+
+Dynarmic::A32::NativeCodeSlab* SharedImageCode::slab()
+{
+    return slab_.get();
+}
+
+void Cpu::diverge_shared_images()
+{
+    if (execution_pool_)
+        execution_pool_->diverge_shared_images();
+}
+
 void Cpu::set_debug_breakpoints_enabled(bool enabled)
 {
     debug_breakpoints_enabled_ = enabled;

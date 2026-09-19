@@ -2992,9 +2992,30 @@ void CompatibilityKernel::report_stalled_receives(
     }
 }
 
+namespace {
+
+    // The shared image slab holds code of a range the emulator promises is the
+    // same in every process. A process that unmaps or reprotects any of it has
+    // broken that promise for itself and stops using the shared code.
+    void note_shared_image_change(
+        Cpu& cpu, std::uint32_t address, std::uint32_t size)
+    {
+        auto& images = SharedImageCode::instance();
+        if (!images.active() || size == 0)
+            return;
+        const auto first = static_cast<std::uint64_t>(address);
+        const auto end = first + size;
+        if (end <= images.first_address() || first >= images.end_address())
+            return;
+        cpu.diverge_shared_images();
+    }
+
+} // namespace
+
 bool CompatibilityKernel::unmap_memory(
     Cpu& cpu, std::uint32_t address, std::uint32_t size)
 {
+    note_shared_image_change(cpu, address, size);
     const auto result = memory_.unmap_with_result(address, size);
     if (!result.succeeded)
         return false;
@@ -3027,6 +3048,7 @@ bool CompatibilityKernel::protect_memory(Cpu& cpu, std::uint32_t address,
     const auto result = memory_.protect_with_result(address, size, permissions);
     if (!result.succeeded)
         return false;
+    note_shared_image_change(cpu, address, size);
     // AddressSpace::protect() applies permissions to the page-rounded range.
     // Retire only translated blocks intersecting that same range and only when
     // executable mappings actually changed. Data-only and no-op protection
