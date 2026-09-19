@@ -671,7 +671,7 @@ bool CompatibilityKernel::dispatch_bsd_shared_region(
         const auto release = ranges_to_release(memory_, parsed.ranges, bounds);
         for (const auto& range : release) {
             static_cast<void>(
-                memory_.unmap(range.address, range.end - range.address));
+                unmap_memory(cpu, range.address, range.end - range.address));
         }
         std::uint64_t released_bytes = 0;
         for (const auto& range : release)

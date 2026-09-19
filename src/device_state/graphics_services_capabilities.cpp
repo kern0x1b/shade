@@ -63,7 +63,7 @@ namespace {
         }
         if (key != nullptr)
             std::free(key);
-        plist_dict_free_iter(iterator);
+        std::free(iterator);
     }
 
     std::optional<std::string> read_file(const std::filesystem::path& path)

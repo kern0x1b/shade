@@ -2356,7 +2356,15 @@ void EmulatorSession::run()
     DeadlineQueue<std::uint32_t, std::uint64_t> guest_deadlines;
     if (device_time_policy == DeviceTimePolicy::HostMappedInteractive) {
         realtime_pacer.emplace(
-            initial_runtime->kernel->current_absolute_time());
+            initial_runtime->kernel->current_absolute_time(),
+            options.time_scale);
+        if (realtime_pacer->time_scale() != 1.0) {
+            std::ostringstream scale;
+            scale << "[time] scale=" << std::fixed << std::setprecision(2)
+                  << realtime_pacer->time_scale()
+                  << " (one guest second takes that many host seconds)";
+            output.line(scale.str());
+        }
         const auto host_wall_time =
             std::chrono::duration_cast<std::chrono::nanoseconds>(
                 std::chrono::system_clock::now().time_since_epoch())
@@ -3772,6 +3780,11 @@ void EmulatorSession::run()
                 }
                 if (!result.exception.empty())
                     failure << " exception=\"" << result.exception << '"';
+                failure << " sp=0x" << registers[13] << " cpsr=0x"
+                        << cpu.cpsr();
+                for (std::size_t index = 0; index < 13; ++index)
+                    failure << " r" << std::dec << index << "=0x" << std::hex
+                            << registers[index];
                 output.line(failure.str());
             }
             auto completion = XnuSliceCompletion::Continue;
@@ -5013,6 +5026,16 @@ void EmulatorSession::run()
         observe_all_runtime_jit_memory();
         concurrent_live_current_at_stop =
             runtime_jit_memory->concurrent_live_current;
+    }
+    // A run that ends while a guest thread is still waiting for a mach reply
+    // names what it waited on. A request the kernel never answers looks, from
+    // the guest, exactly like one a guest server answers slowly, and only the
+    // wait itself distinguishes them.
+    constexpr std::uint64_t stalled_receive_guest_nanoseconds =
+        10ULL * VirtualClock::nanoseconds_per_second;
+    for (auto& runtime : runtimes) {
+        runtime->kernel->report_stalled_receives(
+            stalled_receive_guest_nanoseconds);
     }
     for (auto& runtime : runtimes) {
         account_runtime_jit_memory(*runtime, true);

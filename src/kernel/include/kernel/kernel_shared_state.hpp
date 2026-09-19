@@ -166,6 +166,13 @@ struct PendingMachReceive {
     // that ipc_mqueue_post would select, rather than whichever emulated CPU is
     // polled first.
     std::uint64_t wait_queue_sequence { };
+    // When the receive started, so a run can say how long a thread has been
+    // waiting for a reply that never came, and, when the receive follows the
+    // send of the same mach_msg, which request it is waiting on. A daemon
+    // parked on its service port waits forever by design; a thread waiting for
+    // a reply to a request it sent is a stall.
+    std::uint64_t started { };
+    std::optional<std::uint32_t> awaited_request;
 };
 
 struct PendingKevent {

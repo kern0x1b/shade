@@ -150,9 +150,16 @@ struct AddressSpace::JitPageTableStorage {
 
     void clear()
     {
+#if defined(__linux__)
         if (::madvise(mapping, byte_size, MADV_DONTNEED) != 0) {
             std::memset(mapping, 0, byte_size);
         }
+#else
+        if (::mmap(mapping, byte_size, PROT_READ | PROT_WRITE,
+                MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, -1, 0) != mapping) {
+            std::memset(mapping, 0, byte_size);
+        }
+#endif
     }
 
     void* mapping { };
@@ -458,17 +465,38 @@ bool AddressSpace::map(
     return true;
 }
 
-bool AddressSpace::unmap(std::uint32_t address, std::uint32_t size)
+AddressSpace::UnmapResult AddressSpace::unmap_with_result(
+    std::uint32_t address, std::uint32_t size)
 {
     if (size == 0 || range_overflows(address, size)) {
-        return size == 0;
+        return UnmapResult { .succeeded = size == 0 };
     }
     const auto first = page_base(address);
     const auto end = page_range_end(address, size);
     auto lock = write_lock();
+    bool executable_unmapped = false;
+    for (std::uint64_t cursor = first; cursor < end;) {
+        const auto region =
+            vm_map_.region_at_or_after(static_cast<std::uint32_t>(cursor));
+        if (!region || region->address >= end)
+            break;
+        if (has_permission(region->permissions, MemoryPermission::Execute)) {
+            executable_unmapped = true;
+            break;
+        }
+        cursor = region->end;
+    }
     invalidate_mapping_leases_locked(first, end);
     unmap_range_locked(first, end);
-    return true;
+    return UnmapResult {
+        .succeeded = true,
+        .executable_unmapped = executable_unmapped,
+    };
+}
+
+bool AddressSpace::unmap(std::uint32_t address, std::uint32_t size)
+{
+    return unmap_with_result(address, size).succeeded;
 }
 
 void AddressSpace::unmap_range_locked(
@@ -885,7 +913,7 @@ void AddressSpace::share_pages_locked(std::uint32_t address, std::uint64_t end,
             page.backing = std::make_shared<GuestPageBacking>();
         } else if (page.file_cached ||
                    (page.copy_on_write_possible && !page.shared_writable &&
-                       !page.backing.unique())) {
+                       page.backing.use_count() != 1)) {
             page.backing = std::make_shared<GuestPageBacking>(*page.backing);
         }
         page.file_cached = false;
@@ -896,7 +924,7 @@ void AddressSpace::share_pages_locked(std::uint32_t address, std::uint64_t end,
             // entry can become stale. refresh_jit_page_locked below handles
             // this mapping directly; retain the full scan only for genuinely
             // shared backings or a concurrently published tracking transition.
-            tracked_backing_may_have_aliases |= !page.backing.unique();
+            tracked_backing_may_have_aliases |= page.backing.use_count() != 1;
             if (page.backing->enable_shared_write_tracking())
                 ++tracking_transitions;
             has_tracked_shared_backing = true;
@@ -1319,7 +1347,7 @@ void AddressSpace::uncache_page_locked(std::uint32_t address)
 
 void AddressSpace::ensure_unique_page_map_locked()
 {
-    if (pages_.unique())
+    if (pages_.use_count() == 1)
         return;
     pages_ = std::make_shared<PageMap>(*pages_);
     rebuild_page_lookup_locked();
@@ -1478,7 +1506,7 @@ GuestPageBacking& AddressSpace::writable_backing_locked(
     } else {
         if (page.file_cached ||
             (page.copy_on_write_possible && !page.shared_writable &&
-                !page.backing.unique())) {
+                page.backing.use_count() != 1)) {
             if (performance_counters().enabled())
                 write_copy_on_write_detaches.fetch_add(
                     1, std::memory_order_relaxed);
@@ -2255,11 +2283,11 @@ std::size_t AddressSpace::resident_page_count() const
 std::size_t AddressSpace::shared_page_count() const
 {
     auto lock = read_lock();
-    const auto shared_metadata = !pages_.unique();
+    const auto shared_metadata = pages_.use_count() != 1;
     return static_cast<std::size_t>(std::count_if(
         pages_->begin(), pages_->end(), [shared_metadata](const auto& entry) {
             return entry.second.backing &&
-                   (shared_metadata || !entry.second.backing.unique());
+                   (shared_metadata || entry.second.backing.use_count() != 1);
         }));
 }
 
@@ -2399,7 +2427,7 @@ void AddressSpace::add_page_permissions_locked(
                     static_cast<std::ptrdiff_t>(chunk_begin + chunk_end),
                 static_cast<std::uint8_t>(mapped_page_flag | bits));
         } else {
-            if (!chunk.unique())
+            if (chunk.use_count() != 1)
                 chunk = std::make_shared<PagePermissionChunk>(*chunk);
             for (auto index = chunk_begin; index < chunk_begin + chunk_end;
                 ++index)
@@ -2425,7 +2453,7 @@ void AddressSpace::set_page_permissions_locked(
         auto& chunk = page_permissions_[chunk_index];
         if (!chunk) {
             chunk = std::make_shared<PagePermissionChunk>();
-        } else if (!chunk.unique()) {
+        } else if (chunk.use_count() != 1) {
             chunk = std::make_shared<PagePermissionChunk>(*chunk);
         }
         std::fill(chunk->begin() + static_cast<std::ptrdiff_t>(chunk_begin),
@@ -2448,7 +2476,7 @@ void AddressSpace::clear_page_permissions_locked(
             page_permission_chunk_size - chunk_begin, after_page - page);
         auto& chunk = page_permissions_[chunk_index];
         if (chunk) {
-            if (!chunk.unique())
+            if (chunk.use_count() != 1)
                 chunk = std::make_shared<PagePermissionChunk>(*chunk);
             std::fill(chunk->begin() + static_cast<std::ptrdiff_t>(chunk_begin),
                 chunk->begin() +
@@ -2472,7 +2500,7 @@ AddressSpace::writable_page_permission_chunk_locked(std::size_t page_index)
     auto& chunk = page_permissions_[page_index / page_permission_chunk_size];
     if (!chunk) {
         chunk = std::make_shared<PagePermissionChunk>();
-    } else if (!chunk.unique()) {
+    } else if (chunk.use_count() != 1) {
         chunk = std::make_shared<PagePermissionChunk>(*chunk);
     }
     return *chunk;

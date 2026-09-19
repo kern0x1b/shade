@@ -137,6 +137,15 @@ public:
 
     bool map(std::uint32_t address, std::uint32_t size,
         MemoryPermission permissions);
+    struct UnmapResult {
+        bool succeeded { };
+        // True when at least one removed mapping allowed instruction
+        // execution. Callers use this to retire translated code, since a later
+        // mapping at the same address may hold different instructions.
+        bool executable_unmapped { };
+    };
+    [[nodiscard]] UnmapResult unmap_with_result(
+        std::uint32_t address, std::uint32_t size);
     bool unmap(std::uint32_t address, std::uint32_t size);
     enum class FileSyncResult { Success, Unmapped, IoError };
     // Writes shared file pages through their retained backing descriptors.

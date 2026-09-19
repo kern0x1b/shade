@@ -87,7 +87,8 @@ void CompatibilityKernel::dispatch_mach_message(
 {
     auto& registers = cpu.registers();
     const auto message_address = registers[0];
-    const auto begin_receive = [&] {
+    const auto begin_receive = [&](std::optional<std::uint32_t> awaited_request =
+                                       std::nullopt) {
         const auto timeout_enabled =
             (registers[1] & darwin::mach_message::option_receive_timeout) != 0;
         const auto timeout_milliseconds = registers[5];
@@ -116,7 +117,8 @@ void CompatibilityKernel::dispatch_mach_message(
                     registers[4], registers[1], cpu.processor_id(), deadline,
                     receive_object,
                     shared_state_->mach_port_sets.contains(*receive_object), 0,
-                    shared_state_->allocate_mach_wait_queue_sequence_locked() };
+                    shared_state_->allocate_mach_wait_queue_sequence_locked(),
+                    shared_state_->clock.now(), awaited_request };
             process_.waiting_for_events = true;
             if (deliver_pending_mach_locked(cpu, false))
                 return;
@@ -665,7 +667,7 @@ void CompatibilityKernel::dispatch_mach_message(
                 trace_unknown(cpu, "MIG routine", *message_id);
                 if (*local_port == xnu::ipc::null_name) {
                     if (wants_receive) {
-                        begin_receive();
+                        begin_receive(message_id);
                     } else {
                         registers[0] = darwin::mach::success;
                     }
@@ -1173,7 +1175,7 @@ void CompatibilityKernel::dispatch_mach_message(
                 }
             }
             if (wants_receive) {
-                begin_receive();
+                begin_receive(message_id);
             } else {
                 registers[0] = 0;
             }

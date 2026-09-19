@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <bit>
 #include <charconv>
+#include <cerrno>
 #include <cstring>
 #include <fstream>
 #include <limits>
@@ -26,6 +27,12 @@
 #include <sys/stat.h>
 #include <sys/xattr.h>
 
+#if defined(__APPLE__)
+#define st_atim st_atimespec
+#define st_mtim st_mtimespec
+#define st_ctim st_ctimespec
+#endif
+
 namespace ilemu::hfs {
 namespace {
 
@@ -36,17 +43,73 @@ namespace {
     constexpr std::uint32_t hfs_device = 1;
     constexpr std::uint32_t hfs_block_size = allocation_block_size;
 
+#if defined(__APPLE__)
+    // Darwin has no attribute namespaces: the user namespace names Linux
+    // gives these attributes are the bare names here.
+    ssize_t host_getxattr(const char* path, const char* name, void* value,
+        std::size_t size, bool follow)
+    {
+        const std::string_view full { name };
+        const auto bare = full.starts_with("user.") ? full.substr(5) : full;
+        return ::getxattr(path, std::string { bare }.c_str(), value, size, 0,
+            follow ? 0 : XATTR_NOFOLLOW);
+    }
+
+    ssize_t host_listxattr(
+        const char* path, char* buffer, std::size_t size, bool follow)
+    {
+        const auto length =
+            ::listxattr(path, nullptr, 0, follow ? 0 : XATTR_NOFOLLOW);
+        if (length <= 0)
+            return length;
+        std::vector<char> bare(static_cast<std::size_t>(length));
+        const auto received = ::listxattr(
+            path, bare.data(), bare.size(), follow ? 0 : XATTR_NOFOLLOW);
+        if (received <= 0)
+            return received;
+        std::string prefixed;
+        for (std::size_t cursor = 0;
+             cursor < static_cast<std::size_t>(received);) {
+            const std::string_view entry { bare.data() + cursor };
+            prefixed.append("user.").append(entry).push_back('\0');
+            cursor += entry.size() + 1U;
+        }
+        if (buffer == nullptr)
+            return static_cast<ssize_t>(prefixed.size());
+        if (size < prefixed.size()) {
+            errno = ERANGE;
+            return -1;
+        }
+        std::memcpy(buffer, prefixed.data(), prefixed.size());
+        return static_cast<ssize_t>(prefixed.size());
+    }
+#else
+    ssize_t host_getxattr(const char* path, const char* name, void* value,
+        std::size_t size, bool follow)
+    {
+        return follow ? ::getxattr(path, name, value, size)
+                      : ::lgetxattr(path, name, value, size);
+    }
+
+    ssize_t host_listxattr(
+        const char* path, char* buffer, std::size_t size, bool follow)
+    {
+        return follow ? ::listxattr(path, buffer, size)
+                      : ::llistxattr(path, buffer, size);
+    }
+#endif
+
     std::optional<std::vector<std::byte>> read_xattr(
         const std::filesystem::path& path, std::string_view name, bool follow)
     {
-        const auto reader = follow ? ::getxattr : ::lgetxattr;
-        const auto size =
-            reader(path.c_str(), std::string { name }.c_str(), nullptr, 0);
+        const auto size = host_getxattr(
+            path.c_str(), std::string { name }.c_str(), nullptr, 0, follow);
         if (size < 0)
             return std::nullopt;
         std::vector<std::byte> result(static_cast<std::size_t>(size));
-        if (size != 0 && reader(path.c_str(), std::string { name }.c_str(),
-                             result.data(), result.size()) != size) {
+        if (size != 0 &&
+            host_getxattr(path.c_str(), std::string { name }.c_str(),
+                result.data(), result.size(), follow) != size) {
             return std::nullopt;
         }
         return result;
@@ -825,12 +888,11 @@ std::vector<std::string> MetadataProvider::named_attributes(
     const std::filesystem::path& path, bool follow_symlink) const
 {
     std::set<std::string> names;
-    const auto reader = follow_symlink ? ::listxattr : ::llistxattr;
-    const auto size = reader(path.c_str(), nullptr, 0);
+    const auto size = host_listxattr(path.c_str(), nullptr, 0, follow_symlink);
     if (size > 0) {
         std::vector<char> buffer(static_cast<std::size_t>(size));
-        const auto received =
-            reader(path.c_str(), buffer.data(), buffer.size());
+        const auto received = host_listxattr(
+            path.c_str(), buffer.data(), buffer.size(), follow_symlink);
         std::size_t cursor = 0;
         while (received > 0 && cursor < static_cast<std::size_t>(received)) {
             const std::string_view host_name { buffer.data() + cursor };

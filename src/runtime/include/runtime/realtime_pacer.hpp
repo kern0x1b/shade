@@ -28,7 +28,13 @@ enum class DeviceTimePolicy : std::uint8_t {
 // this class so their deterministic-time behavior remains fast and repeatable.
 class RealtimePacer {
 public:
-    explicit RealtimePacer(DeviceMonotonicTime initial_device_monotonic_time);
+    // A scale above one runs the guest's clock that many times slower than the
+    // host's, which is how a host that cannot emulate the device in real time
+    // still meets the guest's own watchdogs and RPC deadlines.
+    explicit RealtimePacer(DeviceMonotonicTime initial_device_monotonic_time,
+        double time_scale = 1.0);
+
+    [[nodiscard]] double time_scale() const { return time_scale_; }
 
     [[nodiscard]] DeviceMonotonicTime allowed_device_monotonic_time() const;
     [[nodiscard]] std::chrono::nanoseconds delay_until(
@@ -44,8 +50,13 @@ public:
         const;
 
 private:
+    // Guest nanoseconds take time_scale times as long on the host.
+    [[nodiscard]] std::uint64_t host_duration_for(
+        std::uint64_t guest_nanoseconds) const;
+
     DeviceMonotonicTime initial_device_monotonic_time_ { };
     std::chrono::steady_clock::time_point initial_host_time_;
+    double time_scale_ { 1.0 };
 };
 
 } // namespace ilemu

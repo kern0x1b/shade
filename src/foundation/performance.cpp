@@ -557,6 +557,7 @@ void PerformanceCounters::reset(bool enabled)
     scheduler_preemption_deferred_consumes_.store(0, std::memory_order_relaxed);
     scheduler_quantum_expirations_.store(0, std::memory_order_relaxed);
     translation_blocks_.store(0, std::memory_order_relaxed);
+    translation_blocks_shared_region_.store(0, std::memory_order_relaxed);
     cpu_executions_.store(0, std::memory_order_relaxed);
     cpu_ticks_.store(0, std::memory_order_relaxed);
     svc_calls_.store(0, std::memory_order_relaxed);
@@ -995,6 +996,8 @@ std::optional<PerformanceSnapshot> PerformanceCounters::end_display_window()
     result.scheduler_quantum_expirations = diagnostic_delta(
         scheduler_quantum_expirations_.load(std::memory_order_relaxed),
         diagnostic_work_baseline.scheduler_quantum_expirations);
+    result.translation_blocks_shared_region =
+        translation_blocks_shared_region_.load(std::memory_order_relaxed);
     result.translation_blocks =
         diagnostic_delta(translation_blocks_.load(std::memory_order_relaxed),
             diagnostic_work_baseline.translation_blocks);
@@ -1590,6 +1593,11 @@ void PerformanceCounters::record_scheduler_quantum_expiry()
 void PerformanceCounters::record_translation_block()
 {
     add_if_enabled(translation_blocks_, enabled_);
+}
+
+void PerformanceCounters::record_translation_block_shared_region()
+{
+    add_if_enabled(translation_blocks_shared_region_, enabled_);
 }
 
 void PerformanceCounters::record_cpu_execution(std::uint64_t ticks)
@@ -2873,6 +2881,8 @@ PerformanceSnapshot PerformanceCounters::snapshot() const
         scheduler_quantum_expirations_.load(std::memory_order_relaxed);
     result.translation_blocks =
         translation_blocks_.load(std::memory_order_relaxed);
+    result.translation_blocks_shared_region =
+        translation_blocks_shared_region_.load(std::memory_order_relaxed);
     result.cpu_executions = cpu_executions_.load(std::memory_order_relaxed);
     result.cpu_ticks = cpu_ticks_.load(std::memory_order_relaxed);
     result.svc_calls = svc_calls_.load(std::memory_order_relaxed);
@@ -3347,6 +3357,8 @@ std::string format_performance_summary(const PerformanceSnapshot& snapshot)
          << " scheduler-quantum-expired="
          << snapshot.scheduler_quantum_expirations
          << " translation-blocks=" << snapshot.translation_blocks
+         << " translation-blocks-shared-region="
+         << snapshot.translation_blocks_shared_region
          << " cpu-exec=" << snapshot.cpu_executions
          << " cpu-ticks=" << snapshot.cpu_ticks << " svc=" << snapshot.svc_calls
          << " page-misses=" << snapshot.page_misses

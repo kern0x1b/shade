@@ -67,7 +67,7 @@ constexpr std::size_t bytes_per_mebibyte = 1024U * 1024U;
 std::string usage()
 {
     return "Usage:\n"
-           "  ilemu profile [--device PROFILE] [--output FILE]\n"
+           "  ilemu profile [--list | --device PROFILE] [--output FILE]\n"
            "  ilemu abi [--rootfs DIR] [--ios-build CODE] [--output FILE]\n"
            "  ilemu inspect --rootfs DIR [--binary /sbin/launchd] "
            "[--device PROFILE] [--shared-cache GUEST_PATH] "
@@ -102,7 +102,7 @@ std::string usage()
            "[--activation activated|unactivated|preserve] "
            "[--boot-logo PNG] [--frame-output FILE] [--touch-replay FILE] [--control-stdin] "
            "[--baseband-input FILE] [--baseband-output FILE] "
-           "[--disable-scheduler-preemption] "
+           "[--disable-scheduler-preemption] [--time-scale FACTOR] [--verbose] "
            "[--perf-summary] [--jit-observer-only] [--perf-frame-content] "
            "[--perf-cpu-phases] "
            "[--perf-jit-native-lookups] "
@@ -386,6 +386,11 @@ const DeviceModel& select_device_model(const std::vector<std::string>& args)
 
 void profile(const std::vector<std::string>& args, Output& output)
 {
+    if (flag(args, "--list")) {
+        for (const auto& model : DeviceModel::available_models())
+            output.line(std::string { model.identity.product_type });
+        return;
+    }
     const auto& device = select_device_model(args);
     std::ostringstream text;
     text << "product: " << device.identity.product_type << '\n'
@@ -1078,6 +1083,15 @@ void boot(const std::vector<std::string>& args, Output& output)
     options.control_enabled = flag(args, "--control-stdin");
     options.disable_scheduler_preemption =
         flag(args, "--disable-scheduler-preemption");
+    if (const auto value = option(args, "--time-scale")) {
+        const auto parsed = std::stod(*value);
+        if (!(parsed >= 1.0) || parsed > 1000.0) {
+            throw std::runtime_error {
+                "--time-scale must be between 1 and 1000"
+            };
+        }
+        options.time_scale = parsed;
+    }
     options.jit_observer_only = flag(args, "--jit-observer-only");
     options.report_performance = flag(args, "--perf-summary");
     if (const auto value = option(args, "--ticks"))
@@ -1123,8 +1137,10 @@ void boot(const std::vector<std::string>& args, Output& output)
     }
     options.baseband_input = option(args, "--baseband-input");
     options.baseband_output = option(args, "--baseband-output");
-    if (!options.ticks && options.windowed && !flag(args, "--verbose"))
-        options.quiet_output = true;
+    // Tracing every syscall, mach message and IOKit request costs more than
+    // the guest work it describes, so a run traces only what a verdict reads
+    // unless it is asked for the whole trace.
+    options.quiet_output = !flag(args, "--verbose");
     DesktopHost host;
     EmulatorSession session { std::move(options), host, output };
     session.run();

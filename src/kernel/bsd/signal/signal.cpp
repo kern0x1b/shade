@@ -224,6 +224,15 @@ void CompatibilityKernel::dispatch_bsd_signal(Cpu& cpu, std::uint32_t number)
         if (signal == 0) {
             continue;
         }
+        if (target_pid != process_.pid &&
+            (signal == darwin::signal::kill || signal == 15U)) {
+            // Which process ended another one is the first thing a failed run
+            // asks, and a guest that is killed leaves no other trace.
+            output_.write("[signal] sent pid=" +
+                std::to_string(process_.pid) + " target=" +
+                std::to_string(target_pid) + " signal=" +
+                std::to_string(signal) + "\n");
+        }
         const auto error = signal_delivery_handler_
                                ? signal_delivery_handler_(target_pid, signal)
                            : target_pid == process_.pid

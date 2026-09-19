@@ -22,13 +22,23 @@
 #include <signal.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#if defined(__linux__)
 #include <sys/sysinfo.h>
+#elif defined(__APPLE__)
+#include <sys/sysctl.h>
+#endif
 #include <sys/types.h>
 #include <unistd.h>
 
 #if defined(__linux__)
 #include <linux/fs.h>
 #include <sys/ioctl.h>
+#endif
+
+#if defined(__APPLE__)
+#define st_atim st_atimespec
+#define st_mtim st_mtimespec
+#define st_ctim st_ctimespec
 #endif
 
 namespace ilemu {
@@ -433,12 +443,19 @@ namespace {
     [[nodiscard]] HostMemoryAvailability host_memory_availability()
     {
         HostMemoryAvailability result;
+#if defined(__linux__)
         struct sysinfo information { };
         if (::sysinfo(&information) == 0) {
             result.total_bytes =
                 static_cast<std::uint64_t>(information.totalram) *
                 static_cast<std::uint64_t>(information.mem_unit);
         }
+#elif defined(__APPLE__)
+        std::uint64_t memory = 0;
+        std::size_t length = sizeof memory;
+        if (::sysctlbyname("hw.memsize", &memory, &length, nullptr, 0) == 0)
+            result.total_bytes = memory;
+#endif
         result.available_bytes =
             proc_meminfo_bytes("MemAvailable:").value_or(result.total_bytes);
 

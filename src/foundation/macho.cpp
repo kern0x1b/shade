@@ -26,6 +26,12 @@
 
 #include "foundation/file_page_cache.hpp"
 
+#if defined(__APPLE__)
+#define st_atim st_atimespec
+#define st_mtim st_mtimespec
+#define st_ctim st_ctimespec
+#endif
+
 namespace ilemu {
 namespace {
 

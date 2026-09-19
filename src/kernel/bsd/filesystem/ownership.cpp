@@ -293,6 +293,33 @@ bool CompatibilityKernel::dispatch_bsd_filesystem_ownership(
         bsd_success(cpu, 0);
         return true;
     }
+    case darwin::syscall::change_owner_link: {
+        // lchown(2) changes the owner of a symbolic link itself rather than
+        // the file it names.
+        const auto path = memory_.read_c_string(registers[0]);
+        if (!path) {
+            bsd_error(cpu, bsd_support::bad_address);
+            return true;
+        }
+        const auto host = resolve_guest_path(*path, false);
+        std::error_code error;
+        const auto status = std::filesystem::symlink_status(host, error);
+        const auto metadata = query_hfs_metadata(host, false);
+        if (error || status.type() == std::filesystem::file_type::not_found ||
+            !metadata) {
+            bsd_error(cpu, darwin::error::no_entry);
+            return true;
+        }
+        const auto requested_owner = registers[1];
+        const auto requested_group = registers[2];
+        if (!change_owner(*metadata, requested_owner, requested_group))
+            return true;
+        output_.write("[vfs] lchown " + *path +
+                      " uid=" + std::to_string(requested_owner) +
+                      " gid=" + std::to_string(requested_group) + "\n");
+        bsd_success(cpu, 0);
+        return true;
+    }
     case darwin::syscall::change_owner_fd: {
         auto fd = registers[0];
         if (const auto duplicate = duplicated_descriptors_.find(fd);

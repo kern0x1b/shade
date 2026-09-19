@@ -2958,6 +2958,69 @@ void CompatibilityKernel::bsd_error(Cpu& cpu, std::uint32_t error)
     cpu.set_cpsr(cpu.cpsr() | carry_flag);
 }
 
+void CompatibilityKernel::report_stalled_receives(
+    std::uint64_t threshold_nanoseconds) const
+{
+    const auto now = shared_state_->clock.now();
+    for (const auto& [processor, pending] : pending_mach_receives_) {
+        // A thread parked on a service port is a daemon waiting for work, not
+        // a stall. Only a thread that sent a request and is receiving its
+        // reply is waiting for an answer that should have come.
+        if (!pending.awaited_request)
+            continue;
+        if (pending.started == 0 || now < pending.started)
+            continue;
+        const auto waited = now - pending.started;
+        if (waited < threshold_nanoseconds)
+            continue;
+        std::string line = "[mach] stalled pid=" + std::to_string(process_.pid) +
+            " thread=" + std::to_string(processor + 1U) + " request=" +
+            std::to_string(*pending.awaited_request) + " reply-port=" +
+            std::to_string(pending.receive_name);
+        if (pending.receive_object) {
+            line += " object=" + std::to_string(*pending.receive_object);
+            const std::lock_guard mach_lock { shared_state_->mach_mutex };
+            const auto owner = shared_state_->mach_port_objects
+                                   .lookup(*pending.receive_object)
+                                   .value_or(xnu::ipc::PortObject { })
+                                   .receive_owner;
+            line += " receive-owner=" + std::to_string(owner);
+        }
+        line += " guest-seconds=" +
+            std::to_string(waited / VirtualClock::nanoseconds_per_second);
+        output_.line(line);
+    }
+}
+
+bool CompatibilityKernel::unmap_memory(
+    Cpu& cpu, std::uint32_t address, std::uint32_t size)
+{
+    const auto result = memory_.unmap_with_result(address, size);
+    if (!result.succeeded)
+        return false;
+    // Translated blocks are keyed by guest address. Once an executable image
+    // is gone, a new mapping at the same address (dlclose followed by dlopen
+    // of another bundle) must not run the old image's instructions.
+    if (size != 0 && result.executable_unmapped) {
+        constexpr std::uint64_t page_mask =
+            static_cast<std::uint64_t>(AddressSpace::page_size - 1U);
+        const auto first = static_cast<std::uint64_t>(address) & ~page_mask;
+        const auto requested_end = static_cast<std::uint64_t>(address) + size;
+        const auto rounded_end = (requested_end + page_mask) & ~page_mask;
+        const auto end =
+            std::min<std::uint64_t>(rounded_end, std::uint64_t { 1 } << 32U);
+        if (end > first) {
+            cpu.invalidate_cache_range(static_cast<std::uint32_t>(first),
+                static_cast<std::size_t>(end - first));
+            output_.write("[mmap] unmap-executable pid=" +
+                          std::to_string(process_.pid) +
+                          " address=" + std::to_string(first) +
+                          " size=" + std::to_string(end - first) + "\n");
+        }
+    }
+    return true;
+}
+
 bool CompatibilityKernel::protect_memory(Cpu& cpu, std::uint32_t address,
     std::uint32_t size, MemoryPermission permissions)
 {
