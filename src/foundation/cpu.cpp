@@ -1466,6 +1466,13 @@ public:
                 return;
             }
         }
+        if (exception == Umbra::A32::Exception::UndefinedInstruction &&
+            is_trap_instruction(pc)) {
+            // The permanently undefined encoding dyld and libSystem use to
+            // abort ("trap") is a breakpoint to Darwin, not an illegal
+            // instruction: the process dies of SIGTRAP.
+            exception = Umbra::A32::Exception::Breakpoint;
+        }
         std::ostringstream message;
         message << "ARM exception " << static_cast<unsigned>(exception)
                 << " at 0x" << std::hex << pc;
@@ -1473,6 +1480,16 @@ public:
         exception_kind_ = exception;
         exception_pc_ = pc;
         jit_->HaltExecution(Umbra::HaltReason::UserDefined3);
+    }
+
+    bool is_trap_instruction(std::uint32_t pc)
+    {
+        if ((jit_->Cpsr() & (1U << 5U)) != 0U) {
+            const auto half = memory_.read16(pc, MemoryPermission::Execute);
+            return half && *half == 0xdefeU;
+        }
+        const auto word = memory_.read32(pc, MemoryPermission::Execute);
+        return word && *word == 0xe7ffdefeU;
     }
 
     void AddTicks(std::uint64_t ticks) override
