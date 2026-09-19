@@ -16,7 +16,7 @@
 #include "debug/control_channel.hpp"
 #include "foundation/touch_input.hpp"
 
-namespace ilemu {
+namespace shade {
 
 // Replays a complete live-control gesture against host steady time. Keeping
 // this separate from command parsing makes multi-point gestures independent of
@@ -38,4 +38,4 @@ private:
     std::deque<Event> events_;
 };
 
-} // namespace ilemu
+} // namespace shade

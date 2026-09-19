@@ -28,7 +28,7 @@
 #include "graphics/opengles_guest_capabilities.hpp"
 #include "graphics/scanout_composition.hpp"
 
-namespace ilemu {
+namespace shade {
 
 class UserlandHleCall;
 class UserlandHleRegistry;
@@ -272,4 +272,4 @@ private:
     std::shared_ptr<SceneCoordinator> scene_coordinator_;
 };
 
-} // namespace ilemu
+} // namespace shade

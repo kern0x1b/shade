@@ -25,7 +25,7 @@
 #include <span>
 #include <string>
 
-namespace ilemu::kernel_iokit::display {
+namespace shade::kernel_iokit::display {
 namespace {
 
     namespace device_mig = xnu::mig::device;
@@ -643,4 +643,4 @@ void close_connection_locked(
     state.iokit_display_connections.erase(connection_object);
 }
 
-} // namespace ilemu::kernel_iokit::display
+} // namespace shade::kernel_iokit::display

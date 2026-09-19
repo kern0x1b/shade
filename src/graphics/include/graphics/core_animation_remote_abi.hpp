@@ -11,7 +11,7 @@
 #include <optional>
 #include <string_view>
 
-namespace ilemu {
+namespace shade {
 
 class MachOImage;
 
@@ -37,4 +37,4 @@ struct CoreAnimationRemoteAbi {
     bool operator==(const CoreAnimationRemoteAbi&) const = default;
 };
 
-} // namespace ilemu
+} // namespace shade

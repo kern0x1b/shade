@@ -8,7 +8,7 @@
 
 #include <array>
 
-namespace ilemu {
+namespace shade {
 
 class GlesMatrix {
 public:
@@ -36,4 +36,4 @@ private:
     std::array<float, 16> values_ { };
 };
 
-} // namespace ilemu
+} // namespace shade

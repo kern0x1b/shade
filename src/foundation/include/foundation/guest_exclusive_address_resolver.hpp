@@ -12,13 +12,13 @@
 #include <map>
 #include <shared_mutex>
 
-#include <dynarmic/interface/exclusive_monitor.h>
+#include <umbra/interface/exclusive_monitor.h>
 
 #include "foundation/address_space.hpp"
 
-namespace ilemu {
+namespace shade {
 
-// Maps Dynarmic's globally unique processor slots back to the AddressSpace
+// Maps Umbra's globally unique processor slots back to the AddressSpace
 // that owns the Guest virtual address. The resolver is shared by all runtime
 // clusters that use one process-wide ExclusiveMonitor.
 class GuestExclusiveAddressResolver {
@@ -28,11 +28,11 @@ public:
     void unbind(std::size_t processor_base, std::size_t processor_count,
         AddressSpace& memory) noexcept;
 
-    [[nodiscard]] Dynarmic::VAddr resolve(
-        std::size_t processor_id, Dynarmic::VAddr address) const noexcept;
+    [[nodiscard]] Umbra::VAddr resolve(
+        std::size_t processor_id, Umbra::VAddr address) const noexcept;
 
-    static Dynarmic::VAddr resolve_callback(void* context,
-        std::size_t processor_id, Dynarmic::VAddr address) noexcept;
+    static Umbra::VAddr resolve_callback(void* context,
+        std::size_t processor_id, Umbra::VAddr address) noexcept;
 
 private:
     struct Binding {
@@ -44,4 +44,4 @@ private:
     std::map<std::size_t, Binding> bindings_;
 };
 
-} // namespace ilemu
+} // namespace shade

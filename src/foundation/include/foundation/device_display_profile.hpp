@@ -9,7 +9,7 @@
 
 #include "foundation/display_geometry.hpp"
 
-namespace ilemu {
+namespace shade {
 
 // Guest-visible graphics accelerator family. This describes the firmware
 // capability boundary; it does not select the host renderer implementation.
@@ -68,4 +68,4 @@ struct DeviceDisplayProfile {
     }
 };
 
-} // namespace ilemu
+} // namespace shade

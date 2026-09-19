@@ -7,7 +7,7 @@
 #include "kernel/darwin_abi.hpp"
 #include "support.hpp"
 #include <string>
-namespace ilemu {
+namespace shade {
 bool CompatibilityKernel::reject_guarded_descriptor(
     Cpu& cpu, std::uint32_t fd, std::uint32_t flags)
 {
@@ -19,7 +19,7 @@ bool CompatibilityKernel::reject_guarded_descriptor(
     // Preserve the fatal default disposition without performing the forbidden
     // operation. Mach EXC_GUARD exception-port delivery is not modeled yet.
     exit_process(0U, darwin::signal::kill);
-    cpu.halt(Dynarmic::HaltReason::UserDefined1);
+    cpu.halt(Umbra::HaltReason::UserDefined1);
     return true;
 }
 
@@ -94,4 +94,4 @@ void CompatibilityKernel::dispatch_bsd_guarded_file(Cpu& cpu, std::uint32_t numb
     else
         bsd_error(cpu, bsd_support::bad_file_descriptor);
 }
-} // namespace ilemu
+} // namespace shade

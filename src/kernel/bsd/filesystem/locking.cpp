@@ -21,11 +21,11 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include <dynarmic/interface/A32/a32.h>
+#include <umbra/interface/A32/a32.h>
 
 #include "../support.hpp"
 
-namespace ilemu::bsd {
+namespace shade::bsd {
 namespace {
 
     bool ranges_overlap(const RecordLockRange& lhs, const RecordLockRange& rhs)
@@ -217,9 +217,9 @@ void AdvisoryFileLockRegistry::release_process_record_locks(
     }
 }
 
-} // namespace ilemu::bsd
+} // namespace shade::bsd
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     struct GuestRecordLock {
@@ -483,7 +483,7 @@ bool CompatibilityKernel::dispatch_bsd_record_locking(
     process_.waiting_for_events = true;
     output_.write("[vfs] fcntl lock wait pid=" + std::to_string(process_.pid) +
                   " fd=" + std::to_string(fd) + "\n");
-    cpu.halt(Dynarmic::HaltReason::UserDefined5);
+    cpu.halt(Umbra::HaltReason::UserDefined5);
     return true;
 }
 
@@ -543,8 +543,8 @@ bool CompatibilityKernel::dispatch_bsd_filesystem_locking(
     process_.waiting_for_events = true;
     output_.write("[vfs] flock wait pid=" + std::to_string(process_.pid) +
                   " fd=" + std::to_string(fd) + "\n");
-    cpu.halt(Dynarmic::HaltReason::UserDefined5);
+    cpu.halt(Umbra::HaltReason::UserDefined5);
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

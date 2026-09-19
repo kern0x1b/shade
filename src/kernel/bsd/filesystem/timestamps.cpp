@@ -25,7 +25,7 @@
 
 #include "../support.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t timeval_seconds_offset = 0;
@@ -168,4 +168,4 @@ bool CompatibilityKernel::dispatch_bsd_filesystem_timestamps(
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -2,14 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-add_library(ilemu_foundation_memory STATIC
+add_library(shade_foundation_memory STATIC
     content_identity.cpp
     memory/file_page_cache.cpp
     memory/vm_map.cpp)
-add_library(iLEmu::foundation_memory ALIAS ilemu_foundation_memory)
-ilemu_configure_module(ilemu_foundation_memory)
+add_library(Shade::foundation_memory ALIAS shade_foundation_memory)
+shade_configure_module(shade_foundation_memory)
 
-add_library(ilemu_foundation STATIC
+add_library(shade_foundation STATIC
     address_space.cpp
     application_display.cpp
     arm_cpu_model.cpp
@@ -17,7 +17,7 @@ add_library(ilemu_foundation STATIC
     cpu.cpp
     darwin_notify_state_hle.cpp
     device_model.cpp
-    dynarmic_ir_artifact.cpp
+    umbra_ir_artifact.cpp
     dyld_shared_cache.cpp
     executable_catalog.cpp
     firmware_prepare.cpp
@@ -42,19 +42,19 @@ add_library(ilemu_foundation STATIC
     scene_coordinator.cpp
     userland_hle.cpp
     virtual_clock.cpp)
-add_library(iLEmu::foundation ALIAS ilemu_foundation)
-ilemu_configure_module(ilemu_foundation)
-target_compile_definitions(ilemu_foundation PRIVATE
-    ILEMU_DYNARMIC_BUILD_FINGERPRINT=${ILEMU_DYNARMIC_BUILD_FINGERPRINT})
-target_include_directories(ilemu_foundation SYSTEM PRIVATE
-    "${ILEMU_DYNARMIC_DIR}/externals/mcl/include"
-    "${ILEMU_DYNARMIC_DIR}/externals/fmt/include"
-    "${ILEMU_BOOST_DIR}")
-target_link_libraries(ilemu_foundation PUBLIC
-    dynarmic Threads::Threads iLEmu::xnu_adapter
-    iLEmu::foundation_memory)
+add_library(Shade::foundation ALIAS shade_foundation)
+shade_configure_module(shade_foundation)
+target_compile_definitions(shade_foundation PRIVATE
+    SHADE_UMBRA_BUILD_FINGERPRINT=${SHADE_UMBRA_BUILD_FINGERPRINT})
+target_include_directories(shade_foundation SYSTEM PRIVATE
+    "${SHADE_UMBRA_DIR}/externals/mcl/include"
+    "${SHADE_UMBRA_DIR}/externals/fmt/include"
+    "${SHADE_BOOST_DIR}")
+target_link_libraries(shade_foundation PUBLIC
+    umbra Threads::Threads Shade::xnu_adapter
+    Shade::foundation_memory)
 if(TARGET PkgConfig::PLIST)
-    target_link_libraries(ilemu_foundation PRIVATE PkgConfig::PLIST)
-    target_compile_definitions(ilemu_foundation PRIVATE
-        ILEMU_HAS_LIBPLIST=1)
+    target_link_libraries(shade_foundation PRIVATE PkgConfig::PLIST)
+    target_compile_definitions(shade_foundation PRIVATE
+        SHADE_HAS_LIBPLIST=1)
 endif()

@@ -13,7 +13,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     TouchPhase parse_phase(const std::string& value)
@@ -116,4 +116,4 @@ TouchReplay::settled_deadline(std::chrono::milliseconds quiet_period) const
     return start_time_ + final_delay + quiet_period;
 }
 
-} // namespace ilemu
+} // namespace shade

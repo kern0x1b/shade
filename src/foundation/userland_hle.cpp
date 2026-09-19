@@ -28,7 +28,7 @@
 #include "foundation/output.hpp"
 #include "foundation/performance.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t arm_svc_opcode = 0xef000000U;
@@ -76,7 +76,7 @@ namespace {
             bytes.push_back(static_cast<std::byte>(value >> (index * 8U)));
     }
 
-    constexpr std::string_view hle_plan_magic_v2 { "ILEMU-HLE-PLAN" };
+    constexpr std::string_view hle_plan_magic_v2 { "SHADE-HLE-PLAN" };
     constexpr std::uint32_t hle_plan_artifact_version_v2 = 2U;
     // Increment when metadata lookup semantics change without changing the
     // serialized plan layout, so persisted plans are rebuilt from the firmware.
@@ -2347,7 +2347,7 @@ bool UserlandHleRegistry::dispatch(
         return false;
     }
 
-    // Dynarmic exposes the architectural PC after SVC. Thumb HLEs share one
+    // Umbra exposes the architectural PC after SVC. Thumb HLEs share one
     // immediate and are selected by their two-byte entry address; ARM HLEs
     // retain the encoded registration id used by the original implementation.
     const auto entry = cpu.registers()[15] - (thumb ? 2U : 4U);
@@ -2364,7 +2364,7 @@ bool UserlandHleRegistry::dispatch(
         // A host-backed driver owns one persistent guest callback thread. Park
         // it between device periods; the scheduler restores its registers and
         // wakes the same slot when the next buffer is due.
-        cpu.halt(Dynarmic::HaltReason::UserDefined5);
+        cpu.halt(Umbra::HaltReason::UserDefined5);
         return true;
     }
     if (!thumb &&
@@ -2915,4 +2915,4 @@ void UserlandHleRegistry::inherit_mappings(const UserlandHleRegistry& parent)
     pending_thread_callbacks_.clear();
 }
 
-} // namespace ilemu
+} // namespace shade

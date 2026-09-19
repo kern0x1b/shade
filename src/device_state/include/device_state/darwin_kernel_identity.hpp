@@ -10,7 +10,7 @@
 #include <string>
 #include <string_view>
 
-namespace ilemu {
+namespace shade {
 
 struct DarwinKernelIdentity {
     explicit DarwinKernelIdentity(std::string_view darwin_release = "9.0.0d1",
@@ -25,4 +25,4 @@ struct DarwinKernelIdentity {
     std::string build_version;
 };
 
-} // namespace ilemu
+} // namespace shade

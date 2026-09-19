@@ -16,7 +16,7 @@
 #include <optional>
 #include <variant>
 
-namespace ilemu {
+namespace shade {
 
 class HidEventQueue {
 public:
@@ -88,4 +88,4 @@ private:
     std::deque<Event> events_;
 };
 
-} // namespace ilemu
+} // namespace shade

@@ -18,7 +18,7 @@
 
 #include "network/wifi_state.hpp"
 
-namespace ilemu {
+namespace shade {
 
 class UserlandHleCall;
 class UserlandHleRegistry;
@@ -107,4 +107,4 @@ private:
     UserlandHleRegistry& registry_;
 };
 
-} // namespace ilemu
+} // namespace shade

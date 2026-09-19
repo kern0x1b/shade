@@ -5,13 +5,13 @@
 #include "backlight.hpp"
 #include "kernel/iokit_abi.hpp"
 
-#ifdef ILEMU_HAS_LIBPLIST
+#ifdef SHADE_HAS_LIBPLIST
 #include <plist/plist.h>
 #endif
 
 #include <memory>
 
-namespace ilemu::kernel_iokit {
+namespace shade::kernel_iokit {
 namespace {
     using Property = KernelSharedState::IOKitRegistryProperty;
 
@@ -30,7 +30,7 @@ namespace {
         result.dictionary_value = std::move(values);
         return result;
     }
-#ifdef ILEMU_HAS_LIBPLIST
+#ifdef SHADE_HAS_LIBPLIST
     using Plist = std::unique_ptr<void, decltype(&plist_free)>;
 
     Plist parse(std::span<const std::byte> data)
@@ -53,7 +53,7 @@ namespace {
 
 bool BacklightControl::matches(std::span<const std::byte> matching)
 {
-#ifdef ILEMU_HAS_LIBPLIST
+#ifdef SHADE_HAS_LIBPLIST
     const auto root = parse(matching);
     const auto parsed = root.get();
     if (parsed == nullptr || plist_get_node_type(parsed) != PLIST_DICT ||
@@ -88,7 +88,7 @@ void BacklightControl::publish(KernelSharedState::IOKitService& service)
 std::uint32_t BacklightControl::set_properties(
     KernelSharedState::IOKitService& service, std::span<const std::byte> data)
 {
-#ifdef ILEMU_HAS_LIBPLIST
+#ifdef SHADE_HAS_LIBPLIST
     const auto root = parse(data);
     if (!root || plist_get_node_type(root.get()) != PLIST_DICT)
         return iokit_abi::bad_argument;
@@ -123,4 +123,4 @@ std::uint32_t BacklightControl::set_properties(
 #endif
 }
 
-} // namespace ilemu::kernel_iokit
+} // namespace shade::kernel_iokit

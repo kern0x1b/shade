@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <optional>
 
-namespace ilemu {
+namespace shade {
 
 class AddressSpace;
 
@@ -24,4 +24,4 @@ struct PrimeFieldLayout {
         std::uint32_t standard_reduction);
 };
 
-} // namespace ilemu
+} // namespace shade

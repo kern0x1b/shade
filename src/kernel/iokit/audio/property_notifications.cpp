@@ -6,7 +6,7 @@
 #include "kernel/kernel_shared_state.hpp"
 #include "mach/mig_wire_abi.hpp"
 
-namespace ilemu::kernel_iokit::audio {
+namespace shade::kernel_iokit::audio {
 
 IOAudio2PropertyNotifications::IOAudio2PropertyNotifications(
     KernelSharedState& state, std::uint32_t service_object)
@@ -68,4 +68,4 @@ void IOAudio2PropertyNotifications::send(std::uint32_t object_id,
     }
 }
 
-} // namespace ilemu::kernel_iokit::audio
+} // namespace shade::kernel_iokit::audio

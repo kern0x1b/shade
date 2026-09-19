@@ -30,7 +30,7 @@
 
 #include "support.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     enum class AioOperation {
@@ -259,7 +259,7 @@ void CompatibilityKernel::dispatch_bsd_aio(Cpu& cpu, std::uint32_t number)
         if (control_block->notification == darwin::aio::notify_signal) {
             static_cast<void>(deliver_signal(control_block->signal));
             if (process_.exited) {
-                cpu.halt(Dynarmic::HaltReason::UserDefined1);
+                cpu.halt(Umbra::HaltReason::UserDefined1);
             }
         }
     };
@@ -352,4 +352,4 @@ void CompatibilityKernel::dispatch_bsd_aio(Cpu& cpu, std::uint32_t number)
     }
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -16,7 +16,7 @@
 #include <span>
 #include <vector>
 
-namespace ilemu::mach_transport {
+namespace shade::mach_transport {
 
 enum class DescriptorKind : std::uint8_t {
     Port,
@@ -41,4 +41,4 @@ struct Descriptor {
 [[nodiscard]] std::optional<std::vector<Descriptor>> parse_descriptors(
     std::span<const std::byte> message);
 
-} // namespace ilemu::mach_transport
+} // namespace shade::mach_transport

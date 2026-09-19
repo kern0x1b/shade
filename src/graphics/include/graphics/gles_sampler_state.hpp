@@ -12,7 +12,7 @@
 #include <cstdint>
 #include <map>
 
-namespace ilemu {
+namespace shade {
 
 struct GlesSamplerState {
     std::uint32_t min_filter { gles_abi::nearest_mipmap_linear };
@@ -64,4 +64,4 @@ struct GlesSamplerState {
     }
 };
 
-} // namespace ilemu
+} // namespace shade

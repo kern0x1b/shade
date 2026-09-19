@@ -14,7 +14,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace ilemu::darwin::mach::xnu {
+namespace shade::darwin::mach::xnu {
 
 // Keep the audited routine and data constants together so host dispatch does
 // not infer a wire layout from a caller-provided count.
@@ -50,4 +50,4 @@ namespace host_statistics {
     inline constexpr std::size_t cpu_load_word_count = 4;
 } // namespace host_statistics
 
-} // namespace ilemu::darwin::mach::xnu
+} // namespace shade::darwin::mach::xnu

@@ -12,7 +12,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace ilemu::darwin::mach::task_info {
+namespace shade::darwin::mach::task_info {
 
 // XNU osfmk/mach/task_info.h. Fields are natural_t words at the
 // 32-bit ARM compatibility boundary.
@@ -39,4 +39,4 @@ inline constexpr std::size_t dyld_info_word_count = 5;
 
 inline constexpr std::uint32_t timeshare_policy = 1;
 
-} // namespace ilemu::darwin::mach::task_info
+} // namespace shade::darwin::mach::task_info

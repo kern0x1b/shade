@@ -12,7 +12,7 @@
 #include <optional>
 #include <span>
 
-namespace ilemu {
+namespace shade {
 
 // The ARM32 GLI ABI keeps an opaque context followed by a function table.
 // Resolve slots from the firmware's public wrappers instead of assuming that
@@ -37,4 +37,4 @@ private:
     std::uint32_t dispatch_bytes_;
 };
 
-} // namespace ilemu
+} // namespace shade

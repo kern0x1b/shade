@@ -18,7 +18,7 @@
 #include <optional>
 #include <vector>
 
-namespace ilemu::mach_vm_support {
+namespace shade::mach_vm_support {
 
 // Later ARM32 mach_vm clients widened addresses and sizes within Darwin 11.
 // The vm_map subsystem retains natural-sized fields. Both use four-byte MIG
@@ -61,4 +61,4 @@ private:
     std::uint32_t size_;
 };
 
-} // namespace ilemu::mach_vm_support
+} // namespace shade::mach_vm_support

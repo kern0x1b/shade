@@ -18,7 +18,7 @@
 
 #include "foundation/file_page_cache.hpp"
 
-namespace ilemu {
+namespace shade {
 
 class AddressSpace;
 class HostSurface;
@@ -242,4 +242,4 @@ private:
     };
 };
 
-} // namespace ilemu
+} // namespace shade

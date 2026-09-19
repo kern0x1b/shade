@@ -18,7 +18,7 @@
 
 #include "graphics/surface_transport_abi.hpp"
 
-namespace ilemu {
+namespace shade {
 
 class AddressSpace;
 class DisplayState;
@@ -153,4 +153,4 @@ private:
     LookupSurfacePortHandler lookup_surface_port_;
 };
 
-} // namespace ilemu
+} // namespace shade

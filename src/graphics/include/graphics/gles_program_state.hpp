@@ -18,7 +18,7 @@
 #include <string_view>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 // Owns the API-visible GLES2 shader/program objects. Shader execution remains
 // in the existing renderer; this store only preserves the declarations and
@@ -88,4 +88,4 @@ private:
     std::uint32_t next_program_ { 1U };
 };
 
-} // namespace ilemu
+} // namespace shade

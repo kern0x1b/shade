@@ -13,7 +13,7 @@
 #include "foundation/output.hpp"
 #include "foundation/userland_hle.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::string_view audio_toolbox_image {
@@ -46,4 +46,4 @@ void AudioToolboxHle::play_system_sound(UserlandHleCall& call)
     call.resume_original();
 }
 
-} // namespace ilemu
+} // namespace shade

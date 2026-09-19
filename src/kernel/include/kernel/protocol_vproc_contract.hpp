@@ -16,7 +16,7 @@
 #include <cstdint>
 #include <string_view>
 
-namespace ilemu::protocol_vproc {
+namespace shade::protocol_vproc {
 
 // Apple kept protocol_vproc's public prefix stable while adding and removing
 // private routines in the tail.  Describe the wire capability that changes
@@ -47,4 +47,4 @@ inline constexpr std::array contracts { without_service_policy,
     return nullptr;
 }
 
-} // namespace ilemu::protocol_vproc
+} // namespace shade::protocol_vproc

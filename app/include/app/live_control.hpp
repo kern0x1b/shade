@@ -17,7 +17,7 @@
 #include "foundation/system_button_input.hpp"
 #include "foundation/touch_input.hpp"
 
-namespace ilemu {
+namespace shade {
 
 // Non-blocking line-oriented control channel used by headless interactive
 // sessions. The descriptor remains owned by the caller.
@@ -43,4 +43,4 @@ private:
     bool closed_ { };
 };
 
-} // namespace ilemu
+} // namespace shade

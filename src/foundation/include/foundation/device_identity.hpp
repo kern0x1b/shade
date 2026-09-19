@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <string_view>
 
-namespace ilemu {
+namespace shade {
 
 // Some legacy activation flows deliberately identify an offline handset as a
 // development board.  Keep that identity decision in the device capability
@@ -49,4 +49,4 @@ struct DeviceIdentity {
     }
 };
 
-} // namespace ilemu
+} // namespace shade

@@ -14,7 +14,7 @@
 
 #include <limits>
 
-namespace ilemu::mach_transport {
+namespace shade::mach_transport {
 namespace {
 
     std::uint32_t read_word(
@@ -97,4 +97,4 @@ std::optional<std::vector<Descriptor>> parse_descriptors(
     return descriptors;
 }
 
-} // namespace ilemu::mach_transport
+} // namespace shade::mach_transport

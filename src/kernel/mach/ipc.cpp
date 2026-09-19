@@ -50,7 +50,7 @@
 
 #include "support.hpp"
 
-namespace ilemu {
+namespace shade {
 
 using namespace mach_support;
 
@@ -941,4 +941,4 @@ CompatibilityKernel::receive_mach_message_locked(PendingMachReceive& receive,
     return outcome;
 }
 
-} // namespace ilemu
+} // namespace shade

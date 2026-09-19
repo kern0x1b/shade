@@ -16,11 +16,11 @@
 #include <string>
 #include <string_view>
 
-#if defined(ILEMU_HAS_LIBPLIST)
+#if defined(SHADE_HAS_LIBPLIST)
 #include <plist/plist.h>
 #endif
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     std::vector<std::byte> pack_payload(std::string_view xml)
@@ -39,7 +39,7 @@ namespace {
         return payload;
     }
 
-#if defined(ILEMU_HAS_LIBPLIST)
+#if defined(SHADE_HAS_LIBPLIST)
     void merge_dictionary(plist_t destination, plist_t source)
     {
         if (destination == nullptr || source == nullptr ||
@@ -257,7 +257,7 @@ namespace {
 std::vector<std::byte> make_graphics_services_capability_memory(
     const std::filesystem::path& rootfs, const DeviceModel& profile)
 {
-#if defined(ILEMU_HAS_LIBPLIST)
+#if defined(SHADE_HAS_LIBPLIST)
     if (const auto payload = from_firmware_plist(rootfs, profile);
         !payload.empty()) {
         return payload;
@@ -268,4 +268,4 @@ std::vector<std::byte> make_graphics_services_capability_memory(
     return fallback_payload(profile);
 }
 
-} // namespace ilemu
+} // namespace shade

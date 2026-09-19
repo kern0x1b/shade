@@ -20,7 +20,7 @@
 #include "../support.hpp"
 #include "wire_reply.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     // Darwin also publishes this routine in the mach_vm subsystem. ARM32 keeps
@@ -134,4 +134,4 @@ bool CompatibilityKernel::dispatch_mach_vm_purgable_message(
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

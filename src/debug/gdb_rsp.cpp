@@ -24,7 +24,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::size_t maximum_gdb_memory_transfer = 1024U * 1024U;
@@ -714,4 +714,4 @@ void GdbRemoteServer::detach()
     close_client();
 }
 
-} // namespace ilemu
+} // namespace shade

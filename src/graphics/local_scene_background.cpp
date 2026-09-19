@@ -15,7 +15,7 @@
 
 #include "graphics/gles_abi.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr float quad_epsilon = 1.0e-4F;
@@ -371,4 +371,4 @@ bool LocalSceneBackground::restore(const std::shared_ptr<HostSurface>& scene,
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

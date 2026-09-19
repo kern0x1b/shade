@@ -11,7 +11,7 @@
 #include <cstdint>
 #include <optional>
 
-namespace ilemu {
+namespace shade {
 
 // Mach absolute time is the guest DeviceMonotonicTime domain. Interactive
 // execution maps it to host steady time; instruction ticks remain a separate
@@ -59,4 +59,4 @@ private:
     double time_scale_ { 1.0 };
 };
 
-} // namespace ilemu
+} // namespace shade

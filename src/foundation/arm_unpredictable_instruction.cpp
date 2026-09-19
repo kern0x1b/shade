@@ -12,7 +12,7 @@
 #include <cstdint>
 #include <utility>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t asimd_vtrn_mask = 0xffb30f90U;
@@ -141,4 +141,4 @@ bool emulate_arm_unpredictable_instruction(
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -10,7 +10,7 @@
 #include "foundation/cpu.hpp"
 #include "runtime/boot_options.hpp"
 
-namespace ilemu::runtime_detail {
+namespace shade::runtime_detail {
 
 [[nodiscard]] inline std::string_view jit_precompile_source_name(
     JitPrecompileSource source) noexcept
@@ -92,4 +92,4 @@ namespace ilemu::runtime_detail {
     return mode == JitProfileMode::Startup;
 }
 
-} // namespace ilemu::runtime_detail
+} // namespace shade::runtime_detail

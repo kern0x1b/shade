@@ -35,7 +35,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t darwin_socket_stream = 1;
@@ -1118,4 +1118,4 @@ bool HostSocket::writable() const
            (descriptor.revents & (POLLOUT | POLLHUP | POLLERR)) != 0;
 }
 
-} // namespace ilemu
+} // namespace shade

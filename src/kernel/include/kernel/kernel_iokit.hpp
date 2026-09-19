@@ -12,7 +12,7 @@
 #include <cstdint>
 #include <optional>
 
-namespace ilemu {
+namespace shade {
 
 class AddressSpace;
 class Output;
@@ -37,4 +37,4 @@ struct IOKitMachCallSite {
     std::uint32_t local_port, IOKitMachCallSite call_site = { },
     SurfaceStore* surfaces = nullptr);
 
-} // namespace ilemu
+} // namespace shade

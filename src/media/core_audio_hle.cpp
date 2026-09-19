@@ -27,7 +27,7 @@
 #include "foundation/output.hpp"
 #include "foundation/userland_hle.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::string_view core_audio_image {
@@ -1265,4 +1265,4 @@ void CoreAudioHle::stop_io(UserlandHleCall& call)
     call.set_return(0);
 }
 
-} // namespace ilemu
+} // namespace shade

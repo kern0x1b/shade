@@ -20,7 +20,7 @@
 #include "graphics/host_graphics.hpp"
 #include "graphics/surface_store.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     struct PixelLayout {
@@ -1107,4 +1107,4 @@ const GlesResourceStore::Buffer* GlesResourceStore::buffer(
     return found == buffers_.end() ? nullptr : &found->second;
 }
 
-} // namespace ilemu
+} // namespace shade

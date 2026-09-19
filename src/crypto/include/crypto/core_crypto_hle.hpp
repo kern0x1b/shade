@@ -7,10 +7,10 @@
 
 #pragma once
 
-namespace ilemu {
+namespace shade {
 
 class UserlandHleRegistry;
 
 void register_core_crypto_hle(UserlandHleRegistry& registry);
 
-} // namespace ilemu
+} // namespace shade

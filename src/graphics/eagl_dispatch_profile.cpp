@@ -9,7 +9,7 @@
 
 #include <array>
 
-namespace ilemu {
+namespace shade {
 
 std::optional<EaglContextFirstArm32Profile>
 EaglContextFirstArm32Profile::from_dispatch_bytes(std::uint32_t bytes)
@@ -94,4 +94,4 @@ std::optional<std::uint32_t> EaglContextFirstArm32Profile::dispatch_slot(
     return std::nullopt;
 }
 
-} // namespace ilemu
+} // namespace shade

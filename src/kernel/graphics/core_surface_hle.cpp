@@ -35,7 +35,7 @@
 #include "foundation/userland_hle.hpp"
 #include "surface_transport_hle.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::string_view core_surface_image {
@@ -1073,4 +1073,4 @@ void CoreSurfaceHle::dispatch(UserlandHleCall& call)
     }
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -36,7 +36,7 @@
 #include <variant>
 #include <vector>
 
-#include <dynarmic/interface/A32/disassembler.h>
+#include <umbra/interface/A32/disassembler.h>
 
 #include "foundation/address_space.hpp"
 #include "foundation/cpu.hpp"
@@ -59,7 +59,7 @@
 
 namespace {
 
-using namespace ilemu;
+using namespace shade;
 
 constexpr std::size_t maximum_virtual_processors = 64;
 constexpr std::size_t bytes_per_mebibyte = 1024U * 1024U;
@@ -67,15 +67,15 @@ constexpr std::size_t bytes_per_mebibyte = 1024U * 1024U;
 std::string usage()
 {
     return "Usage:\n"
-           "  ilemu profile [--list | --device PROFILE] [--output FILE]\n"
-           "  ilemu abi [--rootfs DIR] [--ios-build CODE] [--output FILE]\n"
-           "  ilemu inspect --rootfs DIR [--binary /sbin/launchd] "
+           "  shade profile [--list | --device PROFILE] [--output FILE]\n"
+           "  shade abi [--rootfs DIR] [--ios-build CODE] [--output FILE]\n"
+           "  shade inspect --rootfs DIR [--binary /sbin/launchd] "
            "[--device PROFILE] [--shared-cache GUEST_PATH] "
            "[--symbols SUBSTRING] [--output FILE]\n"
-           "  ilemu catalog --rootfs DIR [--device PROFILE] [--manifest FILE] "
+           "  shade catalog --rootfs DIR [--device PROFILE] [--manifest FILE] "
            "[--host-cache DIR] "
            "[--output FILE]\n"
-           "  ilemu firmware prepare --rootfs DIR [--device PROFILE] "
+           "  shade firmware prepare --rootfs DIR [--device PROFILE] "
            "[--manifest FILE] [--host-cache DIR] [--prepare-force] "
            "[--prepare-file-blocks N] [--prepare-image-blocks N] "
            "[--prepare-firmware-blocks N] [--prepare-file-ms N] "
@@ -85,10 +85,10 @@ std::string usage()
            "[--prepare-profile-hotset-blocks N] "
            "[--jit-artifact-memory-mib 1..4096] "
            "[--jit-artifact-disk-mib 0..4096] [--output FILE]\n"
-           "  ilemu disasm --rootfs DIR --binary PATH "
+           "  shade disasm --rootfs DIR --binary PATH "
            "(--symbol NAME | --address ADDR) [--device PROFILE] [--count N] "
            "[--shared-cache GUEST_PATH] [--thumb]\n"
-           "  ilemu boot --rootfs DIR [--device PROFILE] [--ios-build CODE] "
+           "  shade boot --rootfs DIR [--device PROFILE] [--ios-build CODE] "
            "[--binary /sbin/launchd] [--guest-command COMMAND] [--ticks N] "
            "[--cores N] [--jit-cache-mib 8..512] "
            "[--jit-cache-budget-mib 256..4096] "
@@ -113,9 +113,9 @@ std::string usage()
            "[--jit-startup-profile-budget-us N] "
            "[--jit-catalog-warming no-enqueue] "
            "[--output FILE]\n"
-           "  ilemu smoke [--cores N] [--jit-cache-mib 8..512] "
+           "  shade smoke [--cores N] [--jit-cache-mib 8..512] "
            "[--perf-summary] [--output FILE]\n"
-           "  ilemu benchmark arm [--iterations N] "
+           "  shade benchmark arm [--iterations N] "
            "[--jit-cache-mib 8..512] [--perf-summary] "
            "[--output FILE]\n"
            "\nBoot/ABI selection reads SystemVersion.plist by default.\n"
@@ -889,7 +889,7 @@ void disasm(const std::vector<std::string>& args, Output& output)
                 break;
             text << "0x" << std::hex << std::setw(8) << std::setfill('0')
                  << address << "  " << std::setw(4) << *instruction << "      "
-                 << Dynarmic::A32::DisassembleThumb16(*instruction) << '\n';
+                 << Umbra::A32::DisassembleThumb16(*instruction) << '\n';
         } else {
             const auto address =
                 start_address + static_cast<std::uint32_t>(index * 4U);
@@ -898,7 +898,7 @@ void disasm(const std::vector<std::string>& args, Output& output)
                 break;
             text << "0x" << std::hex << std::setw(8) << std::setfill('0')
                  << address << "  " << std::setw(8) << *instruction << "  "
-                 << Dynarmic::A32::DisassembleArm(*instruction);
+                 << Umbra::A32::DisassembleArm(*instruction);
             if ((*instruction & 0x0f000000U) == 0x0b000000U) {
                 auto displacement =
                     static_cast<std::int32_t>(*instruction << 8U) >> 6U;
@@ -934,7 +934,7 @@ void smoke(const std::vector<std::string>& args, Output& output)
     append_word(code, 4, 0xef000080U); // svc #0x80 (Darwin syscall gate)
     memory.copy_in(code_address, code);
 
-    Dynarmic::ExclusiveMonitor shared_exclusive_monitor { core_count };
+    Umbra::ExclusiveMonitor shared_exclusive_monitor { core_count };
     auto shared_exclusive_address_resolver =
         std::make_shared<GuestExclusiveAddressResolver>();
     CpuCluster cluster { core_count, core_count, memory, core_count,
@@ -950,7 +950,7 @@ void smoke(const std::vector<std::string>& args, Output& output)
     const auto results = cluster.run_parallel(16);
 
     std::ostringstream text;
-    text << "Dynarmic ARMv6 parallel smoke test: " << core_count
+    text << "Umbra ARMv6 parallel smoke test: " << core_count
          << " virtual CPU(s)\n";
     if (core_count > 1) {
         text << "mode: exact; execution-slot LDREX state resolves through "
@@ -967,7 +967,7 @@ void smoke(const std::vector<std::string>& args, Output& output)
         if (cluster.cpu(index).registers()[0] != expected ||
             results[index].svc != std::optional<std::uint32_t> { 0x80 }) {
             throw std::runtime_error {
-                "Dynarmic smoke test produced an unexpected CPU state"
+                "Umbra smoke test produced an unexpected CPU state"
             };
         }
     }
@@ -1244,7 +1244,7 @@ int main(int argc, char** argv)
         }
         return 0;
     } catch (const std::exception& error) {
-        std::cerr << "ilemu: " << error.what() << '\n';
+        std::cerr << "shade: " << error.what() << '\n';
         return 1;
     }
 }

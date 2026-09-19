@@ -14,7 +14,7 @@
 #include <optional>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 class OpenGlesHle;
 class UserlandHleCall;
@@ -54,4 +54,4 @@ private:
     std::uint32_t pixel_format_ { };
 };
 
-} // namespace ilemu
+} // namespace shade

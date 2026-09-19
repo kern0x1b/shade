@@ -19,7 +19,7 @@
 #include <string_view>
 #include <vector>
 
-namespace ilemu::darwin::bpf {
+namespace shade::darwin::bpf {
 
 // Darwin 8 / XNU Berkeley Packet Filter ABI. The target firmware is
 // ARM32, so pointers, timeval, ifreq and bpf_program use 32-bit layouts.
@@ -103,4 +103,4 @@ struct DescriptorState {
     return minor;
 }
 
-} // namespace ilemu::darwin::bpf
+} // namespace shade::darwin::bpf

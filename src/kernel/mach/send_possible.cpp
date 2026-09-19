@@ -8,7 +8,7 @@
 #include "kernel/kernel_shared_state.hpp"
 #include "support.hpp"
 
-namespace ilemu {
+namespace shade {
 
 void KernelSharedState::notify_send_possible_locked(std::uint32_t destination)
 {
@@ -56,4 +56,4 @@ void KernelSharedState::notify_send_possible_locked(std::uint32_t destination)
     }
 }
 
-} // namespace ilemu
+} // namespace shade

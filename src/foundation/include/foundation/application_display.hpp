@@ -15,7 +15,7 @@
 
 #include "foundation/display_geometry.hpp"
 
-namespace ilemu {
+namespace shade {
 
 // UIKit applications that declare only the phone family are presented in a
 // logical phone-sized window when the device profile is a tablet. Keep this
@@ -74,4 +74,4 @@ compose_application_display_pixels(const ApplicationDisplay& profile,
     DisplayGeometry source_geometry, std::span<const std::uint32_t> pixels,
     DisplayOrientation orientation);
 
-} // namespace ilemu
+} // namespace shade

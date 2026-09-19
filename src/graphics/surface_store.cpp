@@ -23,7 +23,7 @@
 #include "graphics/gles_renderer.hpp"
 #include "graphics/host_graphics.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     std::atomic<std::uint64_t> next_host_surface_sequence { 1 };
@@ -1183,4 +1183,4 @@ bool SurfaceStore::write_argb_region_to_guest(AddressSpace& memory,
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

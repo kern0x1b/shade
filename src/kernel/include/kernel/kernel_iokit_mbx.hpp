@@ -14,7 +14,7 @@
 #include <string_view>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 class AddressSpace;
 struct KernelSharedState;
@@ -53,4 +53,4 @@ namespace kernel_iokit::mbx {
         std::uint32_t connection_object);
 
 } // namespace kernel_iokit::mbx
-} // namespace ilemu
+} // namespace shade

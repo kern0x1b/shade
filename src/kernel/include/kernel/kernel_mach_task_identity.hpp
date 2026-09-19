@@ -11,7 +11,7 @@
 
 #include <cstdint>
 
-namespace ilemu {
+namespace shade {
 
 struct KernelSharedState;
 struct ProcessContext;
@@ -44,4 +44,4 @@ namespace mach_task_identity {
         bool inherit_registered_ports);
 
 } // namespace mach_task_identity
-} // namespace ilemu
+} // namespace shade

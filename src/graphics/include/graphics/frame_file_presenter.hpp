@@ -10,7 +10,7 @@
 #include <filesystem>
 #include <mutex>
 
-namespace ilemu {
+namespace shade {
 
 struct DisplayFrame;
 
@@ -31,4 +31,4 @@ private:
     std::atomic_bool enabled_ { true };
 };
 
-} // namespace ilemu
+} // namespace shade

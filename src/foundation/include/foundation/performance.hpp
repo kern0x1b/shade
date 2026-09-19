@@ -22,7 +22,7 @@
 #include <tuple>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 enum class PerfFallbackReason : std::uint8_t {
     None,
@@ -401,7 +401,7 @@ public:
     }
     // Native block lookup observation is an explicit opt-in diagnostic. It
     // is intentionally independent of the display-window CPU phase switch:
-    // when disabled, Dynarmic receives a null observer and the guest lookup
+    // when disabled, Umbra receives a null observer and the guest lookup
     // path has no host-side callback or tracker probe.
     void set_native_lookup_diagnostics(bool enabled)
     {
@@ -416,7 +416,7 @@ public:
 
     void record_jit(std::uint64_t creation_nanoseconds = 0);
     // Background precompilation uses this always-on history to reserve time
-    // for one non-preemptible Dynarmic block even when verbose perf output is
+    // for one non-preemptible Umbra block even when verbose perf output is
     // disabled.
     void record_jit_block_compile(std::uint64_t nanoseconds);
     [[nodiscard]] std::uint64_t jit_block_compile_p95_nanoseconds() const
@@ -839,4 +839,4 @@ private:
 [[nodiscard]] std::string format_display_performance_summary(
     const PerformanceSnapshot& snapshot, std::string_view label);
 
-} // namespace ilemu
+} // namespace shade

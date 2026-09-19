@@ -45,7 +45,7 @@
 
 #include "support.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t maximum_baseband_io_traces = 64;
@@ -109,7 +109,7 @@ void CompatibilityKernel::dispatch_bsd_descriptor_memory(
                 registers[1], static_cast<std::uint32_t>(size), 0, 0,
                 cpu.processor_id(), deadline };
             process_.waiting_for_events = true;
-            cpu.halt(Dynarmic::HaltReason::UserDefined5);
+            cpu.halt(Umbra::HaltReason::UserDefined5);
             return;
         }
         const auto baseband_descriptor =
@@ -144,7 +144,7 @@ void CompatibilityKernel::dispatch_bsd_descriptor_memory(
                           " read wait pid=" + std::to_string(process_.pid) +
                           " fd=" + std::to_string(fd) +
                           " bytes=" + std::to_string(size) + "\n");
-            cpu.halt(Dynarmic::HaltReason::UserDefined5);
+            cpu.halt(Umbra::HaltReason::UserDefined5);
             return;
         }
         std::vector<std::byte> bytes(size);
@@ -1048,7 +1048,7 @@ void CompatibilityKernel::dispatch_bsd_descriptor_memory(
             return;
         case darwin::fcntl_command::add_detached_signatures:
             // F_ADDSIGS lets dyld attach a detached code-signature blob to a
-            // vnode before validating mmap'ed pages. iLEmu does not model
+            // vnode before validating mmap'ed pages. Shade does not model
             // AMFI/code-signing enforcement, but the kernel ABI still needs to
             // accept a readable fsignatures_t registration record so dyld can
             // continue loading images.
@@ -1459,4 +1459,4 @@ void CompatibilityKernel::dispatch_bsd_descriptor_memory(
     }
 }
 
-} // namespace ilemu
+} // namespace shade

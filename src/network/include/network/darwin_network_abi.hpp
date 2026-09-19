@@ -21,11 +21,11 @@
 #include <string_view>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 struct VirtualAccessPoint;
 }
 
-namespace ilemu::darwin::network {
+namespace shade::darwin::network {
 
 // XNU / Darwin 8 networking constants. These are kept here rather than
 // scattered through the syscall dispatcher so both builders and ABI tests use
@@ -281,4 +281,4 @@ struct InterfaceSnapshot {
     std::uint32_t event_subclass, std::uint32_t event_code,
     std::span<const std::byte> event_data);
 
-} // namespace ilemu::darwin::network
+} // namespace shade::darwin::network

@@ -7,7 +7,7 @@
 
 #pragma once
 
-namespace ilemu {
+namespace shade {
 
 class UserlandHleCall;
 class UserlandHleRegistry;
@@ -23,4 +23,4 @@ private:
     void begin_interface_discovery(UserlandHleCall& call);
 };
 
-} // namespace ilemu
+} // namespace shade

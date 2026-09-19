@@ -19,7 +19,7 @@
 struct SDL_Window;
 union SDL_Event;
 
-namespace ilemu {
+namespace shade {
 
 class SdlInput {
 public:
@@ -79,4 +79,4 @@ private:
     bool running_ { true };
 };
 
-} // namespace ilemu
+} // namespace shade

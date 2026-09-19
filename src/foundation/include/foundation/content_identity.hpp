@@ -17,7 +17,7 @@
 #include <span>
 #include <string>
 
-namespace ilemu {
+namespace shade {
 
 struct ContentIdentity {
     std::array<std::byte, 32> digest { };
@@ -52,4 +52,4 @@ struct ContentIdentityHash {
     std::optional<std::uint64_t> byte_count = std::nullopt,
     const std::function<bool()>& cancellation_check = { });
 
-} // namespace ilemu
+} // namespace shade

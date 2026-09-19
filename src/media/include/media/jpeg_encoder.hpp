@@ -12,7 +12,7 @@
 #include <span>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 // Host codec boundary used by hardware profiles that expose encoded image
 // buffers to the guest. Input pixels are opaque 0xAARRGGBB words.
@@ -20,4 +20,4 @@ namespace ilemu {
     std::span<const std::uint32_t> pixels, std::uint32_t width,
     std::uint32_t height, int quality = 90);
 
-} // namespace ilemu
+} // namespace shade

@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-namespace ilemu::bsd::baseband_device {
+namespace shade::bsd::baseband_device {
 
 std::vector<std::byte> load_replay_file(const std::filesystem::path& path)
 {
@@ -58,4 +58,4 @@ void write_capture_file(
     }
 }
 
-} // namespace ilemu::bsd::baseband_device
+} // namespace shade::bsd::baseband_device

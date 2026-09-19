@@ -13,7 +13,7 @@
 #include <memory>
 #include <optional>
 
-namespace ilemu {
+namespace shade {
 
 class Cpu;
 class UserlandHleCall;
@@ -41,4 +41,4 @@ private:
     HidAccelerometer accelerometer_;
 };
 
-} // namespace ilemu
+} // namespace shade

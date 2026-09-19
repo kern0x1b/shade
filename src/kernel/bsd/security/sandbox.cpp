@@ -15,7 +15,7 @@
 #include <optional>
 #include <span>
 
-namespace ilemu::bsd::sandbox {
+namespace shade::bsd::sandbox {
 namespace {
 
     constexpr std::uint32_t initialize_named_profile = 1U;
@@ -95,4 +95,4 @@ CallResult dispatch(
     return CallResult::Success;
 }
 
-} // namespace ilemu::bsd::sandbox
+} // namespace shade::bsd::sandbox

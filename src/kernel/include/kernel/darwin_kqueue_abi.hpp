@@ -11,7 +11,7 @@
 
 #include <cstdint>
 
-namespace ilemu::darwin::kqueue {
+namespace shade::darwin::kqueue {
 
 inline constexpr std::int16_t filter_read = -1;
 inline constexpr std::int16_t filter_write = -2;
@@ -71,4 +71,4 @@ namespace arm32_timespec {
 
 inline constexpr std::uint64_t nanoseconds_per_second = 1'000'000'000ULL;
 
-} // namespace ilemu::darwin::kqueue
+} // namespace shade::darwin::kqueue

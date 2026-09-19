@@ -9,7 +9,7 @@
 
 #include <algorithm>
 
-namespace ilemu {
+namespace shade {
 
 [[nodiscard]] std::optional<std::uint64_t> effective_host_memory_limit(
     const HostMemoryBudgetSnapshot& memory)
@@ -91,4 +91,4 @@ namespace ilemu {
     return "unknown";
 }
 
-} // namespace ilemu
+} // namespace shade

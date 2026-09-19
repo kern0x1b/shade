@@ -8,7 +8,7 @@
 
 #include "kernel/hid_event_queue.hpp"
 
-namespace ilemu {
+namespace shade {
 
 class HidAccelerometer {
 public:
@@ -39,4 +39,4 @@ private:
     std::optional<std::uint64_t> next_sample_;
 };
 
-} // namespace ilemu
+} // namespace shade

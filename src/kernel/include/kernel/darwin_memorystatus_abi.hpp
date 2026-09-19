@@ -12,7 +12,7 @@
 
 #include "device_state/darwin_abi.hpp"
 
-namespace ilemu::darwin::memorystatus {
+namespace shade::darwin::memorystatus {
 
 inline constexpr std::uint32_t syscall_number = 440;
 inline constexpr std::uint32_t get_priority_list = 1;
@@ -39,4 +39,4 @@ struct ProcessState {
         0 };
 }
 
-} // namespace ilemu::darwin::memorystatus
+} // namespace shade::darwin::memorystatus

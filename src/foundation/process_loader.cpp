@@ -23,7 +23,7 @@
 #include <utility>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t stack_size = 0x00100000U;
@@ -389,4 +389,4 @@ bool ProcessLoader::validate(std::string guest_executable) const
     }
 }
 
-} // namespace ilemu
+} // namespace shade

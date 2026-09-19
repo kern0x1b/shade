@@ -15,7 +15,7 @@
 
 #include "graphics/gles_rasterizer.hpp"
 
-namespace ilemu {
+namespace shade {
 
 // Converts GLES primitive topologies that need host-independent emulation to
 // triangles. Keeping this above the render backends gives Vulkan and software
@@ -44,4 +44,4 @@ public:
         const GlesRasterState& state);
 };
 
-} // namespace ilemu
+} // namespace shade

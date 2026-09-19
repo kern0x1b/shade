@@ -17,7 +17,7 @@
 #include <utility>
 #include <vector>
 
-namespace ilemu::kernel_iokit::battery {
+namespace shade::kernel_iokit::battery {
 namespace {
 
     constexpr std::string_view io_service_class { "IOService" };
@@ -109,4 +109,4 @@ std::uint32_t ensure_service_locked(KernelSharedState& state)
     return object;
 }
 
-} // namespace ilemu::kernel_iokit::battery
+} // namespace shade::kernel_iokit::battery

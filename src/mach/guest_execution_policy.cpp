@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <stdexcept>
 
-namespace ilemu {
+namespace shade {
 
 namespace {
 
@@ -141,4 +141,4 @@ void GuestExecutionPolicy::forget_process(std::uint32_t process_id)
     });
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -15,7 +15,7 @@
 #include <array>
 #include <optional>
 
-namespace ilemu::mach_task_identity {
+namespace shade::mach_task_identity {
 namespace {
 
     using xnu::ipc::Right;
@@ -173,4 +173,4 @@ bool inherit_child(KernelSharedState& state, const ProcessContext& parent,
         .has_value();
 }
 
-} // namespace ilemu::mach_task_identity
+} // namespace shade::mach_task_identity

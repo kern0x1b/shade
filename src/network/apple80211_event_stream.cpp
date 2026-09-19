@@ -12,7 +12,7 @@
 
 #include "network/darwin_network_abi.hpp"
 
-namespace ilemu::darwin::network::apple80211_driver {
+namespace shade::darwin::network::apple80211_driver {
 namespace {
 
     constexpr std::size_t legacy_bitmask_size = sizeof(std::uint16_t);
@@ -124,4 +124,4 @@ void EventStream::prepare_record()
     record_event_count_ = 1;
 }
 
-} // namespace ilemu::darwin::network::apple80211_driver
+} // namespace shade::darwin::network::apple80211_driver

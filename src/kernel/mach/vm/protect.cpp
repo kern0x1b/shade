@@ -18,7 +18,7 @@
 #include "../support.hpp"
 #include "wire_reply.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t mach_vm_protect_identifier = 4802U;
@@ -83,4 +83,4 @@ bool CompatibilityKernel::dispatch_mach_vm_protect_message(
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

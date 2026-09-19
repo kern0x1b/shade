@@ -11,7 +11,7 @@
 #include <span>
 #include <string_view>
 
-namespace ilemu {
+namespace shade {
 
 struct KernelSharedState;
 
@@ -25,4 +25,4 @@ namespace kernel_iokit::battery {
     [[nodiscard]] std::uint32_t ensure_service_locked(KernelSharedState& state);
 
 } // namespace kernel_iokit::battery
-} // namespace ilemu
+} // namespace shade

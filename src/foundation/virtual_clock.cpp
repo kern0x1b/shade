@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <limits>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint64_t maximum_positive_offset =
@@ -93,4 +93,4 @@ void VirtualClock::advance_to(std::uint64_t deadline)
                                      std::memory_order_relaxed)) { }
 }
 
-} // namespace ilemu
+} // namespace shade

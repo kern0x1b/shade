@@ -19,12 +19,12 @@
 #include "foundation/host_file_watcher.hpp"
 #include "foundation/host_resource_controller.hpp"
 
-namespace ilemu {
+namespace shade {
 class CompatibilityKernel;
 class Output;
 }
 
-namespace ilemu::runtime_detail {
+namespace shade::runtime_detail {
 
 // Owns the session's stable catalog object. Loaders can register mappings in
 // it; a completed refresh replaces its contents only at the runtime poll point.
@@ -119,4 +119,4 @@ private:
     std::uint64_t stale_ { };
 };
 
-} // namespace ilemu::runtime_detail
+} // namespace shade::runtime_detail

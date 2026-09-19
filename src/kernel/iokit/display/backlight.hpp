@@ -6,7 +6,7 @@
 
 #include "kernel/kernel_shared_state.hpp"
 
-namespace ilemu::kernel_iokit {
+namespace shade::kernel_iokit {
 
 // Registry contract for the built-in panel's integer brightness control.
 // Native IOHIDDisplay owns brightness curves and session properties.
@@ -19,4 +19,4 @@ public:
         std::span<const std::byte> data);
 };
 
-} // namespace ilemu::kernel_iokit
+} // namespace shade::kernel_iokit

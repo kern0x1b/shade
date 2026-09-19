@@ -11,7 +11,7 @@
 
 #include "graphics/layerkit_compatibility.hpp"
 
-namespace ilemu {
+namespace shade {
 
 struct KernelSharedState;
 class Output;
@@ -37,4 +37,4 @@ private:
     std::shared_ptr<SceneCoordinator> scene_coordinator_;
 };
 
-} // namespace ilemu
+} // namespace shade

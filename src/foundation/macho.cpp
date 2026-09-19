@@ -32,7 +32,7 @@
 #define st_ctim st_ctimespec
 #endif
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t mh_magic = 0xfeedfaceU;
@@ -1445,4 +1445,4 @@ std::string mach_cpu_name(std::uint32_t cpu_type, std::uint32_t cpu_subtype)
     }
 }
 
-} // namespace ilemu
+} // namespace shade

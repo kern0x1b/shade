@@ -18,7 +18,7 @@
 
 #include "graphics/host_graphics.hpp"
 
-namespace ilemu {
+namespace shade {
 
 class DisplayState;
 class GlesRenderer;
@@ -134,4 +134,4 @@ private:
     std::optional<DeferredForegroundFrame> deferred_foreground_frame_;
 };
 
-} // namespace ilemu
+} // namespace shade

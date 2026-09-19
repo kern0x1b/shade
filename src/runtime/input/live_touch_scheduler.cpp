@@ -9,7 +9,7 @@
 
 #include <algorithm>
 
-namespace ilemu {
+namespace shade {
 
 void LiveTouchScheduler::schedule(std::span<const LiveTouchEvent> gesture)
 {
@@ -47,4 +47,4 @@ LiveTouchScheduler::next_deadline() const
                  };
 }
 
-} // namespace ilemu
+} // namespace shade

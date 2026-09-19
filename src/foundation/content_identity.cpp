@@ -19,7 +19,7 @@
 
 #include <unistd.h>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::array<std::uint32_t, 64> round_constants {
@@ -567,4 +567,4 @@ std::optional<ContentIdentity> sha256_file(const std::filesystem::path& path,
     return state.finish();
 }
 
-} // namespace ilemu
+} // namespace shade

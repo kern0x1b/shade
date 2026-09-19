@@ -16,7 +16,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace ilemu::darwin::tty {
+namespace shade::darwin::tty {
 
 // XNU bsd/sys/ioccom.h and bsd/sys/ttycom.h. Darwin encodes a
 // parameter-less ioctl as IOC_VOID | group << 8 | command.
@@ -184,4 +184,4 @@ inline constexpr std::uint32_t asm_create_network_interface =
 // AT+CMUX. Registered DLCIs must already contain openable driver-owned paths.
 inline constexpr std::uint32_t asm_engage = void_command('x', 0x32);
 
-} // namespace ilemu::darwin::tty
+} // namespace shade::darwin::tty

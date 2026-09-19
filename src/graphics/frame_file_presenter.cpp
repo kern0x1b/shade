@@ -20,7 +20,7 @@
 #include "foundation/application_display.hpp"
 #include "graphics/display.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t bitmap_file_header_size = 14;
@@ -213,4 +213,4 @@ bool FrameFilePresenter::enabled() const noexcept
     return enabled_.load(std::memory_order_relaxed);
 }
 
-} // namespace ilemu
+} // namespace shade

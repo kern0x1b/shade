@@ -16,7 +16,7 @@
 #include "foundation/system_button_input.hpp"
 #include "foundation/touch_input.hpp"
 
-namespace ilemu {
+namespace shade {
 
 enum class LiveControlCommandKind {
     Touch,
@@ -67,4 +67,4 @@ public:
     [[nodiscard]] virtual bool closed() const = 0;
 };
 
-} // namespace ilemu
+} // namespace shade

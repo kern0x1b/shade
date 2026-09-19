@@ -43,7 +43,7 @@
 
 #include "support.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t random_device_minor = 0;
@@ -2357,4 +2357,4 @@ void CompatibilityKernel::dispatch_bsd_filesystem(
     }
 }
 
-} // namespace ilemu
+} // namespace shade

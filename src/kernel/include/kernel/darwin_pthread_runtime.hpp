@@ -17,7 +17,7 @@
 #include <optional>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 struct DarwinPthreadRegistration {
     std::uint32_t thread_start { };
@@ -141,4 +141,4 @@ private:
         target_concurrency_ { };
 };
 
-} // namespace ilemu
+} // namespace shade

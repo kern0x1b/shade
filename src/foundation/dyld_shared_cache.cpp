@@ -34,7 +34,7 @@
 #define st_ctim st_ctimespec
 #endif
 
-namespace ilemu {
+namespace shade {
 
 struct DyldSharedCache::ImageStore {
     std::mutex mutex;
@@ -720,7 +720,7 @@ namespace {
                 reinterpret_cast<const std::byte*>(
                     value.data() + value.size()));
         };
-        append_key_string("ilemu-dyld-generation-v1");
+        append_key_string("shade-dyld-generation-v1");
         append_u32(key, DyldSharedCache::parser_schema_version);
         append_u32(key, DyldSharedCache::hle_profile_schema_version);
         append_key_string(normalize_cache_path(path));
@@ -811,7 +811,7 @@ namespace {
             file.content_identity, static_cast<std::uint64_t>(file.file_size));
     }
 
-    constexpr std::string_view dyld_generation_magic { "ILEMU-DYLD-GEN" };
+    constexpr std::string_view dyld_generation_magic { "SHADE-DYLD-GEN" };
     constexpr std::uint32_t dyld_generation_artifact_version = 2U;
     constexpr std::size_t dyld_generation_header_size = 155U;
     constexpr std::size_t dyld_file_record_size = 145U;
@@ -2235,4 +2235,4 @@ DyldCacheImageView DyldCacheImageRange::operator[](std::size_t index) const
     return cache_->image_view_at(index);
 }
 
-} // namespace ilemu
+} // namespace shade

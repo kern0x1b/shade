@@ -18,7 +18,7 @@
 #include <optional>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 class AudioService;
 class AddressSpace;
@@ -139,4 +139,4 @@ private:
     std::vector<std::size_t> retired_io_proc_threads_;
 };
 
-} // namespace ilemu
+} // namespace shade

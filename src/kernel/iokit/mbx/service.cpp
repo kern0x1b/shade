@@ -22,7 +22,7 @@
 #include <utility>
 #include <vector>
 
-namespace ilemu::kernel_iokit::mbx {
+namespace shade::kernel_iokit::mbx {
 
 namespace {
 
@@ -342,4 +342,4 @@ void close_connection(AddressSpace& memory, KernelSharedState& state,
     }
 }
 
-} // namespace ilemu::kernel_iokit::mbx
+} // namespace shade::kernel_iokit::mbx

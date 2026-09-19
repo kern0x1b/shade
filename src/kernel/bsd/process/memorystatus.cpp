@@ -16,7 +16,7 @@
 #include <mutex>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 bool CompatibilityKernel::dispatch_bsd_memorystatus(
     Cpu& cpu, std::uint32_t number)
@@ -144,4 +144,4 @@ bool CompatibilityKernel::dispatch_bsd_memorystatus(
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

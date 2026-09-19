@@ -22,7 +22,7 @@
 #include <string_view>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::string_view opengles_image {
@@ -561,4 +561,4 @@ void OpenGlesHle::register_programmable_gles(UserlandHleRegistry& registry)
     });
 }
 
-} // namespace ilemu
+} // namespace shade

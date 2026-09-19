@@ -18,7 +18,7 @@
 #include "foundation/darwin_address_layout.hpp"
 #include "foundation/macho.hpp"
 
-namespace ilemu {
+namespace shade {
 
 class ExecutableCatalog;
 
@@ -69,4 +69,4 @@ private:
     };
 };
 
-} // namespace ilemu
+} // namespace shade

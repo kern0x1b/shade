@@ -14,7 +14,7 @@
 #include <string_view>
 #include <vector>
 
-namespace ilemu::darwin::network::apple80211_driver {
+namespace shade::darwin::network::apple80211_driver {
 
 enum class EventStreamFormat : std::uint8_t {
     Undetected,
@@ -48,4 +48,4 @@ private:
     std::size_t record_event_count_ { };
 };
 
-} // namespace ilemu::darwin::network::apple80211_driver
+} // namespace shade::darwin::network::apple80211_driver

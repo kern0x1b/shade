@@ -9,7 +9,7 @@
 #include <mutex>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 std::vector<ProcessSnapshot> CompatibilityKernel::process_snapshots() const
 {
@@ -25,4 +25,4 @@ std::vector<ProcessSnapshot> CompatibilityKernel::process_snapshots() const
     return snapshots;
 }
 
-} // namespace ilemu
+} // namespace shade

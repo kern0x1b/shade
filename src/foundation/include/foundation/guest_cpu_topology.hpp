@@ -12,7 +12,7 @@
 #include <cstdint>
 #include <limits>
 
-namespace ilemu {
+namespace shade {
 
 // These bits describe the ISA visible to the guest. They are deliberately
 // independent of the host CPU feature set: a host may execute an ARMv6 guest
@@ -138,4 +138,4 @@ constexpr GuestCpuTopology GuestCpuTopology::single_core(
         isa_feature_mask, cache_topology_id);
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -11,7 +11,7 @@
 
 #include <cstdint>
 
-namespace ilemu::darwin::mach::scheduler {
+namespace shade::darwin::mach::scheduler {
 
 // XNU osfmk/mach/thread_switch.h.
 constexpr std::uint32_t swtch_pri_trap = 59;
@@ -24,4 +24,4 @@ constexpr std::uint32_t maximum_switch_option = switch_option_wait;
 
 constexpr std::uint64_t nanoseconds_per_millisecond = 1'000'000ULL;
 
-} // namespace ilemu::darwin::mach::scheduler
+} // namespace shade::darwin::mach::scheduler

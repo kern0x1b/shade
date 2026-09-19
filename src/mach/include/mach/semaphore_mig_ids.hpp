@@ -18,7 +18,7 @@
 
 #include "mach/xnu_mig_adapter.hpp"
 
-namespace ilemu::xnu::mig::semaphore {
+namespace shade::xnu::mig::semaphore {
 
 inline constexpr std::string_view subsystem_name{"semaphore"};
 inline constexpr std::uint32_t subsystem_base = 617200U;
@@ -86,4 +86,4 @@ constexpr std::uint32_t id(Routine routine) {
     return static_cast<std::uint32_t>(routine);
 }
 
-}  // namespace ilemu::xnu::mig::semaphore
+}  // namespace shade::xnu::mig::semaphore

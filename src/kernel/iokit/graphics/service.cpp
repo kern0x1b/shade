@@ -29,7 +29,7 @@
 #include <utility>
 #include <vector>
 
-namespace ilemu::kernel_iokit::graphics {
+namespace shade::kernel_iokit::graphics {
 namespace {
 
     namespace device_mig = xnu::mig::device;
@@ -608,4 +608,4 @@ void close_connection(AddressSpace& memory, KernelSharedState& state,
     }
 }
 
-} // namespace ilemu::kernel_iokit::graphics
+} // namespace shade::kernel_iokit::graphics

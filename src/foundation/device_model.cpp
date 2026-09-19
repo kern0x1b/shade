@@ -9,7 +9,7 @@
 
 #include <array>
 
-namespace ilemu {
+namespace shade {
 
 namespace {
 
@@ -440,4 +440,4 @@ const DeviceModel* DeviceModel::find(std::string_view product_type)
     return nullptr;
 }
 
-} // namespace ilemu
+} // namespace shade

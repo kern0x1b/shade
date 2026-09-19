@@ -12,7 +12,7 @@
 #include <limits>
 #include <utility>
 
-namespace ilemu {
+namespace shade {
 
 void GlesProgramState::reset()
 {
@@ -247,4 +247,4 @@ void GlesProgramState::collect_deleted_shaders()
     }
 }
 
-} // namespace ilemu
+} // namespace shade

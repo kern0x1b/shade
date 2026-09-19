@@ -24,7 +24,7 @@
 
 #include "support.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     std::string interface_name(std::span<const std::byte> request)
@@ -647,4 +647,4 @@ bool CompatibilityKernel::ioctl_bpf_device(Cpu& cpu, std::uint32_t fd)
     }
 }
 
-} // namespace ilemu
+} // namespace shade

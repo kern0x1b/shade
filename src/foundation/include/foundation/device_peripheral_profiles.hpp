@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <string_view>
 
-namespace ilemu {
+namespace shade {
 
 // The simulator can expose a baseband transport for an explicit replay fixture
 // or run with the normal offline/no-modem policy. This is a capability
@@ -47,4 +47,4 @@ struct AmbientLightSensorProfile {
     std::uint32_t integration_cycles { };
 };
 
-} // namespace ilemu
+} // namespace shade

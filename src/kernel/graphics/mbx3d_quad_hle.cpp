@@ -28,7 +28,7 @@
 #include "foundation/performance.hpp"
 #include "foundation/userland_hle.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     struct Point {
@@ -785,4 +785,4 @@ void Mbx2dHle::quad_copy(
             : mbx2d_abi::failure);
 }
 
-} // namespace ilemu
+} // namespace shade

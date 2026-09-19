@@ -27,7 +27,7 @@
 #include "../mach/support.hpp"
 #include "support.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t maximum_psynch_traces = 512U;
@@ -108,7 +108,7 @@ void CompatibilityKernel::dispatch_bsd_psynch(Cpu& cpu, std::uint32_t number)
                           std::to_string(address) + "\n");
             ++psynch_trace_count_;
         }
-        cpu.halt(Dynarmic::HaltReason::UserDefined5);
+        cpu.halt(Umbra::HaltReason::UserDefined5);
     };
     const auto trace_rw = [&](std::string_view phase,
                               std::span<const DarwinPsynchThread> woken = { },
@@ -303,4 +303,4 @@ void CompatibilityKernel::dispatch_bsd_psynch(Cpu& cpu, std::uint32_t number)
     }
 }
 
-} // namespace ilemu
+} // namespace shade

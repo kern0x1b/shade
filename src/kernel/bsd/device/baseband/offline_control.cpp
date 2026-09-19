@@ -11,7 +11,7 @@
 #include <cctype>
 #include <string_view>
 
-namespace ilemu::bsd::baseband_device {
+namespace shade::bsd::baseband_device {
 namespace {
 
     constexpr std::size_t maximum_command_size = 256U;
@@ -70,4 +70,4 @@ void OfflineControlPlane::reset() { lines_.clear(); }
 
 void OfflineControlPlane::reset(std::uint32_t channel) { lines_.erase(channel); }
 
-} // namespace ilemu::bsd::baseband_device
+} // namespace shade::bsd::baseband_device

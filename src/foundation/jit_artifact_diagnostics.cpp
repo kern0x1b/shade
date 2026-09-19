@@ -7,7 +7,7 @@
 #include "foundation/jit_artifact.hpp"
 #include <sstream>
 
-namespace ilemu {
+namespace shade {
 
 [[nodiscard]] std::string disk_hit_fingerprint_text(
     const JitArtifactStoreStats& stats)
@@ -23,4 +23,4 @@ namespace ilemu {
     }
     return text.str();
 }
-} // namespace ilemu
+} // namespace shade

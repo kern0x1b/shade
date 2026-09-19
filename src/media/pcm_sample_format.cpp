@@ -11,7 +11,7 @@
 #include <cmath>
 #include <type_traits>
 
-namespace ilemu {
+namespace shade {
 namespace {
     // CoreAudio's six-bit sample-fraction field starts at bit seven.
     // https://developer.apple.com/documentation/coreaudiotypes/klinearpcmformatflagssamplefractionshift
@@ -91,4 +91,4 @@ AudioSamples PcmSampleFormat::decode(
     }, peak);
 }
 
-} // namespace ilemu
+} // namespace shade

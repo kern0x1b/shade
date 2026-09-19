@@ -17,7 +17,7 @@
 #include "app/sdl_audio_sink.hpp"
 #include "app/sdl_display.hpp"
 
-namespace ilemu {
+namespace shade {
 
 void DesktopHost::initialize_graphics() { register_native_gles_renderer(); }
 
@@ -64,4 +64,4 @@ HostMemoryBudgetSnapshot DesktopHost::memory_budget_snapshot() const
     return host_memory_budget_snapshot();
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -12,7 +12,7 @@
 #include <map>
 #include <utility>
 
-namespace ilemu {
+namespace shade {
 
 std::uint64_t PresentationTracker::record(std::uint32_t submitting_process_id,
     std::vector<PresentationLayer> layers,
@@ -198,4 +198,4 @@ std::vector<PresentationScene> PresentationTracker::latest_scenes_locked() const
     return scenes;
 }
 
-} // namespace ilemu
+} // namespace shade

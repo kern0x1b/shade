@@ -11,7 +11,7 @@
 
 #include <array>
 
-namespace ilemu::darwin::sysctl {
+namespace shade::darwin::sysctl {
 namespace {
 
     constexpr std::uint32_t readable = 0x80000000U;
@@ -123,4 +123,4 @@ std::optional<ObjectIdentifier> resolve_name(std::string_view name)
     return std::nullopt;
 }
 
-} // namespace ilemu::darwin::sysctl
+} // namespace shade::darwin::sysctl

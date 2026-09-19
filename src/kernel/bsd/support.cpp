@@ -13,7 +13,7 @@
 #include <limits>
 #include <string_view>
 
-namespace ilemu::bsd_support {
+namespace shade::bsd_support {
 namespace {
 
     constexpr std::uint64_t hfs_nanoseconds_per_second = 1'000'000'000ULL;
@@ -79,4 +79,4 @@ std::string format_payload_prefix(std::span<const std::byte> bytes)
     return result;
 }
 
-} // namespace ilemu::bsd_support
+} // namespace shade::bsd_support

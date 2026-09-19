@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <iterator>
 
-namespace ilemu::darwin::sysctl {
+namespace shade::darwin::sysctl {
 namespace {
 
     void append_string(std::vector<std::byte>& result, std::string_view value)
@@ -82,4 +82,4 @@ std::vector<std::byte> encode_process_arguments2(
         executable_path, arguments, environment, true);
 }
 
-} // namespace ilemu::darwin::sysctl
+} // namespace shade::darwin::sysctl

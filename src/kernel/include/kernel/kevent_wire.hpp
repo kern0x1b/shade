@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <optional>
 
-namespace ilemu {
+namespace shade {
 
 struct KeventValue {
     std::uint64_t ident { };
@@ -86,4 +86,4 @@ private:
     bool extended_;
 };
 
-} // namespace ilemu
+} // namespace shade

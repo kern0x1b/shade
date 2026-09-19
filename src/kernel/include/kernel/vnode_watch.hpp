@@ -12,7 +12,7 @@
 #include <cstdint>
 #include <filesystem>
 
-namespace ilemu {
+namespace shade {
 
 // Descriptor-bound kqueue state. The existing VFS generation registry also
 // publishes host watcher changes; no host timer or second filesystem watcher
@@ -33,4 +33,4 @@ private:
     mutable bool detached_ { };
 };
 
-} // namespace ilemu
+} // namespace shade

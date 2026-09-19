@@ -14,7 +14,7 @@
 #include <string_view>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 struct KernelSharedState;
 struct ProcessContext;
@@ -73,4 +73,4 @@ namespace kernel_iokit::baseband {
         std::uint32_t inband_output_capacity = 0);
 
 } // namespace kernel_iokit::baseband
-} // namespace ilemu
+} // namespace shade

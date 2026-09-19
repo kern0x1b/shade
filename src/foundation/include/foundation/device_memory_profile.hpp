@@ -6,7 +6,7 @@
 
 #include <cstdint>
 
-namespace ilemu {
+namespace shade {
 
 struct DeviceMemoryProfile {
     std::uint64_t ram_bytes;
@@ -18,4 +18,4 @@ struct DeviceMemoryProfile {
     std::uint64_t usable_ram_bytes { };
 };
 
-} // namespace ilemu
+} // namespace shade

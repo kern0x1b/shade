@@ -18,7 +18,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     struct Secret {
@@ -149,4 +149,4 @@ std::optional<std::vector<std::byte>> KeyStore::transform(
     return result;
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -19,7 +19,7 @@
 #include <optional>
 #include <span>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr auto send_right =
@@ -131,4 +131,4 @@ void CompatibilityKernel::dispatch_bsd_audit_session(
     bsd_success(cpu, 0U);
 }
 
-} // namespace ilemu
+} // namespace shade

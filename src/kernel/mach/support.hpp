@@ -19,7 +19,7 @@
 #include <span>
 #include <string>
 
-namespace ilemu {
+namespace shade {
 
 class AddressSpace;
 class SurfaceStore;
@@ -182,4 +182,4 @@ namespace mach_support {
         PortMembershipOperation operation);
 
 } // namespace mach_support
-} // namespace ilemu
+} // namespace shade

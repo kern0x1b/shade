@@ -12,7 +12,7 @@
 #include <filesystem>
 #include <optional>
 
-namespace ilemu::runtime_detail {
+namespace shade::runtime_detail {
 
 struct JitCodeCacheBudget {
     std::size_t total_bytes { };
@@ -28,4 +28,4 @@ struct JitCodeCacheBudget {
 [[nodiscard]] std::size_t adaptive_jit_code_cache_size(
     const HostMemoryBudgetSnapshot& memory);
 
-} // namespace ilemu::runtime_detail
+} // namespace shade::runtime_detail

@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <utility>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     void attach_presentation_leases(DisplayFrame& frame)
@@ -322,4 +322,4 @@ bool DisplayState::powered_on() const
     return powered_on_;
 }
 
-} // namespace ilemu
+} // namespace shade

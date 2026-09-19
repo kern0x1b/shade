@@ -51,7 +51,7 @@
 #include "iokit/power.hpp"
 #include "mach/support.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t single_service_message_id(DarwinIOKitMatchingRpcAbi abi)
@@ -855,7 +855,7 @@ namespace {
         // Platform identity belongs to the virtual device across Darwin ABIs.
         // Native MobileGestalt clients require the serial as well as legacy
         // Lockdown; use the same existing virtual identity for every client.
-        const auto serial = std::string { "iLEmu-" } +
+        const auto serial = std::string { "Shade-" } +
                             shared_state.device_product_type + "-" +
                             shared_state.device_model_number;
         service.properties.emplace(
@@ -2786,4 +2786,4 @@ std::optional<std::uint32_t> handle_iokit_mach_request(AddressSpace& memory,
     return std::nullopt;
 }
 
-} // namespace ilemu
+} // namespace shade

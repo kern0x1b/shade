@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <bit>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     std::uint32_t interpolate(
@@ -54,4 +54,4 @@ void FixedPointTextureSampler::sample(
     }
 }
 
-} // namespace ilemu
+} // namespace shade

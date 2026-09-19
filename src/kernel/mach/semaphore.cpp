@@ -45,7 +45,7 @@
 
 #include "support.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t maximum_semaphore_wait_traces = 128;
@@ -304,7 +304,7 @@ void CompatibilityKernel::wait_on_semaphore_object(Cpu& cpu,
             "\n");
         ++semaphore_wait_trace_count_;
     }
-    cpu.halt(Dynarmic::HaltReason::UserDefined5);
+    cpu.halt(Umbra::HaltReason::UserDefined5);
 }
 
-} // namespace ilemu
+} // namespace shade

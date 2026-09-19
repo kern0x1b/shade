@@ -7,7 +7,7 @@
 
 #pragma once
 
-namespace ilemu {
+namespace shade {
 
 // Physical iPhone controls as exposed through the iPhone OS 1.0 GSEvent ABI.
 // "Home" is named "Menu" by the firmware but uses the user-facing name here.
@@ -32,4 +32,4 @@ struct SystemButtonInput {
 // independently cached target state. The device model is the sole state owner.
 struct RingerSwitchInput { };
 
-} // namespace ilemu
+} // namespace shade

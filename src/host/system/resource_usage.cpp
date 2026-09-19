@@ -17,7 +17,7 @@
 #include <sstream>
 #include <string>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     [[nodiscard]] std::optional<std::uint64_t> read_decimal_file(
@@ -225,4 +225,4 @@ namespace {
     return snapshot;
 }
 
-} // namespace ilemu
+} // namespace shade

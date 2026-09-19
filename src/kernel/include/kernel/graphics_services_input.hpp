@@ -19,13 +19,13 @@
 #include "foundation/system_button_input.hpp"
 #include "foundation/touch_input.hpp"
 
-namespace ilemu {
+namespace shade {
 class PresentationTracker;
 class SceneCoordinator;
 class UserlandHleRegistry;
 }
 
-namespace ilemu::graphics_services_input {
+namespace shade::graphics_services_input {
 
 inline constexpr std::string_view system_event_service {
     "PurpleSystemEventPort"
@@ -219,4 +219,4 @@ void record_application_suspension_state(KernelSharedState& state,
     std::uint32_t process_id, bool suspended,
     SceneCoordinator* scenes = nullptr);
 
-} // namespace ilemu::graphics_services_input
+} // namespace shade::graphics_services_input

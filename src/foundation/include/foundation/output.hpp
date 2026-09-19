@@ -14,7 +14,7 @@
 #include <ostream>
 #include <string_view>
 
-namespace ilemu {
+namespace shade {
 
 class Output {
 public:
@@ -43,4 +43,4 @@ private:
     std::mutex mutex_;
 };
 
-} // namespace ilemu
+} // namespace shade

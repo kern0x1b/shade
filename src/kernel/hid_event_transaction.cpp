@@ -15,7 +15,7 @@
 #include <memory>
 #include <utility>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     // Darwin's ARM32 C ABI packs the uint64 timestamp into r1/r2 and
@@ -253,4 +253,4 @@ bool HidEventTransaction::enqueue(UserlandHleRegistry& registry,
         ->start(registry, consumer.processor);
 }
 
-} // namespace ilemu
+} // namespace shade

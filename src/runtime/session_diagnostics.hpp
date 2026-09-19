@@ -13,7 +13,7 @@
 #include <string_view>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 class DisplayPresenter;
 class Output;
 class XnuScheduler;
@@ -48,4 +48,4 @@ private:
 };
 
 } // namespace runtime_detail
-} // namespace ilemu
+} // namespace shade

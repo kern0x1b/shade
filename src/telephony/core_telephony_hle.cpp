@@ -26,7 +26,7 @@
 #include "foundation/userland_hle.hpp"
 #include "network/wifi_state.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::string_view core_telephony_image {
@@ -954,4 +954,4 @@ void register_core_telephony_hle(UserlandHleRegistry& registry,
         [](UserlandHleCall& call) { return_server_success(call); });
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -16,7 +16,7 @@
 
 #include "graphics/gles_abi.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint64_t scanout_background_namespace = 2ULL << 32U;
@@ -364,4 +364,4 @@ bool ScanoutComposition::capture_background(std::uint32_t process_id,
     return background.valid;
 }
 
-} // namespace ilemu
+} // namespace shade

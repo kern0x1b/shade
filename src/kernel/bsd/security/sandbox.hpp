@@ -9,7 +9,7 @@
 #include <cstdint>
 #include "device_state/darwin_abi.hpp"
 
-namespace ilemu {
+namespace shade {
 
 class AddressSpace;
 
@@ -28,4 +28,4 @@ enum class CallResult {
     std::uint32_t argument);
 
 } // namespace bsd::sandbox
-} // namespace ilemu
+} // namespace shade

@@ -11,7 +11,7 @@
 #include <cstddef>
 #include <utility>
 
-namespace ilemu {
+namespace shade {
 
 GlesMatrix::GlesMatrix()
     : values_ { 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F,
@@ -147,4 +147,4 @@ std::array<float, 4> GlesMatrix::transform(
     return result;
 }
 
-} // namespace ilemu
+} // namespace shade

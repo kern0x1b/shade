@@ -10,7 +10,7 @@
 #include <atomic>
 #include <cstdint>
 
-namespace ilemu {
+namespace shade {
 
 // Process-shared hardware clock model. The monotonic counter drives scheduler
 // waits and never changes discontinuously; the calendar is a separately
@@ -39,4 +39,4 @@ private:
     std::atomic_int64_t wall_time_offset_;
 };
 
-} // namespace ilemu
+} // namespace shade

@@ -14,7 +14,7 @@
 #include <string>
 #include <system_error>
 
-namespace ilemu::hfs {
+namespace shade::hfs {
 namespace {
 
     constexpr std::uint32_t mount_read_only = 0x00000001U;
@@ -204,4 +204,4 @@ bool VolumeLayout::is_mount_root(std::string_view path) const
     return normalized.generic_string() == for_guest_path(path).mount_point;
 }
 
-} // namespace ilemu::hfs
+} // namespace shade::hfs

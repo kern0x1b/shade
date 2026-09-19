@@ -15,7 +15,7 @@
 #include <string_view>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 struct NetworkPreferencesResult {
     std::filesystem::path path;
@@ -48,4 +48,4 @@ struct NetworkPreferencesAirport {
     const std::filesystem::path& rootfs,
     std::optional<NetworkPreferencesAirport> airport = std::nullopt);
 
-} // namespace ilemu
+} // namespace shade

@@ -13,7 +13,7 @@
 #include <set>
 #include <utility>
 
-namespace ilemu {
+namespace shade {
 
 // Indexed deadline storage for scheduler-owned event sources. Updating one
 // source removes its previous value in O(log n), while the earliest deadline
@@ -85,4 +85,4 @@ private:
     DeadlineIndex order_;
 };
 
-} // namespace ilemu
+} // namespace shade

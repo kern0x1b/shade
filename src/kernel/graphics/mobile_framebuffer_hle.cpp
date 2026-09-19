@@ -39,7 +39,7 @@
 #include "foundation/userland_hle.hpp"
 #include "surface_transport_hle.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::string_view framebuffer_image {
@@ -1198,4 +1198,4 @@ void MobileFramebufferHle::set_background_color(UserlandHleCall& call)
     call.set_return(iokit_abi::success);
 }
 
-} // namespace ilemu
+} // namespace shade

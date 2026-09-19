@@ -17,7 +17,7 @@
 #include "graphics/gles_resources.hpp"
 #include "graphics/local_scene_background.hpp"
 
-namespace ilemu {
+namespace shade {
 
 // Tracks retained scanout pages used by legacy compositors. A compositor may
 // build a translucent scene in a local render target and source-over it onto
@@ -91,4 +91,4 @@ private:
     LocalSceneBackground local_scene_background_;
 };
 
-} // namespace ilemu
+} // namespace shade

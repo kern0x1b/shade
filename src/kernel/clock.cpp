@@ -22,7 +22,7 @@
 #include "kernel/mach_clock_abi.hpp"
 #include "mach/mig_wire_abi.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t mach_rcv_too_large = 0x10004004U;
@@ -368,4 +368,4 @@ void deliver_due_clock_alarms_locked(
     }
 }
 
-} // namespace ilemu
+} // namespace shade

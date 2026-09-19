@@ -17,7 +17,7 @@
 
 #include "support.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::size_t arm32_timespec_size = 8;
@@ -30,7 +30,7 @@ namespace {
         // currently running it. Derive it from stable hardware-profile fields
         // so moving a data volume or changing the host graphics backend cannot
         // alter the guest-visible identity.
-        std::string identity { "iLEmu-platform-uuid-v1" };
+        std::string identity { "Shade-platform-uuid-v1" };
         for (const auto field :
             { profile.identity.product_type, profile.identity.board_config,
                 profile.identity.model_number, profile.processor.soc }) {
@@ -78,4 +78,4 @@ void CompatibilityKernel::dispatch_bsd_platform(
     bsd_success(cpu, 0);
 }
 
-} // namespace ilemu
+} // namespace shade

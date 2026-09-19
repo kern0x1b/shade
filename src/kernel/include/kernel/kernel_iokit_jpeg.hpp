@@ -12,7 +12,7 @@
 #include <span>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 class AddressSpace;
 class SurfaceStore;
@@ -49,4 +49,4 @@ namespace kernel_iokit::jpeg {
         std::uint32_t inband_output_capacity);
 
 } // namespace kernel_iokit::jpeg
-} // namespace ilemu
+} // namespace shade

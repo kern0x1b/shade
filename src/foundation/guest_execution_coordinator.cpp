@@ -14,7 +14,7 @@
 #include <thread>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 struct GuestExecutionCoordinator::Impl {
     std::mutex mutex;
@@ -135,4 +135,4 @@ void GuestExecutionCoordinator::worker_loop()
     }
 }
 
-} // namespace ilemu
+} // namespace shade

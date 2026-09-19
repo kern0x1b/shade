@@ -13,7 +13,7 @@
 #include <set>
 #include <span>
 
-namespace ilemu {
+namespace shade {
 
 struct LayerKitApplicationPlacement {
     std::uint32_t position_y { };
@@ -61,4 +61,4 @@ private:
     std::map<std::uint32_t, ContextState> contexts_;
 };
 
-} // namespace ilemu
+} // namespace shade

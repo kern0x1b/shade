@@ -13,7 +13,7 @@
 #include <string_view>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 class AddressSpace;
 class Output;
@@ -88,4 +88,4 @@ namespace kernel_iokit::camera {
         std::uint32_t scalar_output_capacity);
 
 } // namespace kernel_iokit::camera
-} // namespace ilemu
+} // namespace shade

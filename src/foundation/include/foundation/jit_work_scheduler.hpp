@@ -15,7 +15,7 @@
 
 #include "foundation/jit_work_policy.hpp"
 
-namespace ilemu {
+namespace shade {
 
 enum class JitScheduledTarget : std::uint8_t {
     NativeCode,
@@ -134,4 +134,4 @@ private:
     std::chrono::steady_clock::time_point last_observation_;
 };
 
-} // namespace ilemu
+} // namespace shade

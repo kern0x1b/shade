@@ -7,7 +7,7 @@
 
 #include "kernel/kernel_control.hpp"
 
-namespace ilemu::bsd::kernel_control {
+namespace shade::bsd::kernel_control {
 
 std::optional<std::uint32_t> identifier_for_name(std::string_view name)
 {
@@ -23,4 +23,4 @@ std::optional<std::string_view> name_for_identifier(std::uint32_t identifier)
     return std::nullopt;
 }
 
-} // namespace ilemu::bsd::kernel_control
+} // namespace shade::bsd::kernel_control

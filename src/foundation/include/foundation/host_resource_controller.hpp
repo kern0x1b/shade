@@ -20,7 +20,7 @@
 #include <thread>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 enum class HostWorkKind : std::uint8_t {
     ForegroundPrepare,
@@ -277,4 +277,4 @@ private:
     bool stopping_ { };
 };
 
-} // namespace ilemu
+} // namespace shade

@@ -21,7 +21,7 @@
 #include "../support.hpp"
 #include "wire_reply.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t request_size =
@@ -90,4 +90,4 @@ bool CompatibilityKernel::dispatch_mach_vm_inherit_message(
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

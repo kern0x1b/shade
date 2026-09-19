@@ -13,7 +13,7 @@
 #include <array>
 #include <stdexcept>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr DarwinAbi disk_policy_abi {
@@ -341,4 +341,4 @@ DarwinKernelConfiguration resolve_darwin_configuration(
     return configuration;
 }
 
-} // namespace ilemu
+} // namespace shade

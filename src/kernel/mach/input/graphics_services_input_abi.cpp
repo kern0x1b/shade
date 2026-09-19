@@ -13,7 +13,7 @@
 
 #include "foundation/macho.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr GraphicsServicesInputAbi darwin9_0_abi{
@@ -505,4 +505,4 @@ GraphicsServicesInputAbi::detect(const MachOImage& image)
     return std::nullopt;
 }
 
-} // namespace ilemu
+} // namespace shade

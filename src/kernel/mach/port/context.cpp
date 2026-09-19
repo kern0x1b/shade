@@ -22,7 +22,7 @@
 #include <optional>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     // Context accessors extend the base mach_port subsystem used for the
@@ -136,4 +136,4 @@ bool CompatibilityKernel::dispatch_mach_port_context_message(
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

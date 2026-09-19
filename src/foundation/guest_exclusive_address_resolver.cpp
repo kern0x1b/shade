@@ -11,7 +11,7 @@
 #include <mutex>
 #include <stdexcept>
 
-namespace ilemu {
+namespace shade {
 
 void GuestExclusiveAddressResolver::bind(std::size_t processor_base,
     std::size_t processor_count, AddressSpace& memory)
@@ -55,8 +55,8 @@ void GuestExclusiveAddressResolver::unbind(std::size_t processor_base,
     }
 }
 
-Dynarmic::VAddr GuestExclusiveAddressResolver::resolve(
-    std::size_t processor_id, Dynarmic::VAddr address) const noexcept
+Umbra::VAddr GuestExclusiveAddressResolver::resolve(
+    std::size_t processor_id, Umbra::VAddr address) const noexcept
 {
     try {
         const std::shared_lock lock { mutex_ };
@@ -74,8 +74,8 @@ Dynarmic::VAddr GuestExclusiveAddressResolver::resolve(
     }
 }
 
-Dynarmic::VAddr GuestExclusiveAddressResolver::resolve_callback(
-    void* context, std::size_t processor_id, Dynarmic::VAddr address) noexcept
+Umbra::VAddr GuestExclusiveAddressResolver::resolve_callback(
+    void* context, std::size_t processor_id, Umbra::VAddr address) noexcept
 {
     if (context == nullptr)
         return address;
@@ -83,4 +83,4 @@ Dynarmic::VAddr GuestExclusiveAddressResolver::resolve_callback(
         processor_id, address);
 }
 
-} // namespace ilemu
+} // namespace shade

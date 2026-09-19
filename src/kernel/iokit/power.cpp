@@ -28,7 +28,7 @@
 #include <utility>
 #include <vector>
 
-namespace ilemu::kernel_iokit {
+namespace shade::kernel_iokit {
 namespace {
 
     namespace device_mig = xnu::mig::device;
@@ -313,4 +313,4 @@ std::optional<std::uint32_t> handle_power_mach_request(AddressSpace& memory,
         message_id, message_address, receive_size, remote_object, local_port);
 }
 
-} // namespace ilemu::kernel_iokit
+} // namespace shade::kernel_iokit

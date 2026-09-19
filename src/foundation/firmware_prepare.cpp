@@ -25,13 +25,13 @@
 #include <utility>
 #include <vector>
 
-#include <dynarmic/interface/exclusive_monitor.h>
+#include <umbra/interface/exclusive_monitor.h>
 
 #include "foundation/address_space.hpp"
 #include "foundation/cpu.hpp"
 #include "foundation/jit_translation_profile.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::array<char, 8> prepare_state_magic { 'i', 'L', 'E', 'M', 'P',
@@ -615,7 +615,7 @@ FirmwarePrepareStats FirmwarePreparer::run()
             stats.prepared_memory_bytes =
                 std::max(stats.prepared_memory_bytes, firmware_memory);
 
-            Dynarmic::ExclusiveMonitor monitor { 1U };
+            Umbra::ExclusiveMonitor monitor { 1U };
             CpuCluster cluster { 1U, 1U, memory, 1U, cpu_model_, monitor, 0U,
                 artifacts };
             const auto slab_bytes =
@@ -721,4 +721,4 @@ FirmwarePrepareStats FirmwarePreparer::run()
     return stats;
 }
 
-} // namespace ilemu
+} // namespace shade

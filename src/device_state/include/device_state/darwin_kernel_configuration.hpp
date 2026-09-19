@@ -16,7 +16,7 @@
 #include "device_state/darwin_abi.hpp"
 #include "device_state/darwin_kernel_identity.hpp"
 
-namespace ilemu {
+namespace shade {
 
 struct DarwinConfigurationEntry {
     std::string_view name;
@@ -49,4 +49,4 @@ struct DarwinKernelConfiguration {
     const std::filesystem::path& rootfs,
     std::optional<std::string_view> ios_build = std::nullopt);
 
-} // namespace ilemu
+} // namespace shade

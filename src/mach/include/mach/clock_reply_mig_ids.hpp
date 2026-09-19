@@ -18,7 +18,7 @@
 
 #include "mach/xnu_mig_adapter.hpp"
 
-namespace ilemu::xnu::mig::clock_reply {
+namespace shade::xnu::mig::clock_reply {
 
 inline constexpr std::string_view subsystem_name{"clock_reply"};
 inline constexpr std::uint32_t subsystem_base = 3125107U;
@@ -48,4 +48,4 @@ constexpr std::uint32_t id(Routine routine) {
     return static_cast<std::uint32_t>(routine);
 }
 
-}  // namespace ilemu::xnu::mig::clock_reply
+}  // namespace shade::xnu::mig::clock_reply

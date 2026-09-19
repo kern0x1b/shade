@@ -21,7 +21,7 @@
 #include <mutex>
 #include <string>
 
-namespace ilemu::kernel_iokit::camera {
+namespace shade::kernel_iokit::camera {
 namespace {
 
     namespace device_mig = xnu::mig::device;
@@ -568,4 +568,4 @@ void close_connection_locked(
         state.iokit_camera_capture_requests.end());
 }
 
-} // namespace ilemu::kernel_iokit::camera
+} // namespace shade::kernel_iokit::camera

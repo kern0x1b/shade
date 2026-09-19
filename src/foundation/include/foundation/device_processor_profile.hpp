@@ -10,7 +10,7 @@
 #include "foundation/arm_cpu_model.hpp"
 #include "foundation/guest_cpu_topology.hpp"
 
-namespace ilemu {
+namespace shade {
 
 struct DeviceProcessorProfile {
     std::string_view soc;
@@ -53,4 +53,4 @@ struct DeviceProcessorProfile {
     }
 };
 
-} // namespace ilemu
+} // namespace shade

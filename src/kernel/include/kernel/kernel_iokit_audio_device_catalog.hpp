@@ -14,7 +14,7 @@
 #include <span>
 #include <string_view>
 
-namespace ilemu::kernel_iokit::audio {
+namespace shade::kernel_iokit::audio {
 
 enum class IOAudio2StreamDirection { Input, Output };
 
@@ -96,4 +96,4 @@ public:
         std::string_view uid);
 };
 
-} // namespace ilemu::kernel_iokit::audio
+} // namespace shade::kernel_iokit::audio

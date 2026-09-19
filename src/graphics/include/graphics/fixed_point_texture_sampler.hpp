@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <span>
 
-namespace ilemu {
+namespace shade {
 
 // Scanline sampling with signed 16.16 coordinates and truncating eight-bit
 // interpolation weights. This preserves the integer software-renderer ABI.
@@ -22,4 +22,4 @@ public:
         std::span<std::uint32_t> destination);
 };
 
-} // namespace ilemu
+} // namespace shade

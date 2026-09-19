@@ -9,7 +9,7 @@
 #include <array>
 #include <string_view>
 
-namespace ilemu {
+namespace shade {
 
 // SpringBoard system applications live directly under /Applications on the
 // early firmware images. MobileInstallation places user applications below
@@ -39,4 +39,4 @@ inline constexpr std::array<std::string_view, 3> application_path_prefixes {
     return path == "/Applications/Setup.app/Setup";
 }
 
-} // namespace ilemu
+} // namespace shade

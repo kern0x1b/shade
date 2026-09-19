@@ -11,7 +11,7 @@
 #include <optional>
 #include <string_view>
 
-namespace ilemu::kernel_iokit::audio {
+namespace shade::kernel_iokit::audio {
 
 // Describes the firmware-facing IOAudio user-client ABI. Selection follows the
 // provider protocol exposed in the IOKit registry, rather than an OS version,
@@ -101,4 +101,4 @@ struct IOKitAudioAbi {
     [[nodiscard]] static const IOKitAudioAbi& io_audio2();
 };
 
-} // namespace ilemu::kernel_iokit::audio
+} // namespace shade::kernel_iokit::audio

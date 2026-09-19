@@ -19,7 +19,7 @@
 #include <utility>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr const char* layerkit_image = "LayerKit.framework/LayerKit";
@@ -158,4 +158,4 @@ void LayerKitHle::inherit_state(const LayerKitHle& parent)
     compatibility_ = parent.compatibility_;
 }
 
-} // namespace ilemu
+} // namespace shade

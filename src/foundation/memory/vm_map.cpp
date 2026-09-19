@@ -11,7 +11,7 @@
 #include <iterator>
 #include <limits>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint64_t address_space_end =
@@ -195,4 +195,4 @@ std::size_t VmMap::page_count(std::uint32_t page_size) const
     return static_cast<std::size_t>(count);
 }
 
-} // namespace ilemu
+} // namespace shade

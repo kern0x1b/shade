@@ -18,7 +18,7 @@
 
 #include "mach/xnu_mig_adapter.hpp"
 
-namespace ilemu::xnu::mig::device {
+namespace shade::xnu::mig::device {
 
 inline constexpr std::string_view subsystem_name{"iokit"};
 inline constexpr std::uint32_t subsystem_base = 2800U;
@@ -551,4 +551,4 @@ constexpr std::uint32_t id(Routine routine) {
     return static_cast<std::uint32_t>(routine);
 }
 
-}  // namespace ilemu::xnu::mig::device
+}  // namespace shade::xnu::mig::device

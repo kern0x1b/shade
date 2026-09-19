@@ -10,7 +10,7 @@
 #include "foundation/address_space.hpp"
 #include <limits>
 
-namespace ilemu {
+namespace shade {
 
 std::optional<PrimeFieldLayout> PrimeFieldLayout::resolve(
     const AddressSpace& memory, std::uint32_t context,
@@ -27,4 +27,4 @@ std::optional<PrimeFieldLayout> PrimeFieldLayout::resolve(
     return std::nullopt;
 }
 
-} // namespace ilemu
+} // namespace shade

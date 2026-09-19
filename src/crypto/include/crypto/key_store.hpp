@@ -16,7 +16,7 @@
 #include <span>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 // Symmetric class keys for the virtual device's no-passcode system bag.
 // The persistent secret belongs to device state, outside the guest filesystem
@@ -42,4 +42,4 @@ private:
     std::array<std::byte, 32> secret_;
 };
 
-} // namespace ilemu
+} // namespace shade

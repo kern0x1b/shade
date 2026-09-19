@@ -16,7 +16,7 @@
 #include <cmath>
 #include <string>
 
-namespace ilemu {
+namespace shade {
 namespace {
     constexpr std::uint32_t parameter_error = 0xffffffce;
     constexpr std::uint32_t unsupported_format = 0x666d743f; // 'fmt?'
@@ -191,4 +191,4 @@ void CoreAudioHle::configure_native_io(
     call.set_return(0);
 }
 
-} // namespace ilemu
+} // namespace shade

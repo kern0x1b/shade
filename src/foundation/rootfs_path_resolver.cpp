@@ -10,7 +10,7 @@
 #include <system_error>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     std::filesystem::path normalize_inside_root(
@@ -80,4 +80,4 @@ std::filesystem::path RootfsPathResolver::resolve(std::string_view guest_path,
     return relative.empty() ? rootfs_ : rootfs_ / relative;
 }
 
-} // namespace ilemu
+} // namespace shade

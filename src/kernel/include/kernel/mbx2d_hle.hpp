@@ -19,7 +19,7 @@
 #include "graphics/mbx2d_abi.hpp"
 #include "graphics/surface_store.hpp"
 
-namespace ilemu {
+namespace shade {
 
 class UserlandHleCall;
 class UserlandHleRegistry;
@@ -199,4 +199,4 @@ private:
     std::unique_ptr<CommandEncoder> command_encoder_;
 };
 
-} // namespace ilemu
+} // namespace shade

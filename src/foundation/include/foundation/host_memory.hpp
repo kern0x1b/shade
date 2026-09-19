@@ -11,7 +11,7 @@
 #include <optional>
 #include <string_view>
 
-namespace ilemu {
+namespace shade {
 
 struct HostMemorySnapshot {
     std::uint64_t rss_bytes { };
@@ -53,4 +53,4 @@ enum class HostMemoryPressureLevel : std::uint8_t {
 [[nodiscard]] std::string_view host_memory_pressure_name(
     const HostMemoryBudgetSnapshot& memory);
 
-} // namespace ilemu
+} // namespace shade

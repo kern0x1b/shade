@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <string_view>
 
-namespace ilemu {
+namespace shade {
 
 // Host-driven system gestures are expressed in the firmware's normalized UI
 // coordinate space. Keeping this data in the device model avoids teaching
@@ -51,4 +51,4 @@ struct DeviceInputProfile {
     bool native_hid_touch_events { true };
 };
 
-} // namespace ilemu
+} // namespace shade

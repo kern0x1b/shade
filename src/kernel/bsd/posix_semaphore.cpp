@@ -18,7 +18,7 @@
 
 #include "support.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::size_t maximum_name_bytes = 31;
@@ -193,4 +193,4 @@ void CompatibilityKernel::dispatch_bsd_posix_semaphore(
     bsd_error(cpu, bsd_support::not_implemented);
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -10,7 +10,7 @@
 
 #include "foundation/display_geometry.hpp"
 
-namespace ilemu {
+namespace shade {
 
 // A prepared firmware asset, independent of SDL and the guest compositor.
 class BootLogo {
@@ -23,4 +23,4 @@ public:
         DisplayGeometry panel);
 };
 
-} // namespace ilemu
+} // namespace shade

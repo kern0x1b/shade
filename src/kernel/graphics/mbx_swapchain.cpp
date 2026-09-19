@@ -17,7 +17,7 @@
 #include "graphics/gles_renderer.hpp"
 #include "foundation/userland_hle.hpp"
 
-namespace ilemu {
+namespace shade {
 
 void Mbx2dHle::initialize_destination(UserlandHleCall& call, RenderState& state)
 {
@@ -150,4 +150,4 @@ void Mbx2dHle::prepare_destination_for_frame(UserlandHleCall& call,
     }
 }
 
-} // namespace ilemu
+} // namespace shade

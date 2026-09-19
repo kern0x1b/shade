@@ -12,7 +12,7 @@
 
 #include <cstdint>
 
-namespace ilemu::darwin::proc_info {
+namespace shade::darwin::proc_info {
 
 // Darwin 9 introduced the private __proc_info syscall used by libproc.
 inline constexpr std::uint32_t syscall_number = 336U;
@@ -32,4 +32,4 @@ inline constexpr std::uint32_t flag_importance_donor = 0x00400000U;
 inline constexpr std::uint32_t path_info_size = 1024U;
 inline constexpr std::uint32_t path_info_max_size = 4U * path_info_size;
 
-} // namespace ilemu::darwin::proc_info
+} // namespace shade::darwin::proc_info

@@ -12,7 +12,7 @@
 
 #include "graphics/gles_abi.hpp"
 
-namespace ilemu {
+namespace shade {
 
 class DisplayState;
 class GlesResourceStore;
@@ -88,4 +88,4 @@ public:
         const GlesRasterState& state);
 };
 
-} // namespace ilemu
+} // namespace shade

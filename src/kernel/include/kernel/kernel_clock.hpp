@@ -14,7 +14,7 @@
 #include <cstdint>
 #include <optional>
 
-namespace ilemu {
+namespace shade {
 
 struct KernelSharedState;
 struct ProcessContext;
@@ -37,4 +37,4 @@ void enqueue_clock_alarm_reply_locked(KernelSharedState& state,
 void deliver_due_clock_alarms_locked(
     KernelSharedState& state, std::uint64_t deadline);
 
-} // namespace ilemu
+} // namespace shade

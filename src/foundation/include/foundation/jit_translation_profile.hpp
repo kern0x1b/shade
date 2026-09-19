@@ -25,7 +25,7 @@
 #include "foundation/content_identity.hpp"
 #include "foundation/jit_work_signal.hpp"
 
-namespace ilemu {
+namespace shade {
 
 // Keep one prior working set plus the next run's bounded activation/recent
 // sample. This prevents a long boot or launch from replacing every learned
@@ -374,4 +374,4 @@ private:
     bool save_enabled_ { true };
 };
 
-} // namespace ilemu
+} // namespace shade

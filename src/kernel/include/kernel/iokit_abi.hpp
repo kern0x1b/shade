@@ -13,7 +13,7 @@
 
 #include <cstdint>
 
-namespace ilemu::iokit_abi {
+namespace shade::iokit_abi {
 
 // Darwin 8 osfmk/device/device.defs subsystem iokit 2800. Later routines used
 // by the iPhoneOS 1.0 IOKit build retain their firmware-observed IDs.
@@ -243,4 +243,4 @@ namespace connect_method {
 
 } // namespace connect_method
 
-} // namespace ilemu::iokit_abi
+} // namespace shade::iokit_abi

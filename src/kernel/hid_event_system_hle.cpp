@@ -14,7 +14,7 @@
 
 #include <string>
 
-namespace ilemu {
+namespace shade {
 
 HidEventSystemHle::HidEventSystemHle(UserlandHleRegistry& registry)
     : registry_ { registry }
@@ -107,4 +107,4 @@ bool HidEventSystemHle::prepare_pending_event(
     return delivering_;
 }
 
-} // namespace ilemu
+} // namespace shade

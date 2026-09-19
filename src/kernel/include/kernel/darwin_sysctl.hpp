@@ -20,7 +20,7 @@
 #include <string_view>
 #include <vector>
 
-namespace ilemu::darwin::sysctl {
+namespace shade::darwin::sysctl {
 
 inline constexpr std::uint32_t control_unspecified = 0;
 inline constexpr std::uint32_t control_kernel = 1;
@@ -111,4 +111,4 @@ struct ObjectMetadata {
     std::string_view executable_path, std::span<const std::string> arguments,
     std::span<const std::string> environment);
 
-} // namespace ilemu::darwin::sysctl
+} // namespace shade::darwin::sysctl

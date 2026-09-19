@@ -15,7 +15,7 @@
 #include <string>
 #include <utility>
 
-namespace ilemu::kernel_iokit::mobile_file_integrity {
+namespace shade::kernel_iokit::mobile_file_integrity {
 namespace {
 
     constexpr std::uint32_t load_entitlements_selector = 1U;
@@ -103,4 +103,4 @@ std::optional<MethodResult> dispatch_connect_method(KernelSharedState& state,
     return MethodResult { iokit_abi::success, std::move(output) };
 }
 
-} // namespace ilemu::kernel_iokit::mobile_file_integrity
+} // namespace shade::kernel_iokit::mobile_file_integrity

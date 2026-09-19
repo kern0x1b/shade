@@ -14,7 +14,7 @@
 
 #include "foundation/userland_hle.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::string_view app_support_image {
@@ -49,4 +49,4 @@ void register_app_support_hle(UserlandHleRegistry& registry)
     }
 }
 
-} // namespace ilemu
+} // namespace shade

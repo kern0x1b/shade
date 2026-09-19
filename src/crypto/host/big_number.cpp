@@ -11,7 +11,7 @@
 #include <memory>
 #include <openssl/bn.h>
 
-namespace ilemu {
+namespace shade {
 
 bool BigNumberArithmetic::greatest_common_divisor(
     std::span<const std::byte> first, std::span<const std::byte> second,
@@ -82,4 +82,4 @@ bool BigNumberArithmetic::power_modulo(std::span<const std::byte> base,
            static_cast<int>(result.size());
 }
 
-} // namespace ilemu
+} // namespace shade

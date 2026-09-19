@@ -15,7 +15,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace ilemu::darwin::resource {
+namespace shade::darwin::resource {
 
 inline constexpr std::uint32_t priority_process = 0;
 inline constexpr std::uint32_t priority_process_group = 1;
@@ -71,4 +71,4 @@ struct Limit {
     return limits;
 }
 
-} // namespace ilemu::darwin::resource
+} // namespace shade::darwin::resource

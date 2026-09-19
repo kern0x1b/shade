@@ -21,7 +21,7 @@
 #include "../support.hpp"
 #include "wire_reply.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     // XNU's mach_vm subsystem omits vm_region from the leading routine
@@ -132,4 +132,4 @@ bool CompatibilityKernel::dispatch_mach_vm_read_message(
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

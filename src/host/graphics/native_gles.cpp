@@ -8,15 +8,15 @@
 
 #include "graphics/gles_renderer.hpp"
 
-#if defined(ILEMU_HAS_VULKAN)
+#if defined(SHADE_HAS_VULKAN)
 #include "vulkan_gles_renderer.hpp"
 #endif
 
-namespace ilemu {
+namespace shade {
 
 void register_native_gles_renderer()
 {
-#if defined(ILEMU_HAS_VULKAN)
+#if defined(SHADE_HAS_VULKAN)
     configure_gles_accelerated_factory(create_vulkan_gles_renderer);
 #else
     configure_gles_accelerated_factory(
@@ -30,4 +30,4 @@ void register_native_gles_renderer()
 #endif
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -20,9 +20,9 @@
 #include <string_view>
 #include <vector>
 
-namespace ilemu::hfs {
+namespace shade::hfs {
 
-inline constexpr std::string_view resource_sidecar_suffix { ".ilemu-rsrc" };
+inline constexpr std::string_view resource_sidecar_suffix { ".shade-rsrc" };
 inline constexpr std::uint32_t allocation_block_size = 4096;
 
 namespace attribute {
@@ -198,4 +198,4 @@ private:
     std::filesystem::path root_;
 };
 
-} // namespace ilemu::hfs
+} // namespace shade::hfs

@@ -5,7 +5,7 @@
 
 #include <cstdint>
 
-namespace ilemu {
+namespace shade {
 class AddressSpace;
 struct KernelSharedState;
 struct ProcessContext;
@@ -18,4 +18,4 @@ std::uint32_t control(AddressSpace& memory, KernelSharedState& state,
     const ProcessContext& caller, std::uint32_t pid, std::uint32_t flavor,
     std::uint32_t argument);
 }
-} // namespace ilemu
+} // namespace shade

@@ -12,7 +12,7 @@
 
 #include "mach/xnu_scheduler.hpp"
 
-namespace ilemu {
+namespace shade {
 
 // Core execution policy for a guest hardware profile with multiple CPUs.
 // Compute-heavy threads may run together, while syscall-dense threads stay on
@@ -42,4 +42,4 @@ private:
     std::map<XnuThreadId, ThreadHistory> histories_;
 };
 
-} // namespace ilemu
+} // namespace shade

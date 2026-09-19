@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace ilemu::kernel_iokit {
+namespace shade::kernel_iokit {
 
 std::uint32_t DiagnosticDataService::ensure_locked(KernelSharedState& state)
 {
@@ -52,4 +52,4 @@ std::uint32_t DiagnosticDataService::ensure_locked(KernelSharedState& state)
     return object;
 }
 
-} // namespace ilemu::kernel_iokit
+} // namespace shade::kernel_iokit

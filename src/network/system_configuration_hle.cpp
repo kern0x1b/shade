@@ -12,7 +12,7 @@
 
 #include "foundation/userland_hle.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::string_view system_configuration_image {
@@ -45,4 +45,4 @@ void SystemConfigurationHle::begin_interface_discovery(UserlandHleCall& call)
     }
 }
 
-} // namespace ilemu
+} // namespace shade

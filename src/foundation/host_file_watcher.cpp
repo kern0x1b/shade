@@ -33,7 +33,7 @@
 #endif
 #endif
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr auto stable_delay = std::chrono::milliseconds { 50 };
@@ -717,4 +717,4 @@ HostFileWatchDrain HostFileWatcher::publish_stable(
     return drain;
 }
 
-} // namespace ilemu
+} // namespace shade

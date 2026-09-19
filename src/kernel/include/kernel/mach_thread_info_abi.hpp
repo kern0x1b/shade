@@ -12,7 +12,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace ilemu::darwin::mach::thread_info {
+namespace shade::darwin::mach::thread_info {
 
 // XNU osfmk/mach/thread_info.h. All fields are natural_t words on
 // the 32-bit ARM ABI used by iPhone OS 1.x.
@@ -30,4 +30,4 @@ constexpr std::size_t timeshare_depress_priority_index = 4;
 constexpr std::uint32_t standard_policy = 1;
 constexpr std::uint32_t waiting_state = 3;
 
-} // namespace ilemu::darwin::mach::thread_info
+} // namespace shade::darwin::mach::thread_info

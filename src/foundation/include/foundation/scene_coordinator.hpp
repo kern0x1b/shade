@@ -13,7 +13,7 @@
 #include <optional>
 #include <utility>
 
-namespace ilemu {
+namespace shade {
 
 // Host/display coordinates to an OS client's input coordinate space. The full
 // affine form supports translation, scale, rotation, and later graphics stacks
@@ -75,4 +75,4 @@ private:
     std::map<std::uint32_t, ClientScene> client_scenes_;
 };
 
-} // namespace ilemu
+} // namespace shade

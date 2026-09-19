@@ -12,7 +12,7 @@
 #include <cstdint>
 #include <optional>
 
-namespace ilemu {
+namespace shade {
 
 inline constexpr std::size_t jit_work_policy_maximum_translation_lanes = 4U;
 
@@ -84,7 +84,7 @@ public:
     // Native-cache limits are host code-generator profiles, not Guest device,
     // application or firmware profiles. x64 keeps the complete mapping safely
     // inside the signed rel32 reach used by generated terminals; arm64 retains
-    // Dynarmic's current address-space limit.
+    // Umbra's current address-space limit.
     [[nodiscard]] static constexpr JitNativeBackend
     native_backend() noexcept
     {
@@ -139,4 +139,4 @@ public:
         const JitWorkObservation& observation) const noexcept;
 };
 
-} // namespace ilemu
+} // namespace shade

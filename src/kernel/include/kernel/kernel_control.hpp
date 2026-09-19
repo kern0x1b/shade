@@ -10,7 +10,7 @@
 #include <optional>
 #include <string_view>
 
-namespace ilemu::bsd::kernel_control {
+namespace shade::bsd::kernel_control {
 
 inline constexpr std::string_view descriptor_kind { "system-control-socket" };
 inline constexpr std::string_view ip_interface_name { "com.apple.ipif" };
@@ -32,4 +32,4 @@ struct Endpoint {
 [[nodiscard]] std::optional<std::string_view> name_for_identifier(
     std::uint32_t identifier);
 
-} // namespace ilemu::bsd::kernel_control
+} // namespace shade::bsd::kernel_control

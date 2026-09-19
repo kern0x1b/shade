@@ -5,7 +5,7 @@
 
 #include <cstdint>
 
-namespace ilemu {
+namespace shade {
 struct KernelSharedState;
 namespace kernel_iokit::audio {
 
@@ -28,4 +28,4 @@ private:
 };
 
 } // namespace kernel_iokit::audio
-} // namespace ilemu
+} // namespace shade

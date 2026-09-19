@@ -9,7 +9,7 @@
 
 #include <cstdint>
 
-namespace ilemu {
+namespace shade {
 
 enum class TouchPhase : std::uint8_t {
     Down,
@@ -24,4 +24,4 @@ struct TouchInput {
     float y { };
 };
 
-} // namespace ilemu
+} // namespace shade

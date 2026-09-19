@@ -16,7 +16,7 @@
 #include <string>
 #include <system_error>
 
-namespace ilemu::bsd_support {
+namespace shade::bsd_support {
 
 inline constexpr std::uint32_t carry_flag = 1U << 29U;
 inline constexpr std::uint32_t bad_file_descriptor = 9;
@@ -40,4 +40,4 @@ inline constexpr std::size_t maximum_io = 16U * 1024U * 1024U;
 [[nodiscard]] std::string format_payload_prefix(
     std::span<const std::byte> bytes);
 
-} // namespace ilemu::bsd_support
+} // namespace shade::bsd_support

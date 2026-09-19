@@ -32,7 +32,7 @@
 #include "graphics/presentation_tracker.hpp"
 #include "foundation/userland_hle.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::string_view mbx2d_image { "/MBX2D.framework/MBX2D" };
@@ -1430,4 +1430,4 @@ void Mbx2dHle::deferred(UserlandHleCall& call)
     call.set_return(mbx_success);
 }
 
-} // namespace ilemu
+} // namespace shade

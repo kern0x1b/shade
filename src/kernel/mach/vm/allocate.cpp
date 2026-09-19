@@ -22,7 +22,7 @@
 #include "../support.hpp"
 #include "wire_reply.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     // XNU publishes the pointer-sized vm_map interface at 3800 and also
@@ -95,4 +95,4 @@ bool CompatibilityKernel::dispatch_mach_vm_allocate_message(
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

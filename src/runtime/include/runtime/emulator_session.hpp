@@ -11,7 +11,7 @@
 
 #include "runtime/boot_options.hpp"
 
-namespace ilemu {
+namespace shade {
 
 class Output;
 class SessionHost;
@@ -38,4 +38,4 @@ private:
     bool started_ { };
 };
 
-} // namespace ilemu
+} // namespace shade

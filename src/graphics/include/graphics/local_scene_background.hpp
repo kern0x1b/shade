@@ -17,7 +17,7 @@
 #include "graphics/gles_renderer.hpp"
 #include "graphics/gles_resources.hpp"
 
-namespace ilemu {
+namespace shade {
 
 // Retains the provenance of a local scene's direct background layer. A scene
 // that later moves across scanout can replay that layer in source coordinates
@@ -51,4 +51,4 @@ private:
     std::map<HostSurfaceKey, State> states_;
 };
 
-} // namespace ilemu
+} // namespace shade

@@ -18,7 +18,7 @@
 
 #include "graphics/gles_abi.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     bool is_triangle_mode(std::uint32_t mode)
@@ -181,4 +181,4 @@ std::optional<GlesPrimitiveBatch> GlesPrimitiveAssembler::assemble(
     return batch;
 }
 
-} // namespace ilemu
+} // namespace shade

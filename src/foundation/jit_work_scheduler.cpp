@@ -9,7 +9,7 @@
 
 #include <algorithm>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     [[nodiscard]] JitWorkScheduleSkip skip_for(
@@ -317,4 +317,4 @@ JitWorkSchedule JitWorkScheduler::schedule(
     return result;
 }
 
-} // namespace ilemu
+} // namespace shade

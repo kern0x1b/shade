@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <limits>
 
-namespace ilemu {
+namespace shade {
 namespace {
     constexpr auto maximum = std::numeric_limits<std::uint64_t>::max();
 
@@ -78,4 +78,4 @@ void KeventTimer::consume(std::uint64_t now)
         deadline_ = now + delay;
 }
 
-} // namespace ilemu
+} // namespace shade

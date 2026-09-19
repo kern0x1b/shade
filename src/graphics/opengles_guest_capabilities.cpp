@@ -9,7 +9,7 @@
 
 #include "foundation/userland_hle.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::string_view common_vendor { "Imagination Technologies" };
@@ -147,4 +147,4 @@ OpenGlesGuestCapabilitySet open_gles_framebuffer_capabilities(
     return OpenGlesGuestCapabilitySet::MbxLiteFramebufferObjects;
 }
 
-} // namespace ilemu
+} // namespace shade

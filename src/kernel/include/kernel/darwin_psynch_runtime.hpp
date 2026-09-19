@@ -18,7 +18,7 @@
 #include <optional>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 struct DarwinPsynchThread {
     std::uint32_t process_id { };
@@ -157,4 +157,4 @@ private:
     std::map<DarwinPsynchThread, std::uint32_t> completed_results_;
 };
 
-} // namespace ilemu
+} // namespace shade

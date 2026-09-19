@@ -25,7 +25,7 @@
 #include <unordered_set>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 // Constants and ordering are taken from XNU osfmk/kern/sched.h
 // and sched_prim.c. These defaults serve CPU-only helpers and unit tests. A
@@ -373,4 +373,4 @@ private:
     bool dispatch_diagnostics_enabled_ { };
 };
 
-} // namespace ilemu
+} // namespace shade

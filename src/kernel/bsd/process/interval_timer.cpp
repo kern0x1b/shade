@@ -24,7 +24,7 @@
 #include <optional>
 #include <string>
 
-namespace ilemu::kernel_bsd::interval_timer {
+namespace shade::kernel_bsd::interval_timer {
 namespace {
 
     constexpr std::uint32_t real_timer = 0;
@@ -242,4 +242,4 @@ void retire_process(KernelSharedState& state, std::uint32_t process_id)
     state.process_interval_timers.erase(process_id);
 }
 
-} // namespace ilemu::kernel_bsd::interval_timer
+} // namespace shade::kernel_bsd::interval_timer

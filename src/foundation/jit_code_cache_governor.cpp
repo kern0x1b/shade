@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <limits>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     [[nodiscard]] std::size_t saturating_add(
@@ -204,4 +204,4 @@ void JitCodeCacheGovernor::release(
             : actual_bytes_total_ - static_cast<std::size_t>(actual_bytes);
 }
 
-} // namespace ilemu
+} // namespace shade

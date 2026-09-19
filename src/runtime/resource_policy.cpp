@@ -10,7 +10,7 @@
 #include "foundation/jit_work_policy.hpp"
 #include <algorithm>
 
-namespace ilemu::runtime_detail {
+namespace shade::runtime_detail {
 
 std::filesystem::path nearest_existing_filesystem_path(
     const std::filesystem::path& path)
@@ -82,4 +82,4 @@ std::size_t adaptive_jit_code_cache_size(const HostMemoryBudgetSnapshot& memory)
         effective.has_value(), memory.available_bytes, memory.available_known);
 }
 
-} // namespace ilemu::runtime_detail
+} // namespace shade::runtime_detail

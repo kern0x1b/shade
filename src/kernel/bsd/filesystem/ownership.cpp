@@ -20,7 +20,7 @@
 
 #include "../support.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t unchanged_identity =
@@ -412,4 +412,4 @@ bool CompatibilityKernel::dispatch_bsd_filesystem_ownership(
     }
 }
 
-} // namespace ilemu
+} // namespace shade

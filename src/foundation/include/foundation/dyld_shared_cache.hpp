@@ -25,7 +25,7 @@
 #include "foundation/content_identity.hpp"
 #include "foundation/file_page_cache.hpp"
 
-namespace ilemu {
+namespace shade {
 
 class MachOImage;
 class DyldSharedCache;
@@ -360,4 +360,4 @@ private:
     friend class DyldCacheImageRange;
 };
 
-} // namespace ilemu
+} // namespace shade

@@ -22,7 +22,7 @@
 #include "foundation/dyld_shared_cache.hpp"
 #include "foundation/macho.hpp"
 
-namespace ilemu {
+namespace shade {
 
 enum class ExecutableCatalogKind : std::uint8_t {
     MachO,
@@ -189,4 +189,4 @@ private:
     std::uint64_t mutation_revision_ { };
 };
 
-} // namespace ilemu
+} // namespace shade

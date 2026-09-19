@@ -14,7 +14,7 @@
 #include <limits>
 #include <sstream>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     void add_if_enabled(std::atomic<std::uint64_t>& counter,
@@ -1239,7 +1239,7 @@ void PerformanceCounters::record_jit_shared_cache_state(std::uint64_t slab_id,
     std::uint64_t recycled_code_delta { };
     std::uint64_t full_clear_delta { };
     const auto delta = [](std::uint64_t current, std::uint64_t previous) {
-        // Exact-range counters reset when Dynarmic performs an explicit full
+        // Exact-range counters reset when Umbra performs an explicit full
         // clear. Treat that reset as a new monotonic epoch while centralizing
         // duplicate executor observations by slab id.
         return current >= previous ? current - previous : current;
@@ -3898,4 +3898,4 @@ std::string format_display_performance_summary(
     return text.str();
 }
 
-} // namespace ilemu
+} // namespace shade

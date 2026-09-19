@@ -9,7 +9,7 @@
 
 #include <string_view>
 
-namespace ilemu {
+namespace shade {
 
 // Conventional compositor shaders expose either a single color varying or
 // indexed color varyings and fragment outputs. Select from shader declarations,
@@ -33,4 +33,4 @@ struct GlesProgramInterfaceProfile {
     }
 };
 
-} // namespace ilemu
+} // namespace shade

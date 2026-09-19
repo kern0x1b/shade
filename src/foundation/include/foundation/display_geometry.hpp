@@ -11,7 +11,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace ilemu {
+namespace shade {
 
 // UIKit describes the logical orientation of an application's window
 // independently from the panel's native framebuffer geometry. Keep this
@@ -111,4 +111,4 @@ inline constexpr std::uint32_t default_display_width =
 inline constexpr std::uint32_t default_display_height =
     default_display_geometry.height;
 
-} // namespace ilemu
+} // namespace shade

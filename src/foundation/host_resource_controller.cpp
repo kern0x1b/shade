@@ -11,7 +11,7 @@
 #include <stdexcept>
 #include <utility>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     [[nodiscard]] unsigned work_priority(HostWorkKind kind)
@@ -522,4 +522,4 @@ void HostResourceController::stop()
     workers_.clear();
 }
 
-} // namespace ilemu
+} // namespace shade

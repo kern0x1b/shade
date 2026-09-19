@@ -22,7 +22,7 @@
 
 #include "../support.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     [[nodiscard]] bool package_extension_order(
@@ -138,4 +138,4 @@ bool CompatibilityKernel::dispatch_bsd_filesystem_control(
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

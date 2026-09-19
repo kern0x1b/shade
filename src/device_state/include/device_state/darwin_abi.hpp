@@ -15,7 +15,7 @@
 #include "foundation/darwin_address_layout.hpp"
 #include "foundation/device_identity.hpp"
 
-namespace ilemu {
+namespace shade {
 
 // libpthread moved thread creation and workqueue registration behind BSD
 // syscalls in Darwin 10. Keep that wire contract separate from the broader
@@ -233,4 +233,4 @@ struct DarwinAbi {
     DarwinGuestCapabilities capabilities;
 };
 
-} // namespace ilemu
+} // namespace shade

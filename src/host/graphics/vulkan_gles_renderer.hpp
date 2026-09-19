@@ -12,7 +12,7 @@
 
 #include "graphics/gles_renderer.hpp"
 
-namespace ilemu {
+namespace shade {
 
 // Returns null when Vulkan exposes no device matching the selection policy.
 // Failure details let the policy layer reject an explicitly requested backend.
@@ -22,4 +22,4 @@ namespace ilemu {
     GlesDeviceSelection selection,
     std::string* failure = nullptr) noexcept;
 
-} // namespace ilemu
+} // namespace shade

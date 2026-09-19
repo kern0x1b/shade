@@ -12,7 +12,7 @@
 
 #include "foundation/host_memory.hpp"
 
-namespace ilemu {
+namespace shade {
 
 class AudioDecoder;
 class AudioSink;
@@ -43,4 +43,4 @@ public:
     memory_budget_snapshot() const = 0;
 };
 
-} // namespace ilemu
+} // namespace shade

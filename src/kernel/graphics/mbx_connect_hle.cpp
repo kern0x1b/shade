@@ -12,7 +12,7 @@
 
 #include "foundation/userland_hle.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::string_view mbx_connect_image {
@@ -38,4 +38,4 @@ void register_mbx_connect_hle(UserlandHleRegistry& registry)
     }
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -25,7 +25,7 @@
 #include "foundation/arm_cpu_model.hpp"
 #include "foundation/content_identity.hpp"
 
-namespace ilemu {
+namespace shade {
 
 struct MachSection {
     std::string name;
@@ -232,4 +232,4 @@ private:
 [[nodiscard]] std::string mach_cpu_name(
     std::uint32_t cpu_type, std::uint32_t cpu_subtype);
 
-} // namespace ilemu
+} // namespace shade

@@ -10,7 +10,7 @@
 #include "debug/gdb_rsp.hpp"
 #include "process.hpp"
 
-namespace ilemu::runtime_detail {
+namespace shade::runtime_detail {
 
 class BootGdbTarget final : public GdbTarget {
 public:
@@ -220,4 +220,4 @@ private:
         breakpoints_;
 };
 
-} // namespace ilemu::runtime_detail
+} // namespace shade::runtime_detail

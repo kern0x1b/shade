@@ -12,7 +12,7 @@
 #include <cstdint>
 #include <memory>
 
-namespace ilemu {
+namespace shade {
 
 enum class JitWorkActivityKind : std::uint8_t {
     Activation,
@@ -104,4 +104,4 @@ private:
     std::atomic_size_t worker_count_ { };
 };
 
-} // namespace ilemu
+} // namespace shade

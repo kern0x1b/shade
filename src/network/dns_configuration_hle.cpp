@@ -20,7 +20,7 @@
 #include "foundation/address_space.hpp"
 #include "foundation/userland_hle.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::string_view responder_image { "/usr/sbin/mDNSResponder" };
@@ -107,4 +107,4 @@ void register_dns_configuration_hle(UserlandHleRegistry& registry)
         });
 }
 
-} // namespace ilemu
+} // namespace shade

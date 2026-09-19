@@ -20,7 +20,7 @@
 #include "graphics/gles_resources.hpp"
 #include "graphics/gles_sampler_state.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     struct ScreenVertex {
@@ -642,4 +642,4 @@ bool GlesSoftwareRasterizer::draw(DisplayState& display,
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

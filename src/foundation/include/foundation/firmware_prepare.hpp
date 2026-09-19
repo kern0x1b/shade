@@ -19,7 +19,7 @@
 #include "foundation/jit_artifact.hpp"
 #include "foundation/macho.hpp"
 
-namespace ilemu {
+namespace shade {
 
 enum class FirmwareArtifactSeedMode : std::uint8_t {
     CatalogOnly,
@@ -126,4 +126,4 @@ private:
     std::map<ContentIdentity, ExecutableCatalogFileGeneration> completed_state_;
 };
 
-} // namespace ilemu
+} // namespace shade

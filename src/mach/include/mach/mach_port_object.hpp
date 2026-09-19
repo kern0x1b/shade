@@ -15,7 +15,7 @@
 #include <map>
 #include <optional>
 
-namespace ilemu::xnu::ipc {
+namespace shade::xnu::ipc {
 
 using PortObjectId = std::uint32_t;
 using TaskIdentity = std::uint32_t;
@@ -177,4 +177,4 @@ private:
     std::map<PortObjectId, PortObject> objects_;
 };
 
-} // namespace ilemu::xnu::ipc
+} // namespace shade::xnu::ipc

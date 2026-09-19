@@ -18,7 +18,7 @@
 
 #include "mach/xnu_mig_adapter.hpp"
 
-namespace ilemu::xnu::mig::mach_port {
+namespace shade::xnu::mig::mach_port {
 
 inline constexpr std::string_view subsystem_name{"mach_port"};
 inline constexpr std::uint32_t subsystem_base = 3200U;
@@ -266,4 +266,4 @@ constexpr std::uint32_t id(Routine routine) {
     return static_cast<std::uint32_t>(routine);
 }
 
-}  // namespace ilemu::xnu::mig::mach_port
+}  // namespace shade::xnu::mig::mach_port

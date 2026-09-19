@@ -12,7 +12,7 @@
 
 #include "foundation/arm_cpu_model.hpp"
 
-namespace ilemu {
+namespace shade {
 
 enum class LockdownActivation {
     Preserve,
@@ -46,4 +46,4 @@ struct LockdownStateUpdate {
     const std::filesystem::path& rootfs, LockdownActivation activation,
     const LockdownCapabilities& profile);
 
-} // namespace ilemu
+} // namespace shade

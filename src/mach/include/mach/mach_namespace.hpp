@@ -18,7 +18,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace ilemu::xnu::ipc {
+namespace shade::xnu::ipc {
 
 using TaskId = std::uint32_t;
 using MachName = std::uint32_t;
@@ -125,4 +125,4 @@ private:
     std::map<TaskId, Space> spaces_;
 };
 
-} // namespace ilemu::xnu::ipc
+} // namespace shade::xnu::ipc

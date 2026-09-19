@@ -21,7 +21,7 @@
 
 #include "foundation/performance.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     std::atomic<std::uint64_t> write_batch_calls { };
@@ -82,7 +82,7 @@ namespace {
         const auto host_page =
             reinterpret_cast<std::uintptr_t>(backing.bytes.data());
         if constexpr (sizeof(std::uintptr_t) >= sizeof(std::uint64_t)) {
-            // Dynarmic's absolute-offset page-table mode adds the full Guest
+            // Umbra's absolute-offset page-table mode adds the full Guest
             // address to this entry. Keep the arithmetic in uintptr_t so the
             // deliberately-before-object pointer is never formed by C++ pointer
             // arithmetic; the generated access always lands inside bytes.
@@ -2506,4 +2506,4 @@ AddressSpace::writable_page_permission_chunk_locked(std::size_t page_index)
     return *chunk;
 }
 
-} // namespace ilemu
+} // namespace shade

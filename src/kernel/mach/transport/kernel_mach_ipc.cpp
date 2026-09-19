@@ -13,7 +13,7 @@
 #include <array>
 #include <limits>
 
-namespace ilemu::mach_ipc {
+namespace shade::mach_ipc {
 namespace {
 
     std::uint32_t read_word(
@@ -162,4 +162,4 @@ std::optional<ReceivedMessage> prepare_received_message(
     return result;
 }
 
-} // namespace ilemu::mach_ipc
+} // namespace shade::mach_ipc

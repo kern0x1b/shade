@@ -11,7 +11,7 @@
 #include <cmath>
 #include <utility>
 
-namespace ilemu {
+namespace shade {
 
 std::pair<float, float> SceneTransform::map(float x, float y) const
 {
@@ -145,4 +145,4 @@ void SceneCoordinator::retire_process(std::uint32_t process_id)
     client_scenes_.erase(process_id);
 }
 
-} // namespace ilemu
+} // namespace shade

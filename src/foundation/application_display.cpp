@@ -16,11 +16,11 @@
 #include <string>
 #include <system_error>
 
-#if defined(ILEMU_HAS_LIBPLIST)
+#if defined(SHADE_HAS_LIBPLIST)
 #include <plist/plist.h>
 #endif
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     std::optional<DisplayOrientation> parse_orientation(std::string_view value)
@@ -90,7 +90,7 @@ namespace {
         return std::nullopt;
     }
 
-#if defined(ILEMU_HAS_LIBPLIST)
+#if defined(SHADE_HAS_LIBPLIST)
     class PlistOwner {
     public:
         explicit PlistOwner(plist_t node = nullptr)
@@ -168,7 +168,7 @@ ApplicationDisplay detect_application_display(
         return profile;
     }
 
-#if defined(ILEMU_HAS_LIBPLIST)
+#if defined(SHADE_HAS_LIBPLIST)
     const auto path = info_plist_path(rootfs, executable_path);
     std::ifstream input { path, std::ios::binary };
     if (!input)
@@ -293,7 +293,7 @@ DisplayOrientation detect_application_display_orientation(
     if (!input)
         return portrait_fallback();
 
-#if defined(ILEMU_HAS_LIBPLIST)
+#if defined(SHADE_HAS_LIBPLIST)
     const std::string bytes { std::istreambuf_iterator<char> { input },
         std::istreambuf_iterator<char> { } };
     plist_t parsed = nullptr;
@@ -378,4 +378,4 @@ std::vector<std::uint32_t> orient_display_pixels(
     return output;
 }
 
-} // namespace ilemu
+} // namespace shade

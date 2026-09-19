@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-namespace ilemu::bsd::baseband_device {
+namespace shade::bsd::baseband_device {
 
 // Minimal command plane retained by an Offline serial-multiplexer endpoint.
 // It acknowledges complete AT command lines without inventing radio state or
@@ -30,4 +30,4 @@ private:
     std::map<std::uint32_t, std::string> lines_;
 };
 
-} // namespace ilemu::bsd::baseband_device
+} // namespace shade::bsd::baseband_device

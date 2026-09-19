@@ -19,7 +19,7 @@
 #include <cstdint>
 #include <mutex>
 
-namespace ilemu {
+namespace shade {
 
 using namespace mach_support;
 
@@ -156,4 +156,4 @@ bool CompatibilityKernel::dispatch_mach_vm_kernel_rpc_trap(
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

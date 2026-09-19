@@ -12,7 +12,7 @@
 
 #include "foundation/userland_hle.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::string_view mobile_bluetooth_image {
@@ -32,4 +32,4 @@ void register_bluetooth_manager_hle(UserlandHleRegistry& registry)
         });
 }
 
-} // namespace ilemu
+} // namespace shade

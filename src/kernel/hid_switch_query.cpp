@@ -12,7 +12,7 @@
 #include <memory>
 #include <utility>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t keyboard_event = 3U;
@@ -114,4 +114,4 @@ void register_hid_switch_queries(UserlandHleRegistry& registry)
         });
 }
 
-} // namespace ilemu
+} // namespace shade

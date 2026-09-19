@@ -10,7 +10,7 @@
 
 #include <cstdint>
 
-namespace ilemu {
+namespace shade {
 
 struct GlesPixelUnpack {
     std::uint32_t alignment { gles_abi::default_pixel_alignment };
@@ -23,4 +23,4 @@ struct GlesPixelUnpack {
     std::uint32_t row_bytes { };
 };
 
-} // namespace ilemu
+} // namespace shade

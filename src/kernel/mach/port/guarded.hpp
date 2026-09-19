@@ -7,7 +7,7 @@
 #include <array>
 #include <cstdint>
 
-namespace ilemu {
+namespace shade {
 class AddressSpace;
 struct KernelSharedState;
 

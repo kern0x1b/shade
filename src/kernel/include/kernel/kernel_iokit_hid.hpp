@@ -14,7 +14,7 @@
 #include <string_view>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 class AddressSpace;
 class Output;
@@ -56,4 +56,4 @@ namespace kernel_iokit::hid {
         std::uint32_t connection_object);
 
 } // namespace kernel_iokit::hid
-} // namespace ilemu
+} // namespace shade

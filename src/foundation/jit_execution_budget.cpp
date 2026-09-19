@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <limits>
 
-namespace ilemu {
+namespace shade {
 
 std::uint32_t JitHostExecutionBudget::next(
     std::chrono::nanoseconds target) const noexcept
@@ -59,4 +59,4 @@ void JitHostExecutionBudget::observe(
     }
 }
 
-} // namespace ilemu
+} // namespace shade

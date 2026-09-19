@@ -19,7 +19,7 @@
 
 #include "../support.hpp"
 
-namespace ilemu {
+namespace shade {
 
 bool CompatibilityKernel::dispatch_bsd_filesystem_persistence(
     Cpu& cpu, std::uint32_t number)
@@ -55,4 +55,4 @@ bool CompatibilityKernel::dispatch_bsd_filesystem_persistence(
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

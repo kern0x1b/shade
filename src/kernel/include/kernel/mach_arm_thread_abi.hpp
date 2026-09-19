@@ -13,7 +13,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace ilemu::darwin::arm_thread {
+namespace shade::darwin::arm_thread {
 
 // The iPhoneOS 1.0 ARM_THREAD_STATE flavor used by libSystem: r0-r15 followed
 // by CPSR, matching the 17-natural state accepted by thread_create_running.
@@ -25,4 +25,4 @@ inline constexpr std::size_t general_state_word_count =
 
 using GeneralState = std::array<std::uint32_t, general_state_word_count>;
 
-} // namespace ilemu::darwin::arm_thread
+} // namespace shade::darwin::arm_thread

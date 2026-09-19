@@ -10,7 +10,7 @@
 #include <map>
 #include <string>
 
-namespace ilemu::bsd::sandbox {
+namespace shade::bsd::sandbox {
 
 // Opaque guest capabilities for the non-enforcing Sandbox provider. The
 // firmware decides when to grant access; these tokens never grant host access.
@@ -36,4 +36,4 @@ private:
     std::uint64_t next_handle_ { 1U };
 };
 
-} // namespace ilemu::bsd::sandbox
+} // namespace shade::bsd::sandbox

@@ -72,7 +72,7 @@
 #include "network/wifi_state.hpp"
 #include "mach/xnu_scheduler.hpp"
 
-namespace ilemu {
+namespace shade {
 
 class MachOImage;
 
@@ -1005,4 +1005,4 @@ private:
     std::mutex mutex_;
 };
 
-} // namespace ilemu
+} // namespace shade

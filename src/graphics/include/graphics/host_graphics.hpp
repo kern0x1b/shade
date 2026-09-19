@@ -19,7 +19,7 @@
 #include "graphics/display.hpp"
 #include "foundation/performance.hpp"
 
-namespace ilemu {
+namespace shade {
 
 struct HostSurfaceKey {
     std::uint64_t owner { };
@@ -298,4 +298,4 @@ public:
     std::span<const std::uint32_t> initial_pixels = { });
 [[nodiscard]] std::unique_ptr<CommandEncoder> make_cpu_command_encoder();
 
-} // namespace ilemu
+} // namespace shade

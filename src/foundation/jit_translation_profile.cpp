@@ -19,7 +19,7 @@
 #include <system_error>
 #include <utility>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::array<char, 8> profile_magic { 'i', 'L', 'J', 'T', 'P', 'R',
@@ -1238,4 +1238,4 @@ JitTranslationProfileStats JitTranslationProfileStore::stats() const noexcept
     return result;
 }
 
-} // namespace ilemu
+} // namespace shade

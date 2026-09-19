@@ -24,7 +24,7 @@
 #include "wire_reply.hpp"
 #include "wire_format.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     using namespace mach_support;
@@ -272,4 +272,4 @@ bool CompatibilityKernel::dispatch_mach_vm_map_message(
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -6,7 +6,7 @@
 
 #include "kernel/iokit_abi.hpp"
 
-namespace ilemu::kernel_iokit::baseband {
+namespace shade::kernel_iokit::baseband {
 namespace {
 
     // Native AppleIPAppender user-client operations. Its registry service and
@@ -57,4 +57,4 @@ MethodResult dispatch_ip_appender_method(std::uint32_t selector,
     return { iokit_abi::success, { } };
 }
 
-} // namespace ilemu::kernel_iokit::baseband
+} // namespace shade::kernel_iokit::baseband

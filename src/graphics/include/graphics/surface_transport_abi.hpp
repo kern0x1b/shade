@@ -13,7 +13,7 @@
 #include <span>
 #include <string_view>
 
-namespace ilemu::surface_transport {
+namespace shade::surface_transport {
 
 // Firmware-facing user-space surface transports.  Selection follows the
 // private symbol family exported by the loaded framework, never an OS build,
@@ -155,4 +155,4 @@ inline constexpr ClientAbi io_surface_client_extended_metadata = [] {
     return core_surface_client_buffer;
 }
 
-} // namespace ilemu::surface_transport
+} // namespace shade::surface_transport

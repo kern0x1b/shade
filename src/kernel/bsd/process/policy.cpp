@@ -15,7 +15,7 @@
 #include <cstdint>
 #include <mutex>
 
-namespace ilemu {
+namespace shade {
 
 bool CompatibilityKernel::dispatch_bsd_process_policy(
     Cpu& cpu, std::uint32_t number)
@@ -127,4 +127,4 @@ bool CompatibilityKernel::dispatch_bsd_process_policy(
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

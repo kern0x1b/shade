@@ -21,7 +21,7 @@
 #include <string>
 #include <string_view>
 
-namespace ilemu {
+namespace shade {
 namespace {
     constexpr const char* engine_image = "/GLEngine.bundle/GLEngine";
     constexpr const char* shared_image =
@@ -528,4 +528,4 @@ std::uint32_t OpenGlesDispatchHle::set_surface_parameter(UserlandHleCall& call,
     return 0U;
 }
 
-} // namespace ilemu
+} // namespace shade

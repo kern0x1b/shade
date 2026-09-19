@@ -41,7 +41,7 @@
 #define st_ctim st_ctimespec
 #endif
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint64_t file_prefetch_bytes =
@@ -89,7 +89,7 @@ namespace {
     [[nodiscard]] std::filesystem::path shared_immutable_file_root()
     {
         return std::filesystem::temp_directory_path() /
-               ("ilemu-shared-cache-" + std::to_string(::getuid()));
+               ("shade-shared-cache-" + std::to_string(::getuid()));
     }
 
     [[nodiscard]] std::filesystem::path shared_immutable_file_path(
@@ -2235,4 +2235,4 @@ FilePageCacheStats FilePageCache::stats() const
     return stats_;
 }
 
-} // namespace ilemu
+} // namespace shade

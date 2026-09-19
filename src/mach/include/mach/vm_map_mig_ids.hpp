@@ -18,7 +18,7 @@
 
 #include "mach/xnu_mig_adapter.hpp"
 
-namespace ilemu::xnu::mig::vm_map {
+namespace shade::xnu::mig::vm_map {
 
 inline constexpr std::string_view subsystem_name{"vm_map"};
 inline constexpr std::uint32_t subsystem_base = 3800U;
@@ -309,4 +309,4 @@ constexpr std::uint32_t id(Routine routine) {
     return static_cast<std::uint32_t>(routine);
 }
 
-}  // namespace ilemu::xnu::mig::vm_map
+}  // namespace shade::xnu::mig::vm_map

@@ -16,7 +16,7 @@
 #include "foundation/cpu.hpp"
 #include "foundation/userland_hle.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::string_view lockdown_image { "/usr/lib/liblockdown.dylib" };
@@ -141,4 +141,4 @@ void register_lockdown_hle(UserlandHleRegistry& registry,
         });
 }
 
-} // namespace ilemu
+} // namespace shade

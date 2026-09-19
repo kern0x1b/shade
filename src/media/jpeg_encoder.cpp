@@ -16,7 +16,7 @@ extern "C" {
 #include <jpeglib.h>
 }
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     struct JpegErrorState {
@@ -90,4 +90,4 @@ std::optional<std::vector<std::byte>> encode_jpeg_argb(
     return result;
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <string_view>
 
-namespace ilemu {
+namespace shade {
 
 class UserlandHleCall;
 
@@ -50,4 +50,4 @@ struct OpenGlesGuestCapabilities {
 [[nodiscard]] OpenGlesGuestCapabilitySet open_gles_framebuffer_capabilities(
     OpenGlesGuestCapabilitySet kind);
 
-} // namespace ilemu
+} // namespace shade

@@ -19,7 +19,7 @@
 #include <set>
 #include <vector>
 
-namespace ilemu::bsd {
+namespace shade::bsd {
 
 enum class AdvisoryLockKind : std::uint8_t {
     Shared,
@@ -103,4 +103,4 @@ private:
     std::map<std::uint32_t, std::vector<OwnedRecordLock>> record_locks_;
 };
 
-} // namespace ilemu::bsd
+} // namespace shade::bsd

@@ -19,7 +19,7 @@
 #include "kernel/kernel_shared_state.hpp"
 #include "graphics/surface_store.hpp"
 
-namespace ilemu::kernel_iokit::jpeg {
+namespace shade::kernel_iokit::jpeg {
 namespace {
 
     constexpr std::size_t request_size = 0x28U;
@@ -177,4 +177,4 @@ std::optional<MethodResult> dispatch_connect_method(KernelSharedState& state,
     return MethodResult { iokit_abi::success, std::move(output) };
 }
 
-} // namespace ilemu::kernel_iokit::jpeg
+} // namespace shade::kernel_iokit::jpeg

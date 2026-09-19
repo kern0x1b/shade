@@ -12,7 +12,7 @@
 #include <limits>
 #include <stdexcept>
 
-namespace ilemu::runtime_detail {
+namespace shade::runtime_detail {
 
 class GuestTickClock {
 public:
@@ -70,4 +70,4 @@ private:
     return whole_ticks + fractional_ticks;
 }
 
-} // namespace ilemu::runtime_detail
+} // namespace shade::runtime_detail

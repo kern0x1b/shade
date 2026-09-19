@@ -8,7 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace ilemu::bsd {
+namespace shade::bsd {
 
 // Connection-time credentials, independent of the process holding the fd.
 // ARM32 xucred: version, effective uid, short group count, padding, 16 gids.
@@ -39,4 +39,4 @@ private:
     std::uint32_t gid_;
 };
 
-} // namespace ilemu::bsd
+} // namespace shade::bsd

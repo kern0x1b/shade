@@ -14,7 +14,7 @@
 
 #include "mach/xnu_scheduler.hpp"
 
-namespace ilemu {
+namespace shade {
 
 // Stable simulator facts supplied by a client. "Realtime" can represent a
 // display callback, audio callback or another bounded Guest dependency chain;
@@ -87,4 +87,4 @@ private:
     std::size_t preferred_process_burst_ { };
 };
 
-} // namespace ilemu
+} // namespace shade

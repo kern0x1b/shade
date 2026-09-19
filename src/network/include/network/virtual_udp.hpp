@@ -19,7 +19,7 @@
 #include <utility>
 #include <vector>
 
-namespace ilemu::bsd {
+namespace shade::bsd {
 
 enum class VirtualUdpStatus {
     Success,
@@ -123,4 +123,4 @@ private:
     std::atomic_bool defunct_ { false };
 };
 
-} // namespace ilemu::bsd
+} // namespace shade::bsd

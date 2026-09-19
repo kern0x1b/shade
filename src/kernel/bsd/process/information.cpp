@@ -17,7 +17,7 @@
 #include <string>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 bool CompatibilityKernel::dispatch_bsd_process_information(
     Cpu& cpu, std::uint32_t number)
@@ -199,4 +199,4 @@ bool CompatibilityKernel::dispatch_bsd_process_information(
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

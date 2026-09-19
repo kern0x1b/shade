@@ -20,7 +20,7 @@
 
 #include "../support.hpp"
 
-namespace ilemu {
+namespace shade {
 
 bool CompatibilityKernel::dispatch_mach_port_limit_message(
     Cpu& cpu, const MachMessageRequest& request)
@@ -119,4 +119,4 @@ bool CompatibilityKernel::dispatch_mach_port_limit_message(
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

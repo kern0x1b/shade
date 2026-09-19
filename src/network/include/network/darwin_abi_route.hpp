@@ -13,7 +13,7 @@
 
 #include <cstdint>
 
-namespace ilemu {
+namespace shade {
 
 enum class DarwinAbiEpoch {
     Unknown,
@@ -96,4 +96,4 @@ inline constexpr DarwinAbiRoute arm_cache_trap_execute_route {
     return false;
 }
 
-} // namespace ilemu
+} // namespace shade

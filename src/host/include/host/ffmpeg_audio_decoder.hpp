@@ -10,7 +10,7 @@
 
 #include "media/audio.hpp"
 
-namespace ilemu {
+namespace shade {
 
 class FfmpegAudioDecoder final : public AudioDecoder {
 public:
@@ -30,4 +30,4 @@ private:
     std::unique_ptr<Impl> impl_;
 };
 
-} // namespace ilemu
+} // namespace shade

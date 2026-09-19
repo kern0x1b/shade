@@ -16,7 +16,7 @@
 #include <limits>
 #include <utility>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t kernel_bit = 0x01U;
@@ -515,4 +515,4 @@ void DarwinPsynchRuntime::clear_process(std::uint32_t process_id)
     }
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <string_view>
 
-namespace ilemu {
+namespace shade {
 struct KernelSharedState;
 
 namespace kernel_iokit {
@@ -24,4 +24,4 @@ public:
 };
 
 } // namespace kernel_iokit
-} // namespace ilemu
+} // namespace shade

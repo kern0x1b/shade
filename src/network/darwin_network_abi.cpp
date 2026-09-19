@@ -22,7 +22,7 @@
 #include <string>
 #include <string_view>
 
-namespace ilemu::darwin::network {
+namespace shade::darwin::network {
 namespace {
 
     constexpr std::size_t interface_message_header_size = 112;
@@ -425,4 +425,4 @@ std::vector<std::byte> make_kernel_event(std::uint32_t identifier,
     return result;
 }
 
-} // namespace ilemu::darwin::network
+} // namespace shade::darwin::network

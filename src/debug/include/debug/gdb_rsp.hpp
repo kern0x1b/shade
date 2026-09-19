@@ -17,7 +17,7 @@
 #include <string_view>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 class Output;
 
@@ -131,4 +131,4 @@ private:
     GdbRspProtocol protocol_;
 };
 
-} // namespace ilemu
+} // namespace shade

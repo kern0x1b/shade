@@ -18,7 +18,7 @@
 
 #include "network/virtual_network.hpp"
 
-namespace ilemu {
+namespace shade {
 
 inline constexpr auto wifi_interface_mac_address =
     virtual_network::interface_mac_address;
@@ -94,4 +94,4 @@ private:
     std::optional<WifiIpv4Configuration> ipv4_;
 };
 
-} // namespace ilemu
+} // namespace shade

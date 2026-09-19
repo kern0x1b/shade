@@ -17,7 +17,7 @@
 #include "graphics/gles_renderer.hpp"
 #include "network/host_network.hpp"
 
-namespace ilemu {
+namespace shade {
 
 enum class JitProfileMode : std::uint8_t {
     Adaptive,
@@ -80,4 +80,4 @@ struct BootOptions {
 [[nodiscard]] std::filesystem::path default_host_cache_directory(
     const std::filesystem::path& rootfs);
 
-} // namespace ilemu
+} // namespace shade

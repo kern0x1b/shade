@@ -11,7 +11,7 @@
 #include <string_view>
 #include <utility>
 
-namespace ilemu {
+namespace shade {
 
 class RootfsPathResolver {
 public:
@@ -28,4 +28,4 @@ private:
     std::filesystem::path rootfs_;
 };
 
-} // namespace ilemu
+} // namespace shade

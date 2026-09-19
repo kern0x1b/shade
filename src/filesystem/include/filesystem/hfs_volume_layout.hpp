@@ -15,7 +15,7 @@
 
 #include "filesystem/hfs_metadata.hpp"
 
-namespace ilemu::hfs {
+namespace shade::hfs {
 
 // Guest-visible HFS volumes discovered from the firmware's own fstab. This
 // keeps partition identity in the filesystem layer and avoids leaking host
@@ -38,4 +38,4 @@ private:
     std::vector<VolumeMetadata> volumes_;
 };
 
-} // namespace ilemu::hfs
+} // namespace shade::hfs

@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <utility>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     std::vector<VirtualAccessPoint> default_access_points()
@@ -187,4 +187,4 @@ WifiIpv4Configuration WifiState::default_ipv4_configuration()
     return result;
 }
 
-} // namespace ilemu
+} // namespace shade

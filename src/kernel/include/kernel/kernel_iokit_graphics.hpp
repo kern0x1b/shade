@@ -14,7 +14,7 @@
 #include <string_view>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 class AddressSpace;
 struct KernelSharedState;
@@ -61,4 +61,4 @@ namespace kernel_iokit::graphics {
         std::uint32_t connection_object);
 
 } // namespace kernel_iokit::graphics
-} // namespace ilemu
+} // namespace shade

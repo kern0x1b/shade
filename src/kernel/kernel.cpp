@@ -81,7 +81,7 @@
 
 #include "mach/support.hpp"
 
-namespace ilemu {
+namespace shade {
 
 std::size_t CompatibilityKernel::bootstrap_checked_in_service_count() const
 {
@@ -2854,7 +2854,7 @@ void CompatibilityKernel::dispatch(Cpu& cpu, std::uint32_t svc_immediate)
         // the supported ARM userspace ABI, rather than an unimplemented kernel
         // entry. Keep that fatal policy explicit and separate from unknown-ABI
         // tracing.
-        cpu.halt(Dynarmic::HaltReason::UserDefined4);
+        cpu.halt(Umbra::HaltReason::UserDefined4);
     } else if (cpu.registers()[12] ==
                darwin::arm_fast_trap::syscall_number) {
         dispatch_arm_fast_trap(cpu);
@@ -2883,7 +2883,7 @@ void CompatibilityKernel::dispatch_arm_fast_trap(Cpu& cpu)
                                      std::uint32_t length,
                                      MemoryPermission access) {
         // XNU's recovery path triages EXC_BAD_ACCESS. Feed the same fault
-        // through Dynarmic when this SVC is running inside an executor; a
+        // through Umbra when this SVC is running inside an executor; a
         // deferred SVC receives the scheduler-visible fatal halt boundary from
         // Cpu instead.
         cpu.raise_memory_fault(address, length, access);
@@ -3511,4 +3511,4 @@ void CompatibilityKernel::trace_unknown(
     output_.write(message.str());
 }
 
-} // namespace ilemu
+} // namespace shade

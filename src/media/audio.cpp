@@ -20,11 +20,11 @@
 #include <string>
 #include <utility>
 
-#if defined(ILEMU_HAS_LIBPLIST)
+#if defined(SHADE_HAS_LIBPLIST)
 #include <plist/plist.h>
 #endif
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::array<std::byte, 4> caf_signature { std::byte { 'c' },
@@ -673,7 +673,7 @@ std::optional<AudioBuffer> AudioService::load_file_locked(
 
 void AudioService::load_category_aliases()
 {
-#if defined(ILEMU_HAS_LIBPLIST)
+#if defined(SHADE_HAS_LIBPLIST)
     const auto path = rootfs_ / "System/Library/Frameworks/Celestial.framework/"
                                 "CategoriesThatShareVolumes.plist";
     const auto bytes = read_file(path);
@@ -744,7 +744,7 @@ void AudioService::retire_finished_service_source_locked()
 
 void AudioService::load_system_volume_state()
 {
-#if defined(ILEMU_HAS_LIBPLIST)
+#if defined(SHADE_HAS_LIBPLIST)
     const auto path =
         rootfs_ / "var/root/Library/Preferences/com.apple.celestial.plist";
     const auto bytes = read_file(path);
@@ -780,4 +780,4 @@ void AudioService::load_system_volume_state()
 #endif
 }
 
-} // namespace ilemu
+} // namespace shade

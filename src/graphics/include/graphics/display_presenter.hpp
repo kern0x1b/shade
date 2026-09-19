@@ -18,7 +18,7 @@
 #include "foundation/system_button_input.hpp"
 #include "foundation/touch_input.hpp"
 
-namespace ilemu {
+namespace shade {
 
 struct DisplayFrame;
 
@@ -52,4 +52,4 @@ public:
     take_ringer_switch_events() = 0;
 };
 
-} // namespace ilemu
+} // namespace shade

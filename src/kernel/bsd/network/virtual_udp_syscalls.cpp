@@ -18,7 +18,7 @@
 #include <utility>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     std::uint32_t socket_error(bsd::VirtualUdpStatus status)
@@ -67,7 +67,7 @@ bool CompatibilityKernel::send_host_socket_bytes(Cpu& cpu, std::uint32_t fd,
         output_.write(
             "[network] write wait pid=" + std::to_string(process_.pid) +
             " fd=" + std::to_string(fd) + "\n");
-        cpu.halt(Dynarmic::HaltReason::UserDefined5);
+        cpu.halt(Umbra::HaltReason::UserDefined5);
         return true;
     }
     if (result.status == HostSocketStatus::Error) {
@@ -195,4 +195,4 @@ bool CompatibilityKernel::send_socket_message(Cpu& cpu, std::uint32_t fd,
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

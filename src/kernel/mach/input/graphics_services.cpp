@@ -26,7 +26,7 @@
 #include "foundation/scene_coordinator.hpp"
 #include "foundation/userland_hle.hpp"
 
-namespace ilemu::graphics_services_input {
+namespace shade::graphics_services_input {
 namespace {
 
     constexpr std::uint32_t copy_send_bits = 19;
@@ -3569,4 +3569,4 @@ void record_application_suspension_state(KernelSharedState& state,
     }
 }
 
-} // namespace ilemu::graphics_services_input
+} // namespace shade::graphics_services_input

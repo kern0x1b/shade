@@ -12,7 +12,7 @@
 
 #include "media/audio.hpp"
 
-namespace ilemu {
+namespace shade {
 
 class SdlAudioSink final : public AudioSink {
 public:
@@ -34,4 +34,4 @@ private:
     std::unique_ptr<Impl> impl_;
 };
 
-} // namespace ilemu
+} // namespace shade

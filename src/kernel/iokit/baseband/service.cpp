@@ -15,7 +15,7 @@
 #include <mutex>
 #include <string>
 
-namespace ilemu::kernel_iokit::baseband {
+namespace shade::kernel_iokit::baseband {
 
 namespace {
 
@@ -192,4 +192,4 @@ std::optional<MethodResult> dispatch_connect_method(KernelSharedState& state,
     return MethodResult { iokit_abi::success, { seconds, microseconds } };
 }
 
-} // namespace ilemu::kernel_iokit::baseband
+} // namespace shade::kernel_iokit::baseband

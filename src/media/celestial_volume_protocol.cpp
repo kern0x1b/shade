@@ -15,11 +15,11 @@
 #include <string_view>
 #include <utility>
 
-#if defined(ILEMU_HAS_LIBPLIST)
+#if defined(SHADE_HAS_LIBPLIST)
 #include <plist/plist.h>
 #endif
 
-namespace ilemu::celestial_volume_protocol {
+namespace shade::celestial_volume_protocol {
 namespace {
 
     constexpr std::uint32_t category_volume_reply_identifier = 1138;
@@ -80,7 +80,7 @@ namespace {
     std::optional<float> decode_binary_plist_number(
         std::span<const std::byte> bytes)
     {
-#if defined(ILEMU_HAS_LIBPLIST)
+#if defined(SHADE_HAS_LIBPLIST)
         if (bytes.empty() ||
             bytes.size() > std::numeric_limits<std::uint32_t>::max()) {
             return std::nullopt;
@@ -278,4 +278,4 @@ std::optional<SourceFloatProperty> decode_source_float_property_request(
     return std::nullopt;
 }
 
-} // namespace ilemu::celestial_volume_protocol
+} // namespace shade::celestial_volume_protocol

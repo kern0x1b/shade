@@ -17,7 +17,7 @@
 
 #include "foundation/display_geometry.hpp"
 
-namespace ilemu {
+namespace shade {
 
 class HostSurface;
 class HostSurfacePresentationLease;
@@ -131,4 +131,4 @@ private:
     DisplayOrientation content_orientation_ { DisplayOrientation::Portrait };
 };
 
-} // namespace ilemu
+} // namespace shade

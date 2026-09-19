@@ -33,7 +33,7 @@
 #define st_ctim st_ctimespec
 #endif
 
-namespace ilemu::hfs {
+namespace shade::hfs {
 namespace {
 
     constexpr std::uint32_t hfs_root_catalog_id = 2;
@@ -927,4 +927,4 @@ std::filesystem::path MetadataProvider::resource_sidecar(
     return result;
 }
 
-} // namespace ilemu::hfs
+} // namespace shade::hfs

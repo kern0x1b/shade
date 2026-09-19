@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <optional>
 
-namespace ilemu {
+namespace shade {
 
 class AddressSpace;
 class Cpu;
@@ -39,4 +39,4 @@ namespace kernel_bsd::interval_timer {
     void retire_process(KernelSharedState& state, std::uint32_t process_id);
 
 } // namespace kernel_bsd::interval_timer
-} // namespace ilemu
+} // namespace shade

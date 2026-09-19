@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-add_library(ilemu_media STATIC
+add_library(shade_media STATIC
     audio.cpp
     pcm_sample_format.cpp
     audio_toolbox_hle.cpp
@@ -12,13 +12,13 @@ add_library(ilemu_media STATIC
     core_media_hle.cpp
     jpeg_encoder.cpp
     media_library_service.cpp)
-add_library(iLEmu::media ALIAS ilemu_media)
-ilemu_configure_module(ilemu_media)
-target_link_libraries(ilemu_media PUBLIC iLEmu::foundation)
+add_library(Shade::media ALIAS shade_media)
+shade_configure_module(shade_media)
+target_link_libraries(shade_media PUBLIC Shade::foundation)
 find_package(JPEG REQUIRED)
-target_link_libraries(ilemu_media PRIVATE JPEG::JPEG)
+target_link_libraries(shade_media PRIVATE JPEG::JPEG)
 if(TARGET PkgConfig::PLIST)
-    target_link_libraries(ilemu_media PRIVATE PkgConfig::PLIST)
-    target_compile_definitions(ilemu_media PRIVATE
-        ILEMU_HAS_LIBPLIST=1)
+    target_link_libraries(shade_media PRIVATE PkgConfig::PLIST)
+    target_compile_definitions(shade_media PRIVATE
+        SHADE_HAS_LIBPLIST=1)
 endif()

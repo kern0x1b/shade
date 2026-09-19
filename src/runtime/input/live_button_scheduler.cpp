@@ -9,7 +9,7 @@
 
 #include <algorithm>
 
-namespace ilemu {
+namespace shade {
 
 void LiveButtonScheduler::schedule(
     SystemButtonInput down, std::chrono::milliseconds hold)
@@ -49,4 +49,4 @@ LiveButtonScheduler::next_deadline() const
                  };
 }
 
-} // namespace ilemu
+} // namespace shade

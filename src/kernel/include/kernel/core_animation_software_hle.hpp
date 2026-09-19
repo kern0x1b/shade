@@ -7,9 +7,9 @@
 
 #pragma once
 
-namespace ilemu {
+namespace shade {
 
 class UserlandHleRegistry;
 void register_core_animation_software_hle(UserlandHleRegistry& registry);
 
-} // namespace ilemu
+} // namespace shade

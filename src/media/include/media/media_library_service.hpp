@@ -13,7 +13,7 @@
 #include <string_view>
 #include <vector>
 
-namespace ilemu::media_library_service {
+namespace shade::media_library_service {
 
 inline constexpr std::string_view bootstrap_name { "com.apple.musicplayer" };
 
@@ -31,4 +31,4 @@ inline constexpr std::string_view bootstrap_name { "com.apple.musicplayer" };
 
 [[nodiscard]] bool is_request_identifier(std::uint32_t identifier);
 
-} // namespace ilemu::media_library_service
+} // namespace shade::media_library_service

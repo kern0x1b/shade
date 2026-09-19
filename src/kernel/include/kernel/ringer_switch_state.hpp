@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <string_view>
 
-namespace ilemu {
+namespace shade {
 
 // Darwin clients observe the physical ringer/silent switch through this
 // notification key. The device model owns the value; audio policy remains in
@@ -53,4 +53,4 @@ private:
 };
 
 
-} // namespace ilemu
+} // namespace shade

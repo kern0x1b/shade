@@ -13,7 +13,7 @@
 #include <string>
 #include <string_view>
 
-namespace ilemu {
+namespace shade {
 
 // Read-only view of launchd's firmware-owned provider declarations. It keeps
 // bootstrap ownership derived from Program/ProgramArguments and MachServices
@@ -32,4 +32,4 @@ private:
         services_by_executable_;
 };
 
-} // namespace ilemu
+} // namespace shade

@@ -14,7 +14,7 @@
 
 #include "foundation/device_model.hpp"
 
-namespace ilemu {
+namespace shade {
 
 inline constexpr std::string_view graphics_services_capability_object_name {
     "GSCapabilities"
@@ -27,4 +27,4 @@ inline constexpr std::string_view graphics_services_capability_object_name {
 make_graphics_services_capability_memory(
     const std::filesystem::path& rootfs, const DeviceModel& profile);
 
-} // namespace ilemu
+} // namespace shade

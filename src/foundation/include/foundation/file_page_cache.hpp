@@ -26,7 +26,7 @@
 
 #include "foundation/content_identity.hpp"
 
-namespace ilemu {
+namespace shade {
 
 inline constexpr std::uint32_t guest_memory_page_size = 4096;
 inline constexpr std::uint32_t guest_exclusive_granule_size = 64;
@@ -543,4 +543,4 @@ private:
     FilePageCacheStats stats_;
 };
 
-} // namespace ilemu
+} // namespace shade

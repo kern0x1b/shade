@@ -11,7 +11,7 @@
 
 #include <utility>
 
-namespace ilemu {
+namespace shade {
 
 VnodeWatch::VnodeWatch(
     std::filesystem::path path, GuestFileGenerationRegistry& files)
@@ -64,4 +64,4 @@ void VnodeWatch::acknowledge(std::uint32_t flags) const
     pending_ &= ~flags;
 }
 
-} // namespace ilemu
+} // namespace shade

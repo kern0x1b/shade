@@ -10,7 +10,7 @@
 #include <cstddef>
 #include <span>
 
-namespace ilemu {
+namespace shade {
 
 // Unsigned, little-endian integers. The caller owns the fixed-width result.
 class BigNumberArithmetic {
@@ -23,4 +23,4 @@ public:
         std::span<std::byte> result);
 };
 
-} // namespace ilemu
+} // namespace shade

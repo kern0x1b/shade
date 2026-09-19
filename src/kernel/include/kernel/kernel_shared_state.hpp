@@ -62,7 +62,7 @@
 #include "network/local_socket_credentials.hpp"
 #include "mach/xnu_scheduler.hpp"
 
-namespace ilemu {
+namespace shade {
 
 class HostSocket;
 class KeyStore;
@@ -2045,4 +2045,4 @@ struct KernelSharedState {
     return event_port && event_port->receive_owner == process_id;
 }
 
-} // namespace ilemu
+} // namespace shade

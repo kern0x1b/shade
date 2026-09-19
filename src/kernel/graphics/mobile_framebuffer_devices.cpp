@@ -17,7 +17,7 @@
 #include <mutex>
 #include <string>
 
-namespace ilemu {
+namespace shade {
 
 bool MobileFramebufferHle::is_external_framebuffer(UserlandHleCall& call) const
 {
@@ -96,4 +96,4 @@ void MobileFramebufferHle::register_device_functions(
         });
 }
 
-} // namespace ilemu
+} // namespace shade

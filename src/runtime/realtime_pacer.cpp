@@ -12,7 +12,7 @@
 #include <cstdint>
 #include <limits>
 
-namespace ilemu {
+namespace shade {
 
 RealtimePacer::RealtimePacer(
     DeviceMonotonicTime initial_device_monotonic_time, double time_scale)
@@ -97,4 +97,4 @@ std::chrono::nanoseconds RealtimePacer::limit_delay(
         delay, std::max(until_host_deadline, std::chrono::nanoseconds::zero()));
 }
 
-} // namespace ilemu
+} // namespace shade

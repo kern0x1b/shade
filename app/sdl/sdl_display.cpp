@@ -31,17 +31,17 @@
 #include "foundation/performance.hpp"
 #include "sdl_input.hpp"
 
-#if defined(ILEMU_HAS_SDL2)
+#if defined(SHADE_HAS_SDL2)
 #include <SDL.h>
-#if defined(ILEMU_HAS_VULKAN)
+#if defined(SHADE_HAS_VULKAN)
 #include <SDL_vulkan.h>
 #endif
 #endif
 
-namespace ilemu {
+namespace shade {
 namespace {
 
-#if defined(ILEMU_HAS_SDL2)
+#if defined(SHADE_HAS_SDL2)
     // sdl2-compat defaults to emulating X11's non-DPI-aware behavior on
     // Wayland. Opt into logical window coordinates backed by the compositor's
     // full pixel density. Classic SDL2 and non-Wayland backends safely retain
@@ -141,7 +141,7 @@ struct SdlDisplay::Impl {
     DisplayGeometry input_geometry;
     DisplayGeometry host_geometry;
     DisplayOrientation orientation { DisplayOrientation::Portrait };
-#if defined(ILEMU_HAS_SDL2)
+#if defined(SHADE_HAS_SDL2)
     SDL_Window* window { };
     SDL_Renderer* renderer { };
     SDL_Texture* texture { };
@@ -162,7 +162,7 @@ struct SdlDisplay::Impl {
 
     [[nodiscard]] SDL_Window* create_window(bool vulkan) const
     {
-        return SDL_CreateWindow("iLEmu", SDL_WINDOWPOS_CENTERED,
+        return SDL_CreateWindow("Shade", SDL_WINDOWPOS_CENTERED,
             SDL_WINDOWPOS_CENTERED, static_cast<int>(host_geometry.width),
             static_cast<int>(host_geometry.height), window_flags(vulkan));
     }
@@ -470,7 +470,7 @@ struct SdlDisplay::Impl {
     {
         if (orientation == next_orientation)
             return;
-#if defined(ILEMU_HAS_SDL2)
+#if defined(SHADE_HAS_SDL2)
         if (!flush_cpu_presenter())
             return;
 #endif
@@ -485,7 +485,7 @@ struct SdlDisplay::Impl {
                             : input_geometry;
         input.set_display_geometry(geometry);
         input.set_orientation(orientation);
-#if defined(ILEMU_HAS_SDL2)
+#if defined(SHADE_HAS_SDL2)
         if (window != nullptr) {
             const auto native_presentation =
                 host_graphics && host_graphics->native_presentation_available();
@@ -776,7 +776,7 @@ struct SdlDisplay::Impl {
         return stage_cpu_frame_for_native_present(frame);
     }
 
-#if defined(ILEMU_HAS_SDL2)
+#if defined(SHADE_HAS_SDL2)
     bool present_cpu_frame(DisplayFrame& frame)
     {
         auto& performance = performance_counters();
@@ -1124,7 +1124,7 @@ struct SdlDisplay::Impl {
 
     [[nodiscard]] bool transition_to_cpu_presentation()
     {
-#if defined(ILEMU_HAS_SDL2)
+#if defined(SHADE_HAS_SDL2)
         {
             std::lock_guard lock { sdl_mutex };
             if (window != nullptr && !vulkan_window)
@@ -1150,7 +1150,7 @@ struct SdlDisplay::Impl {
 
 bool SdlDisplay::available()
 {
-#if defined(ILEMU_HAS_SDL2)
+#if defined(SHADE_HAS_SDL2)
     return true;
 #else
     return false;
@@ -1163,13 +1163,13 @@ SdlDisplay::SdlDisplay(
           frame_geometry.valid() ? frame_geometry : default_display_geometry,
           input_geometry.valid() ? input_geometry : default_display_geometry) }
 {
-#if defined(ILEMU_HAS_SDL2)
+#if defined(SHADE_HAS_SDL2)
     configure_sdl_dpi_awareness();
     if (SDL_InitSubSystem(SDL_INIT_VIDEO) != 0) {
         throw std::runtime_error { "SDL video initialization failed: " +
                                    std::string { SDL_GetError() } };
     }
-#if defined(ILEMU_HAS_VULKAN)
+#if defined(SHADE_HAS_VULKAN)
     if (SDL_Vulkan_LoadLibrary(nullptr) == 0) {
         impl_->vulkan_library_loaded = true;
         impl_->window = impl_->create_window(true);
@@ -1187,14 +1187,14 @@ SdlDisplay::SdlDisplay(
     impl_->start_cpu_presenter();
 #else
     throw std::runtime_error {
-        "SDL2 display support was not available when iLEmu was built"
+        "SDL2 display support was not available when Shade was built"
     };
 #endif
 }
 
 SdlDisplay::~SdlDisplay()
 {
-#if defined(ILEMU_HAS_SDL2)
+#if defined(SHADE_HAS_SDL2)
     if (impl_) {
         flush_presentation();
         impl_->stop_native_presenter();
@@ -1213,7 +1213,7 @@ SdlDisplay::~SdlDisplay()
             impl_->destroy_retired_window();
             if (impl_->window != nullptr)
                 SDL_DestroyWindow(impl_->window);
-#if defined(ILEMU_HAS_VULKAN)
+#if defined(SHADE_HAS_VULKAN)
             if (impl_->vulkan_library_loaded)
                 SDL_Vulkan_UnloadLibrary();
 #endif
@@ -1226,7 +1226,7 @@ SdlDisplay::~SdlDisplay()
 std::optional<VulkanPresenterConfiguration>
 SdlDisplay::vulkan_presenter_configuration() const
 {
-#if defined(ILEMU_HAS_SDL2) && defined(ILEMU_HAS_VULKAN)
+#if defined(SHADE_HAS_SDL2) && defined(SHADE_HAS_VULKAN)
     std::lock_guard sdl_lock { impl_->sdl_mutex };
     if (!impl_->vulkan_window)
         return std::nullopt;
@@ -1274,7 +1274,7 @@ void SdlDisplay::set_host_graphics(std::shared_ptr<HostGraphicsDevice> graphics)
 {
     flush_presentation();
     impl_->stop_native_presenter();
-#if defined(ILEMU_HAS_SDL2)
+#if defined(SHADE_HAS_SDL2)
     impl_->stop_cpu_presenter();
 #endif
     {
@@ -1292,7 +1292,7 @@ void SdlDisplay::set_host_graphics(std::shared_ptr<HostGraphicsDevice> graphics)
                 ? impl_->host_graphics->create_command_encoder()
                 : nullptr;
     }
-#if defined(ILEMU_HAS_SDL2)
+#if defined(SHADE_HAS_SDL2)
     if (impl_->host_graphics &&
         !impl_->host_graphics->native_presentation_available())
         impl_->ensure_cpu_window();
@@ -1308,7 +1308,7 @@ void SdlDisplay::set_host_graphics(std::shared_ptr<HostGraphicsDevice> graphics)
 
 void SdlDisplay::present(DisplayFrame frame)
 {
-#if defined(ILEMU_HAS_SDL2)
+#if defined(SHADE_HAS_SDL2)
     if (frame.width != impl_->guest_geometry.width ||
         frame.height != impl_->guest_geometry.height ||
         (frame.pixels.empty() && !frame.read_pixels)) {
@@ -1365,7 +1365,7 @@ void SdlDisplay::present(DisplayFrame frame)
 
 bool SdlDisplay::has_pending_presentation()
 {
-#if defined(ILEMU_HAS_SDL2)
+#if defined(SHADE_HAS_SDL2)
     std::lock_guard lock { impl_->frame_mutex };
     return !impl_->pending_frames.empty() ||
            impl_->overflow_frame.has_value() ||
@@ -1377,7 +1377,7 @@ bool SdlDisplay::has_pending_presentation()
 
 void SdlDisplay::flush_presentation()
 {
-#if defined(ILEMU_HAS_SDL2)
+#if defined(SHADE_HAS_SDL2)
     // A native failure is converted to the software path by poll_events(), so a
     // complete boundary has to alternate the main-thread pump with the native
     // worker until every stage is empty.
@@ -1439,7 +1439,7 @@ std::uint64_t SdlDisplay::presented_frames() const
 
 bool SdlDisplay::poll_events()
 {
-#if defined(ILEMU_HAS_SDL2)
+#if defined(SHADE_HAS_SDL2)
     // SDL events are latency-sensitive and must be drained before any CPU
     // fallback upload. Native presentation is handed to an ordered worker queue
     // and never waits on acquire/present from the guest scheduler thread.
@@ -1631,7 +1631,7 @@ bool SdlDisplay::poll_events()
 bool SdlDisplay::wait_for_event(std::chrono::nanoseconds timeout)
 {
     performance_counters().record_sdl_idle_wait();
-#if defined(ILEMU_HAS_SDL2)
+#if defined(SHADE_HAS_SDL2)
     bool input_running { };
     {
         std::lock_guard lock { impl_->sdl_mutex };
@@ -1667,4 +1667,4 @@ std::vector<RingerSwitchInput> SdlDisplay::take_ringer_switch_events()
     return impl_->input.take_ringer_switch_events();
 }
 
-} // namespace ilemu
+} // namespace shade

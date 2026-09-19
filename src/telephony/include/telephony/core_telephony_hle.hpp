@@ -10,7 +10,7 @@
 #include <functional>
 #include <memory>
 
-namespace ilemu {
+namespace shade {
 
 class UserlandHleRegistry;
 class WifiState;
@@ -31,4 +31,4 @@ void register_core_telephony_hle(UserlandHleRegistry& registry,
         wifi_state_changed = { },
     bool offline_transport = true);
 
-} // namespace ilemu
+} // namespace shade

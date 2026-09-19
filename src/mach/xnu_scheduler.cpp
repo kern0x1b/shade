@@ -18,7 +18,7 @@
 #include <limits>
 #include <stdexcept>
 
-namespace ilemu {
+namespace shade {
 
 namespace {
 
@@ -1313,4 +1313,4 @@ std::uint32_t XnuScheduler::timeshare_quanta() const
         (processor_count + run_queue_count / 2U) / run_queue_count);
 }
 
-} // namespace ilemu
+} // namespace shade

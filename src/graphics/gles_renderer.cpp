@@ -21,7 +21,7 @@
 
 #include "graphics/display.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     // Standalone core tests do not install a host adapter. The application
@@ -76,7 +76,7 @@ namespace {
 
         [[nodiscard]] std::string_view name() const override
         {
-            return "iLEmu GLES 1.1 reference";
+            return "Shade GLES 1.1 reference";
         }
 
         [[nodiscard]] bool accelerated() const override { return false; }
@@ -300,4 +300,4 @@ void shutdown_gles_renderer()
         state.renderer->reset();
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     void greatest_common_divisor(UserlandHleCall& call)
@@ -97,4 +97,4 @@ void register_core_crypto_hle(UserlandHleRegistry& registry)
     }
 }
 
-} // namespace ilemu
+} // namespace shade

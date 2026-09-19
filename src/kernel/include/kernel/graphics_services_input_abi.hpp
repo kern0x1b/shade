@@ -17,7 +17,7 @@
 #include "foundation/system_button_input.hpp"
 #include "foundation/touch_input.hpp"
 
-namespace ilemu {
+namespace shade {
 
 class MachOImage;
 
@@ -74,4 +74,4 @@ struct GraphicsServicesInputAbi {
     detect(const MachOImage& image);
 };
 
-} // namespace ilemu
+} // namespace shade

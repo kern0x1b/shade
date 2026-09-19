@@ -11,7 +11,7 @@
 #include <cmath>
 #include <limits>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t render_type_mask = 0x001f0000U;
@@ -142,4 +142,4 @@ std::optional<std::uint32_t> LayerKitRootCompatibility::observe_commit(
     return state.attached_window_wrapper;
 }
 
-} // namespace ilemu
+} // namespace shade

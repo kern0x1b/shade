@@ -33,7 +33,7 @@
 
 #include "bsd/support.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t ebadf = 9;
@@ -1788,4 +1788,4 @@ void CompatibilityKernel::detach_kevents_for_descriptor(std::uint32_t fd)
     }
 }
 
-} // namespace ilemu
+} // namespace shade

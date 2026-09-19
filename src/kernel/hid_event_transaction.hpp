@@ -11,7 +11,7 @@
 
 #include <functional>
 
-namespace ilemu {
+namespace shade {
 
 class UserlandHleRegistry;
 enum class DarwinHidDigitizerAbi : std::uint8_t;
@@ -24,4 +24,4 @@ public:
         std::function<void()> completion);
 };
 
-} // namespace ilemu
+} // namespace shade

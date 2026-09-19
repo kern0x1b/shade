@@ -16,7 +16,7 @@
 #include <utility>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     HostRectangle union_rectangle(HostRectangle left, HostRectangle right)
@@ -804,4 +804,4 @@ std::unique_ptr<CommandEncoder> make_cpu_command_encoder()
     return std::make_unique<CpuCommandEncoder>();
 }
 
-} // namespace ilemu
+} // namespace shade

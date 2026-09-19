@@ -9,7 +9,7 @@
 
 #include <stdexcept>
 
-namespace ilemu {
+namespace shade {
 
 namespace {
 
@@ -112,4 +112,4 @@ bool Output::should_emit(std::string_view text) const
            concise_prefix(text);
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -18,7 +18,7 @@
 #include <string_view>
 #include <vector>
 
-namespace ilemu::xnu::mig {
+namespace shade::xnu::mig {
 
 enum class Subsystem : std::uint8_t {
     MachPort,
@@ -99,4 +99,4 @@ compute_wire_layout(std::span<const ArgumentInfo> arguments,
 [[nodiscard]] std::optional<RoutineInfo> lookup_routine(
     std::uint32_t identifier);
 
-} // namespace ilemu::xnu::mig
+} // namespace shade::xnu::mig

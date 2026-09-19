@@ -22,7 +22,7 @@
 
 #include "../support.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t complex_reply_size = 68;
@@ -166,4 +166,4 @@ bool CompatibilityKernel::dispatch_mach_port_query_message(
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

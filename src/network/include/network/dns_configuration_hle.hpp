@@ -10,7 +10,7 @@
 
 #pragma once
 
-namespace ilemu {
+namespace shade {
 
 class UserlandHleRegistry;
 
@@ -18,4 +18,4 @@ class UserlandHleRegistry;
 // endpoint without creating resolver files inside the guest root filesystem.
 void register_dns_configuration_hle(UserlandHleRegistry& registry);
 
-} // namespace ilemu
+} // namespace shade

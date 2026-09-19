@@ -9,7 +9,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace ilemu::gles_abi {
+namespace shade::gles_abi {
 
 inline constexpr std::uint32_t no_error = 0;
 inline constexpr std::uint32_t invalid_enum = 0x0500U;
@@ -186,4 +186,4 @@ inline constexpr std::uint64_t maximum_resource_bytes =
     256ULL * 1024ULL * 1024ULL;
 inline constexpr std::uint32_t maximum_draw_vertices = 1'000'000U;
 
-} // namespace ilemu::gles_abi
+} // namespace shade::gles_abi

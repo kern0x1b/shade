@@ -10,7 +10,7 @@
 
 #include <png.h>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     struct PngImage {
@@ -85,4 +85,4 @@ std::vector<std::uint32_t> BootLogo::placeholder(DisplayGeometry panel)
     return render(image.value, panel);
 }
 
-} // namespace ilemu
+} // namespace shade

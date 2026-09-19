@@ -22,7 +22,7 @@
 #include "foundation/content_identity.hpp"
 #include "foundation/file_page_cache.hpp"
 
-namespace ilemu {
+namespace shade {
 
 class HostResourceController;
 
@@ -168,4 +168,4 @@ private:
     bool overflow_ { false };
 };
 
-} // namespace ilemu
+} // namespace shade

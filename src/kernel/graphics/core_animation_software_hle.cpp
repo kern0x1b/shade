@@ -18,7 +18,7 @@
 #include <limits>
 #include <string>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     struct Fixed16SoftwareSamplerArm32Profile {
@@ -191,4 +191,4 @@ void register_core_animation_software_hle(UserlandHleRegistry& registry)
     }
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -12,7 +12,7 @@
 
 #include <cstdint>
 
-namespace ilemu::darwin::mach::clock {
+namespace shade::darwin::mach::clock {
 
 // XNU osfmk/mach/clock_types.h and kern/syscall_sw.c.
 constexpr std::uint32_t sleep_trap = 62;
@@ -34,4 +34,4 @@ constexpr std::uint32_t attribute_word_count = 1;
 // samples it in one-microsecond quanta.
 constexpr std::uint32_t virtual_resolution_nanoseconds = 1'000;
 
-} // namespace ilemu::darwin::mach::clock
+} // namespace shade::darwin::mach::clock

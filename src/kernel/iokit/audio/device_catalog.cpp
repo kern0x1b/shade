@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <array>
 
-namespace ilemu::kernel_iokit::audio {
+namespace shade::kernel_iokit::audio {
 namespace {
 
     constexpr std::uint32_t four_cc(
@@ -356,4 +356,4 @@ const IOAudio2DeviceDescription* IOAudio2DeviceCatalog::find(
     return device == device_catalog.end() ? nullptr : &*device;
 }
 
-} // namespace ilemu::kernel_iokit::audio
+} // namespace shade::kernel_iokit::audio

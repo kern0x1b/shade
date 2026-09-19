@@ -9,7 +9,7 @@
 
 #include <cstdint>
 
-namespace ilemu {
+namespace shade {
 
 // Darwin loaders differ in whether apple[0] is a bare path or a keyed
 // executable_path entry. Select the audited loader contract through a named
@@ -19,4 +19,4 @@ enum class DarwinInitialAppleVectorAbi : std::uint8_t {
     LegacyExecutablePath,
 };
 
-} // namespace ilemu
+} // namespace shade

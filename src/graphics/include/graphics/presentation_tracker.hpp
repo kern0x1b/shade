@@ -18,7 +18,7 @@
 #include "foundation/scene_coordinator.hpp"
 #include "graphics/surface_store.hpp"
 
-namespace ilemu {
+namespace shade {
 
 // Host-backend-independent description of a surface placement in one completed
 // display transaction. OS-specific adapters translate their native transaction
@@ -116,4 +116,4 @@ private:
     std::map<std::uint32_t, std::uint64_t> retired_process_watermarks_;
 };
 
-} // namespace ilemu
+} // namespace shade

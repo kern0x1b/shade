@@ -18,7 +18,7 @@
 #include "foundation/system_button_input.hpp"
 #include "foundation/touch_input.hpp"
 
-namespace ilemu {
+namespace shade {
 
 struct DisplayFrame;
 
@@ -59,4 +59,4 @@ private:
     std::unique_ptr<Impl> impl_;
 };
 
-} // namespace ilemu
+} // namespace shade

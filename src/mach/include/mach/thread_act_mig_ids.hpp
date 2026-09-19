@@ -18,7 +18,7 @@
 
 #include "mach/xnu_mig_adapter.hpp"
 
-namespace ilemu::xnu::mig::thread_act {
+namespace shade::xnu::mig::thread_act {
 
 inline constexpr std::string_view subsystem_name{"thread_act"};
 inline constexpr std::uint32_t subsystem_base = 3600U;
@@ -229,4 +229,4 @@ constexpr std::uint32_t id(Routine routine) {
     return static_cast<std::uint32_t>(routine);
 }
 
-}  // namespace ilemu::xnu::mig::thread_act
+}  // namespace shade::xnu::mig::thread_act

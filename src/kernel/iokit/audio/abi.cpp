@@ -7,7 +7,7 @@
 
 #include "kernel/kernel_iokit_audio_abi.hpp"
 
-namespace ilemu::kernel_iokit::audio {
+namespace shade::kernel_iokit::audio {
 namespace {
 
     constexpr IOKitAudioAbi io_audio2_abi{
@@ -104,4 +104,4 @@ const IOKitAudioAbi& IOKitAudioAbi::io_audio2()
     return io_audio2_abi;
 }
 
-} // namespace ilemu::kernel_iokit::audio
+} // namespace shade::kernel_iokit::audio

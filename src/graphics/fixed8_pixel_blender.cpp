@@ -7,7 +7,7 @@
 
 #include "graphics/fixed8_pixel_blender.hpp"
 
-namespace ilemu {
+namespace shade {
 
 void Fixed8PixelBlender::source_over(std::span<const std::uint32_t> source,
     std::span<const std::uint32_t> destination,
@@ -23,4 +23,4 @@ void Fixed8PixelBlender::source_over(std::span<const std::uint32_t> source,
     }
 }
 
-} // namespace ilemu
+} // namespace shade

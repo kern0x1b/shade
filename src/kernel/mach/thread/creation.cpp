@@ -17,7 +17,7 @@
 
 #include "../support.hpp"
 
-namespace ilemu {
+namespace shade {
 
 using namespace mach_support;
 
@@ -96,4 +96,4 @@ CompatibilityKernel::create_guest_thread(
     return CreatedGuestThread { *processor, port_name };
 }
 
-} // namespace ilemu
+} // namespace shade

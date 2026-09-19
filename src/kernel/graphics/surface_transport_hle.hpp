@@ -7,7 +7,7 @@
 #include "foundation/userland_hle.hpp"
 #include "graphics/surface_transport_abi.hpp"
 
-namespace ilemu::surface_transport {
+namespace shade::surface_transport {
 
 [[nodiscard]] inline Kind io_surface_kind(UserlandHleCall& call)
 {
@@ -24,4 +24,4 @@ namespace ilemu::surface_transport {
                : core_surface_client_buffer;
 }
 
-} // namespace ilemu::surface_transport
+} // namespace shade::surface_transport

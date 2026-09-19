@@ -49,7 +49,7 @@
 
 #include "support.hpp"
 
-namespace ilemu {
+namespace shade {
 
 namespace mach_support {
 
@@ -1334,4 +1334,4 @@ namespace mach_support {
 
 } // namespace mach_support
 
-} // namespace ilemu
+} // namespace shade

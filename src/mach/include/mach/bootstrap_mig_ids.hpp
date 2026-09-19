@@ -18,7 +18,7 @@
 
 #include "mach/xnu_mig_adapter.hpp"
 
-namespace ilemu::xnu::mig::bootstrap {
+namespace shade::xnu::mig::bootstrap {
 
 inline constexpr std::string_view subsystem_name{"bootstrap"};
 inline constexpr std::uint32_t subsystem_base = 400U;
@@ -164,4 +164,4 @@ constexpr std::uint32_t id(Routine routine) {
     return static_cast<std::uint32_t>(routine);
 }
 
-}  // namespace ilemu::xnu::mig::bootstrap
+}  // namespace shade::xnu::mig::bootstrap

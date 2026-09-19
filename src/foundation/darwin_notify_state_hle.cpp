@@ -13,7 +13,7 @@
 #include "foundation/address_space.hpp"
 #include "foundation/userland_hle.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::string_view libsystem_image { "/usr/lib/libSystem.B.dylib" };
@@ -338,4 +338,4 @@ bool DarwinNotifyStateHle::native_server_ready() const
     return !query || query();
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -13,7 +13,7 @@
 #include <mutex>
 #include <optional>
 
-namespace ilemu {
+namespace shade {
 
 // A class describes how valuable already-emitted native code is when the host
 // asks the simulator to release memory. It never controls whether a process is
@@ -123,4 +123,4 @@ private:
     bool pressure_limited_ { };
 };
 
-} // namespace ilemu
+} // namespace shade

@@ -22,7 +22,7 @@
 
 #include "../../support.hpp"
 
-namespace ilemu {
+namespace shade {
 
 bool CompatibilityKernel::create_kernel_control_socket(Cpu& cpu)
 {
@@ -234,4 +234,4 @@ bool CompatibilityKernel::write_kernel_control_socket(
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

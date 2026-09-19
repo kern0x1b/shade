@@ -8,9 +8,9 @@
 
 #include "foundation/host_memory.hpp"
 
-namespace ilemu {
+namespace shade {
 
 [[nodiscard]] HostMemorySnapshot host_memory_snapshot();
 [[nodiscard]] HostMemoryBudgetSnapshot host_memory_budget_snapshot();
 
-} // namespace ilemu
+} // namespace shade

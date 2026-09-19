@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace ilemu {
+namespace shade {
 
 class UserlandHleRegistry;
 
@@ -15,4 +15,4 @@ class UserlandHleRegistry;
 // no PowerVR connection, command buffer, or register interface is exposed.
 void register_mbx_connect_hle(UserlandHleRegistry& registry);
 
-} // namespace ilemu
+} // namespace shade

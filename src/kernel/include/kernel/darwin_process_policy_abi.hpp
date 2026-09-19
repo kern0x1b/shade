@@ -6,7 +6,7 @@
 
 #include <cstdint>
 
-namespace ilemu::darwin::process_policy {
+namespace shade::darwin::process_policy {
 
 // bsd/sys/process_policy.h and bsd/kern/process_policy.c in XNU.
 inline constexpr std::uint32_t syscall_number = 323;
@@ -59,4 +59,4 @@ inline constexpr std::uint32_t boost_donation = 3;
     }
 }
 
-} // namespace ilemu::darwin::process_policy
+} // namespace shade::darwin::process_policy

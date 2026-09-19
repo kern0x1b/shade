@@ -19,7 +19,7 @@
 #include <variant>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 using AudioSamples = std::variant<std::vector<std::int16_t>,
     std::vector<std::int32_t>, std::vector<float>>;
@@ -183,4 +183,4 @@ private:
         0.5F } };
 };
 
-} // namespace ilemu
+} // namespace shade

@@ -16,7 +16,7 @@
 #include <limits>
 #include <string>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t maximum_supplementary_groups = 16;
@@ -225,4 +225,4 @@ bool CompatibilityKernel::dispatch_bsd_process_credentials(
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

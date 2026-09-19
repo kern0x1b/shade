@@ -33,7 +33,7 @@
 #include <utility>
 #include <vector>
 
-namespace ilemu::kernel_iokit::audio {
+namespace shade::kernel_iokit::audio {
 namespace {
 
     namespace device_mig = xnu::mig::device;
@@ -972,4 +972,4 @@ void close_connection(AddressSpace& memory, KernelSharedState& state,
     }
 }
 
-} // namespace ilemu::kernel_iokit::audio
+} // namespace shade::kernel_iokit::audio

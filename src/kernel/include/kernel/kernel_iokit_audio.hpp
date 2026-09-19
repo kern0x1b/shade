@@ -13,7 +13,7 @@
 #include <span>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 class AddressSpace;
 class Output;
@@ -55,4 +55,4 @@ namespace kernel_iokit::audio {
         std::uint32_t connection_object);
 
 } // namespace kernel_iokit::audio
-} // namespace ilemu
+} // namespace shade

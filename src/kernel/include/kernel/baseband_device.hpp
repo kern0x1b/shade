@@ -26,7 +26,7 @@
 #include "kernel/darwin_tty_abi.hpp"
 #include "kernel/offline_baseband_control.hpp"
 
-namespace ilemu::bsd::baseband_device {
+namespace shade::bsd::baseband_device {
 
 inline constexpr std::string_view path { "/dev/h5.baseband" };
 // Darwin 9/early iPhoneOS CommCenter probes the legacy serial node before
@@ -262,4 +262,4 @@ inline State::~State()
         lifetime_->state = nullptr;
 }
 
-} // namespace ilemu::bsd::baseband_device
+} // namespace shade::bsd::baseband_device

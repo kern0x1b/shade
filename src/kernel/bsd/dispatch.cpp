@@ -43,7 +43,7 @@
 
 #include "support.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     std::optional<std::uint32_t> canonical_no_cancel_syscall(
@@ -118,7 +118,7 @@ void CompatibilityKernel::dispatch_bsd_nosys(Cpu& cpu, bool send_sigsys)
         return;
     static_cast<void>(deliver_signal(darwin::signal::bad_system_call));
     if (process_.exited)
-        cpu.halt(Dynarmic::HaltReason::UserDefined1);
+        cpu.halt(Umbra::HaltReason::UserDefined1);
 }
 
 void CompatibilityKernel::dispatch_bsd(Cpu& cpu, std::uint32_t number)
@@ -494,4 +494,4 @@ void CompatibilityKernel::dispatch_bsd(Cpu& cpu, std::uint32_t number)
     }
 }
 
-} // namespace ilemu
+} // namespace shade

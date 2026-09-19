@@ -7,7 +7,7 @@
 
 #pragma once
 
-namespace ilemu {
+namespace shade {
 
 class UserlandHleRegistry;
 
@@ -19,4 +19,4 @@ private:
     void play_system_sound(class UserlandHleCall& call);
 };
 
-} // namespace ilemu
+} // namespace shade

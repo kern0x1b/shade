@@ -16,7 +16,7 @@
 #include "foundation/output.hpp"
 #include "kernel/kernel.hpp"
 
-namespace ilemu::runtime_detail {
+namespace shade::runtime_detail {
 
 SessionCatalog::SessionCatalog(std::filesystem::path rootfs,
     ArmArchitectureVersion architecture, std::string manifest, Output& output)
@@ -375,4 +375,4 @@ void CatalogMaintenance::report_refresh_stats() const
     }
 }
 
-} // namespace ilemu::runtime_detail
+} // namespace shade::runtime_detail

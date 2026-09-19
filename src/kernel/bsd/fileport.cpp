@@ -19,7 +19,7 @@
 #include "../mach/support.hpp"
 #include "support.hpp"
 
-namespace ilemu {
+namespace shade {
 
 void CompatibilityKernel::dispatch_bsd_fileport(
     Cpu& cpu, std::uint32_t number)
@@ -103,4 +103,4 @@ void CompatibilityKernel::dispatch_bsd_fileport(
     bsd_success(cpu, *descriptor);
 }
 
-} // namespace ilemu
+} // namespace shade

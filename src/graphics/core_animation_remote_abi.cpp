@@ -17,7 +17,7 @@
 
 #include "foundation/macho.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::array<std::string_view, 2> encoder_send_symbols {
@@ -160,4 +160,4 @@ std::optional<CoreAnimationRemoteAbi> CoreAnimationRemoteAbi::detect(
     return std::nullopt;
 }
 
-} // namespace ilemu
+} // namespace shade

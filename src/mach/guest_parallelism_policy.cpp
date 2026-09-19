@@ -9,7 +9,7 @@
 
 #include <algorithm>
 
-namespace ilemu {
+namespace shade {
 
 GuestParallelismPolicy::GuestParallelismPolicy(
     std::uint64_t guest_ticks_per_second)
@@ -60,4 +60,4 @@ void GuestParallelismPolicy::forget_process(std::uint32_t process_id)
     });
 }
 
-} // namespace ilemu
+} // namespace shade

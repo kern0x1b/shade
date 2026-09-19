@@ -14,7 +14,7 @@
 
 #include "foundation/touch_input.hpp"
 
-namespace ilemu {
+namespace shade {
 
 // Host-time replay keeps UI automation independent of guest scheduling speed.
 // Each text line is: <delay-ms> <down|move|up|cancel> <x> <y>.
@@ -43,4 +43,4 @@ private:
     bool started_ { };
 };
 
-} // namespace ilemu
+} // namespace shade

@@ -9,7 +9,7 @@
 
 #include "process.hpp"
 
-namespace ilemu::runtime_detail {
+namespace shade::runtime_detail {
 
 struct RuntimeJitMemoryAggregate {
     std::size_t runtime_count { };
@@ -271,4 +271,4 @@ private:
     std::unordered_map<const void*, JitPrecompileMemoryStats> live_by_runtime;
 };
 
-} // namespace ilemu::runtime_detail
+} // namespace shade::runtime_detail

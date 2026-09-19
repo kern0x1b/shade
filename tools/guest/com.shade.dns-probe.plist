@@ -3,12 +3,12 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.ilemu.dns-probe</string>
+    <string>com.shade.dns-probe</string>
     <key>OnDemand</key>
     <false/>
     <key>ProgramArguments</key>
     <array>
-        <string>/usr/libexec/ilemu-dns-probe</string>
+        <string>/usr/libexec/shade-dns-probe</string>
     </array>
 </dict>
 </plist>

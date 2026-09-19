@@ -20,7 +20,7 @@
 #include "../support.hpp"
 #include "wire_reply.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     using namespace mach_support;
@@ -91,4 +91,4 @@ bool CompatibilityKernel::dispatch_mach_vm_deallocate_message(
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -19,7 +19,7 @@
 #include <utility>
 #include <vector>
 
-namespace ilemu::bsd::baseband_device {
+namespace shade::bsd::baseband_device {
 
 namespace {
 
@@ -698,4 +698,4 @@ bool is_path(std::string_view candidate)
            is_mux_path(candidate);
 }
 
-} // namespace ilemu::bsd::baseband_device
+} // namespace shade::bsd::baseband_device

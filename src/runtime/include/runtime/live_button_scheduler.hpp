@@ -14,7 +14,7 @@
 
 #include "foundation/system_button_input.hpp"
 
-namespace ilemu {
+namespace shade {
 
 // Keeps a physical button Down event alive for a host-controlled duration and
 // emits the matching Up event without involving the window toolkit.
@@ -35,4 +35,4 @@ private:
     std::deque<Event> events_;
 };
 
-} // namespace ilemu
+} // namespace shade

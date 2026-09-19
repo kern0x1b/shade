@@ -21,7 +21,7 @@
 
 #include "../support.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::uint32_t posix_spawn_syscall = 244U;
@@ -148,7 +148,7 @@ bool CompatibilityKernel::dispatch_bsd_process_spawn(
         }
         message << '\n';
         output_.write(message.str());
-        cpu.halt(Dynarmic::HaltReason::UserDefined6);
+        cpu.halt(Umbra::HaltReason::UserDefined6);
         return true;
     }
 
@@ -207,4 +207,4 @@ bool CompatibilityKernel::dispatch_bsd_process_spawn(
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -13,7 +13,7 @@
 #include <cstdint>
 #include <limits>
 
-namespace ilemu {
+namespace shade {
 
 // The tracker is a bounded diagnostic correlation window, not a copy of the
 // complete profile. Eight 32-entry queue windows cover the largest expected
@@ -323,4 +323,4 @@ private:
 inline constexpr std::size_t jit_native_preimport_tracker_object_bytes =
     sizeof(JitNativePreimportTracker);
 
-} // namespace ilemu
+} // namespace shade

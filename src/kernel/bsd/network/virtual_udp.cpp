@@ -13,7 +13,7 @@
 #include <array>
 #include <limits>
 
-namespace ilemu::bsd {
+namespace shade::bsd {
 namespace {
 
     using namespace darwin::network;
@@ -495,4 +495,4 @@ void VirtualUdpSocket::make_defunct()
     multicast_groups_.clear();
 }
 
-} // namespace ilemu::bsd
+} // namespace shade::bsd

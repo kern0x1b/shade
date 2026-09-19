@@ -17,7 +17,7 @@
 #include <bit>
 #include <utility>
 
-namespace ilemu::darwin::route {
+namespace shade::darwin::route {
 namespace {
 
     std::uint16_t read16(std::span<const std::byte> bytes, std::size_t offset)
@@ -590,4 +590,4 @@ std::vector<Entry> Table::snapshot() const
     return entries_;
 }
 
-} // namespace ilemu::darwin::route
+} // namespace shade::darwin::route

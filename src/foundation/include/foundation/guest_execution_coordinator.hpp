@@ -16,7 +16,7 @@
 
 #include "foundation/cpu.hpp"
 
-namespace ilemu {
+namespace shade {
 
 struct GuestExecutionRequest {
     Cpu* cpu { };
@@ -50,4 +50,4 @@ private:
     std::unique_ptr<Impl> impl_;
 };
 
-} // namespace ilemu
+} // namespace shade

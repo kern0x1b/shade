@@ -13,7 +13,7 @@
 #include <optional>
 #include <span>
 
-namespace ilemu {
+namespace shade {
 
 class PcmSampleFormat {
 public:
@@ -31,4 +31,4 @@ private:
     bool floating_point_ { };
 };
 
-} // namespace ilemu
+} // namespace shade

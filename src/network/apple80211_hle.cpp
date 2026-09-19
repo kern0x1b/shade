@@ -21,7 +21,7 @@
 #include "foundation/output.hpp"
 #include "foundation/userland_hle.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::string_view aeropuerto_image {
@@ -487,4 +487,4 @@ void Apple80211Hle::queue_event_locked(std::uint32_t process_id,
     });
 }
 
-} // namespace ilemu
+} // namespace shade

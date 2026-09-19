@@ -13,7 +13,7 @@
 #include <cstdint>
 #include <optional>
 
-namespace ilemu {
+namespace shade {
 
 class AddressSpace;
 class Output;
@@ -32,4 +32,4 @@ namespace kernel_iokit {
         std::uint32_t remote_object, std::uint32_t local_port);
 
 } // namespace kernel_iokit
-} // namespace ilemu
+} // namespace shade

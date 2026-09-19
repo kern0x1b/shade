@@ -15,7 +15,7 @@
 
 #include "../support.hpp"
 
-namespace ilemu {
+namespace shade {
 
 void CompatibilityKernel::dispatch_bsd_process_sockets(Cpu& cpu)
 {
@@ -99,4 +99,4 @@ void CompatibilityKernel::shutdown_process_sockets(std::uint32_t level)
     shared_state_->note_io_event_transition();
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -44,7 +44,7 @@
 namespace {
 
 constexpr auto wifi_scan_completion_delay =
-    10U * ilemu::darwin::mach::scheduler::nanoseconds_per_millisecond;
+    10U * shade::darwin::mach::scheduler::nanoseconds_per_millisecond;
 
 [[nodiscard]] bool is_printable_ascii(std::byte value)
 {
@@ -87,7 +87,7 @@ constexpr auto wifi_scan_completion_delay =
 }
 
 [[nodiscard]] std::optional<std::string> extract_mux_channel_name(
-    const ilemu::AddressSpace& memory, std::uint32_t base_address,
+    const shade::AddressSpace& memory, std::uint32_t base_address,
     std::span<const std::byte> bytes)
 {
     if (const auto inline_name = extract_inline_ascii_string(bytes);
@@ -113,7 +113,7 @@ constexpr auto wifi_scan_completion_delay =
 
 } // namespace
 
-namespace ilemu {
+namespace shade {
 
 void CompatibilityKernel::dispatch_bsd_events(Cpu& cpu, std::uint32_t number)
 {
@@ -1600,7 +1600,7 @@ void CompatibilityKernel::dispatch_bsd_events(Cpu& cpu, std::uint32_t number)
             "[network] poll wait pid=" + std::to_string(process_.pid) +
             " nfds=" + std::to_string(descriptor_count) + "\n");
         bsd_success(cpu, 0);
-        cpu.halt(Dynarmic::HaltReason::UserDefined5);
+        cpu.halt(Umbra::HaltReason::UserDefined5);
         return;
     }
     case 93: { // select
@@ -1740,7 +1740,7 @@ void CompatibilityKernel::dispatch_bsd_events(Cpu& cpu, std::uint32_t number)
             "[network] select wait pid=" + std::to_string(process_.pid) +
             " nfds=" + std::to_string(descriptor_count) + "\n");
         bsd_success(cpu, 0);
-        cpu.halt(Dynarmic::HaltReason::UserDefined5);
+        cpu.halt(Umbra::HaltReason::UserDefined5);
         return;
     }
     case 202: { // __sysctl
@@ -2645,4 +2645,4 @@ void CompatibilityKernel::dispatch_bsd_events(Cpu& cpu, std::uint32_t number)
     }
 }
 
-} // namespace ilemu
+} // namespace shade

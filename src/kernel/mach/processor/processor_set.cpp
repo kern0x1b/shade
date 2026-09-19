@@ -24,7 +24,7 @@
 
 #include "../support.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     using namespace mach_support;
@@ -289,4 +289,4 @@ bool CompatibilityKernel::dispatch_mach_processor_message(
     return false;
 }
 
-} // namespace ilemu
+} // namespace shade

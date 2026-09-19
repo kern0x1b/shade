@@ -12,7 +12,7 @@
 
 #include <cstdint>
 
-namespace ilemu::darwin::error {
+namespace shade::darwin::error {
     inline constexpr std::uint32_t operation_not_permitted = 1;
     inline constexpr std::uint32_t no_entry = 2;
     inline constexpr std::uint32_t no_such_process = 3;
@@ -49,4 +49,4 @@ namespace ilemu::darwin::error {
     inline constexpr std::uint32_t not_connected = 57;
     inline constexpr std::uint32_t connection_refused = 61;
     inline constexpr std::uint32_t no_attribute = 93;
-} // namespace ilemu::darwin::error
+} // namespace shade::darwin::error

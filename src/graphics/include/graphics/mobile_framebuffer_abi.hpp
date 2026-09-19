@@ -10,7 +10,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace ilemu::mobile_framebuffer_abi {
+namespace shade::mobile_framebuffer_abi {
 
 // Confirmed by the iPhone OS 1.0 IOMobileFramebuffer implementation: layer
 // indices greater than 2 are rejected before the swap structure is updated.
@@ -29,4 +29,4 @@ inline constexpr std::size_t destination_width_argument = 9;
 inline constexpr std::size_t destination_height_argument = 10;
 inline constexpr std::size_t flags_argument = 11;
 
-} // namespace ilemu::mobile_framebuffer_abi
+} // namespace shade::mobile_framebuffer_abi

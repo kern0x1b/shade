@@ -9,7 +9,7 @@
 
 #include <cstdint>
 
-namespace ilemu::core_surface_abi {
+namespace shade::core_surface_abi {
 
 // Confirmed from the iPhone OS 1.0 CoreSurface ARM framework. Public
 // CoreSurfaceBuffer accessors load the private client-buffer pointer from
@@ -36,4 +36,4 @@ inline constexpr std::uint32_t bytes_per_bgra_pixel = 4;
 inline constexpr std::uint32_t lock_read_only = 0x00000001U;
 inline constexpr std::uint32_t lock_avoid_sync = 0x00000002U;
 
-} // namespace ilemu::core_surface_abi
+} // namespace shade::core_surface_abi

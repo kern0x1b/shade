@@ -14,7 +14,7 @@
 #include <mutex>
 #include <string>
 
-#if defined(ILEMU_HAS_FFMPEG)
+#if defined(SHADE_HAS_FFMPEG)
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
@@ -25,10 +25,10 @@ extern "C" {
 }
 #endif
 
-namespace ilemu {
+namespace shade {
 namespace {
 
-#if defined(ILEMU_HAS_FFMPEG)
+#if defined(SHADE_HAS_FFMPEG)
     std::string ffmpeg_error(int status)
     {
         std::array<char, AV_ERROR_MAX_STRING_SIZE> text { };
@@ -80,7 +80,7 @@ FfmpegAudioDecoder::~FfmpegAudioDecoder() = default;
 
 bool FfmpegAudioDecoder::available()
 {
-#if defined(ILEMU_HAS_FFMPEG)
+#if defined(SHADE_HAS_FFMPEG)
     return true;
 #else
     return false;
@@ -91,7 +91,7 @@ std::optional<AudioBuffer> FfmpegAudioDecoder::decode(
     const std::filesystem::path& path)
 {
     std::lock_guard lock { impl_->mutex };
-#if defined(ILEMU_HAS_FFMPEG)
+#if defined(SHADE_HAS_FFMPEG)
     AVFormatContext* raw_format = nullptr;
     auto status =
         avformat_open_input(&raw_format, path.c_str(), nullptr, nullptr);
@@ -250,4 +250,4 @@ std::string FfmpegAudioDecoder::last_error() const
     return impl_->error;
 }
 
-} // namespace ilemu
+} // namespace shade

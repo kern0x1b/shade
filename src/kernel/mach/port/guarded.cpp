@@ -12,7 +12,7 @@
 
 #include <bit>
 
-namespace ilemu {
+namespace shade {
 
 std::uint32_t dispatch_guarded_port_trap(KernelSharedState& state,
     AddressSpace& memory, std::uint32_t task,
@@ -115,4 +115,4 @@ std::uint32_t dispatch_guarded_port_trap(KernelSharedState& state,
     return modify_port_references_locked(state, task, name, Right::Receive, -1);
 }
 
-} // namespace ilemu
+} // namespace shade

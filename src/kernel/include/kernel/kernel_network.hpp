@@ -12,7 +12,7 @@
 #include "network/darwin_network_abi.hpp"
 #include "kernel/kernel_shared_state.hpp"
 
-namespace ilemu::kernel_network {
+namespace shade::kernel_network {
 
 // An isolated guest still has a local IP stack. Stream endpoints in this
 // mode deliberately have no HostSocket: bind/listen state remains inside the
@@ -35,4 +35,4 @@ inline constexpr std::string_view isolated_ipv6_stream_descriptor {
     std::string_view name,
     const KernelSharedState::NetworkInterface& interface);
 
-} // namespace ilemu::kernel_network
+} // namespace shade::kernel_network

@@ -6,7 +6,7 @@
 
 #include <cstdint>
 
-namespace ilemu {
+namespace shade {
 class AddressSpace;
 struct ProcessContext;
 
@@ -17,4 +17,4 @@ inline constexpr std::uint32_t syscall_number = 452;
     const ProcessContext& caller, std::uint32_t operation,
     std::uint32_t uuid_address, std::uint32_t uuid_length);
 } // namespace kernel_bsd::uuid_policy
-} // namespace ilemu
+} // namespace shade

@@ -15,7 +15,7 @@
 #include "graphics/gles_renderer.hpp"
 #include "foundation/userland_hle.hpp"
 
-namespace ilemu {
+namespace shade {
 
 std::uint32_t Mbx2dHle::allocate_client_surface(
     std::uint32_t base, std::uint32_t allocation_size, std::uint32_t width)
@@ -111,4 +111,4 @@ void Mbx2dHle::release_client_renderer_resources()
     retired_client_host_sources_.clear();
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -12,7 +12,7 @@
 
 #include <cstdint>
 
-namespace ilemu::darwin::socket {
+namespace shade::darwin::socket {
     inline constexpr std::uint32_t local = 1; // AF_UNIX / AF_LOCAL
     inline constexpr std::uint32_t stream = 1; // SOCK_STREAM
     inline constexpr std::uint32_t datagram = 2; // SOCK_DGRAM
@@ -59,4 +59,4 @@ namespace ilemu::darwin::socket {
     inline constexpr std::uint32_t shutdown_read = 0;
     inline constexpr std::uint32_t shutdown_write = 1;
     inline constexpr std::uint32_t shutdown_read_write = 2;
-} // namespace ilemu::darwin::socket
+} // namespace shade::darwin::socket

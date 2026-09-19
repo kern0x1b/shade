@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 bool CompatibilityKernel::release_file_descriptor(std::uint32_t descriptor)
 {
@@ -70,4 +70,4 @@ void CompatibilityKernel::release_close_on_exec_descriptors()
     }
 }
 
-} // namespace ilemu
+} // namespace shade

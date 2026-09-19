@@ -13,7 +13,7 @@
 #include <span>
 #include <string>
 
-namespace ilemu::celestial_volume_protocol {
+namespace shade::celestial_volume_protocol {
 
 struct CategoryVolume {
     std::string category;
@@ -54,4 +54,4 @@ struct SourceCreateReply {
 decode_source_float_property_request(
     std::uint32_t identifier, std::span<const std::byte> bytes);
 
-} // namespace ilemu::celestial_volume_protocol
+} // namespace shade::celestial_volume_protocol

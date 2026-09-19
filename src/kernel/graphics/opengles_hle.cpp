@@ -35,7 +35,7 @@
 #include "foundation/userland_hle.hpp"
 #include "surface_transport_hle.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::string_view opengles_image {
@@ -2015,10 +2015,10 @@ void OpenGlesHle::register_egl(UserlandHleRegistry& registry)
         std::string_view value;
         switch (call.argument(1)) {
         case egl_vendor:
-            value = "iLEmu";
+            value = "Shade";
             break;
         case egl_version:
-            value = "1.1 iLEmu userland HLE";
+            value = "1.1 Shade userland HLE";
             break;
         case egl_extensions:
             value = "";
@@ -3855,4 +3855,4 @@ void OpenGlesHle::unsupported(UserlandHleCall& call)
     call.set_return(0);
 }
 
-} // namespace ilemu
+} // namespace shade

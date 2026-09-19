@@ -27,7 +27,7 @@
 #include "mach/thread_act_mig_ids.hpp"
 #include "mach/vm_map_mig_ids.hpp"
 
-namespace ilemu::xnu::mig {
+namespace shade::xnu::mig {
 namespace {
 
     template <typename Range>
@@ -234,4 +234,4 @@ std::optional<RoutineInfo> lookup_routine(std::uint32_t identifier)
         system_configuration::subsystem_name, system_configuration::routines);
 }
 
-} // namespace ilemu::xnu::mig
+} // namespace shade::xnu::mig

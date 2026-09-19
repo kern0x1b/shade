@@ -11,7 +11,7 @@
 
 #include "device_state/lockdown_state.hpp"
 
-namespace ilemu {
+namespace shade {
 
 class UserlandHleRegistry;
 
@@ -21,4 +21,4 @@ class UserlandHleRegistry;
 void register_lockdown_hle(UserlandHleRegistry& registry,
     std::optional<bool> activated, LockdownCapabilities profile);
 
-} // namespace ilemu
+} // namespace shade

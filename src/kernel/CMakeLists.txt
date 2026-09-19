@@ -2,25 +2,25 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-add_library(ilemu_kernel_api INTERFACE)
-add_library(iLEmu::kernel_api ALIAS ilemu_kernel_api)
-target_include_directories(ilemu_kernel_api INTERFACE
+add_library(shade_kernel_api INTERFACE)
+add_library(Shade::kernel_api ALIAS shade_kernel_api)
+target_include_directories(shade_kernel_api INTERFACE
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>")
-target_link_libraries(ilemu_kernel_api INTERFACE
-    iLEmu::device_state
-    iLEmu::foundation
-    iLEmu::mach
-    iLEmu::filesystem
-    iLEmu::network
-    iLEmu::storage
-    iLEmu::telephony
-    iLEmu::media
-    iLEmu::bluetooth
-    iLEmu::crypto
-    iLEmu::graphics
-    iLEmu::xnu_adapter)
+target_link_libraries(shade_kernel_api INTERFACE
+    Shade::device_state
+    Shade::foundation
+    Shade::mach
+    Shade::filesystem
+    Shade::network
+    Shade::storage
+    Shade::telephony
+    Shade::media
+    Shade::bluetooth
+    Shade::crypto
+    Shade::graphics
+    Shade::xnu_adapter)
 
-add_library(ilemu_kernel STATIC
+add_library(shade_kernel STATIC
     kernel.cpp
     commpage.cpp
     hid_event_system_hle.cpp
@@ -32,10 +32,10 @@ add_library(ilemu_kernel STATIC
     vnode_watch.cpp
     kevent_timer.cpp
     network.cpp)
-add_library(iLEmu::kernel ALIAS ilemu_kernel)
-ilemu_configure_module(ilemu_kernel)
+add_library(Shade::kernel ALIAS shade_kernel)
+shade_configure_module(shade_kernel)
 
-add_library(ilemu_kernel_graphics STATIC
+add_library(shade_kernel_graphics STATIC
     graphics/core_surface_hle.cpp
     graphics/layerkit_hle.cpp
     graphics/mbx2d_hle.cpp
@@ -49,115 +49,115 @@ add_library(ilemu_kernel_graphics STATIC
     graphics/core_animation_software_hle.cpp
     graphics/opengles_programmable.cpp
     graphics/mbx_connect_hle.cpp)
-add_library(iLEmu::kernel_graphics ALIAS ilemu_kernel_graphics)
-ilemu_configure_module(ilemu_kernel_graphics)
+add_library(Shade::kernel_graphics ALIAS shade_kernel_graphics)
+shade_configure_module(shade_kernel_graphics)
 
-add_library(ilemu_kernel_bsd_baseband_device STATIC
+add_library(shade_kernel_bsd_baseband_device STATIC
     bsd/device/baseband/device.cpp
     bsd/device/baseband/offline_control.cpp
     bsd/device/baseband/replay.cpp)
-add_library(iLEmu::kernel_bsd_baseband_device ALIAS
-    ilemu_kernel_bsd_baseband_device)
-ilemu_configure_module(ilemu_kernel_bsd_baseband_device)
-target_link_libraries(ilemu_kernel_bsd_baseband_device PRIVATE
-    iLEmu::foundation)
+add_library(Shade::kernel_bsd_baseband_device ALIAS
+    shade_kernel_bsd_baseband_device)
+shade_configure_module(shade_kernel_bsd_baseband_device)
+target_link_libraries(shade_kernel_bsd_baseband_device PRIVATE
+    Shade::foundation)
 
-add_library(ilemu_kernel_bsd_debug STATIC
+add_library(shade_kernel_bsd_debug STATIC
     bsd/debug/tracing.cpp)
-add_library(iLEmu::kernel_bsd_debug ALIAS
-    ilemu_kernel_bsd_debug)
-ilemu_configure_module(ilemu_kernel_bsd_debug)
-target_link_libraries(ilemu_kernel_bsd_debug PRIVATE
-    iLEmu::foundation)
+add_library(Shade::kernel_bsd_debug ALIAS
+    shade_kernel_bsd_debug)
+shade_configure_module(shade_kernel_bsd_debug)
+target_link_libraries(shade_kernel_bsd_debug PRIVATE
+    Shade::foundation)
 
-add_library(ilemu_kernel_bsd_sysctl STATIC
+add_library(shade_kernel_bsd_sysctl STATIC
     bsd/sysctl/hardware_values.cpp
     bsd/sysctl/name_resolver.cpp
     bsd/sysctl/process_arguments.cpp)
-add_library(iLEmu::kernel_bsd_sysctl ALIAS
-    ilemu_kernel_bsd_sysctl)
-ilemu_configure_module(ilemu_kernel_bsd_sysctl)
+add_library(Shade::kernel_bsd_sysctl ALIAS
+    shade_kernel_bsd_sysctl)
+shade_configure_module(shade_kernel_bsd_sysctl)
 
-add_library(ilemu_kernel_bsd_signal STATIC
+add_library(shade_kernel_bsd_signal STATIC
     bsd/signal/signal.cpp)
-add_library(iLEmu::kernel_bsd_signal ALIAS
-    ilemu_kernel_bsd_signal)
-ilemu_configure_module(ilemu_kernel_bsd_signal)
-target_link_libraries(ilemu_kernel_bsd_signal PRIVATE
-    iLEmu::foundation)
+add_library(Shade::kernel_bsd_signal ALIAS
+    shade_kernel_bsd_signal)
+shade_configure_module(shade_kernel_bsd_signal)
+target_link_libraries(shade_kernel_bsd_signal PRIVATE
+    Shade::foundation)
 
-add_library(ilemu_kernel_bsd_filesystem_control STATIC
+add_library(shade_kernel_bsd_filesystem_control STATIC
     bsd/filesystem/control.cpp)
-add_library(iLEmu::kernel_bsd_filesystem_control ALIAS
-    ilemu_kernel_bsd_filesystem_control)
-ilemu_configure_module(ilemu_kernel_bsd_filesystem_control)
-target_link_libraries(ilemu_kernel_bsd_filesystem_control PRIVATE
-    iLEmu::filesystem
-    iLEmu::foundation)
+add_library(Shade::kernel_bsd_filesystem_control ALIAS
+    shade_kernel_bsd_filesystem_control)
+shade_configure_module(shade_kernel_bsd_filesystem_control)
+target_link_libraries(shade_kernel_bsd_filesystem_control PRIVATE
+    Shade::filesystem
+    Shade::foundation)
 
-add_library(ilemu_kernel_bsd_filesystem_ownership STATIC
+add_library(shade_kernel_bsd_filesystem_ownership STATIC
     bsd/filesystem/ownership.cpp)
-add_library(iLEmu::kernel_bsd_filesystem_ownership ALIAS
-    ilemu_kernel_bsd_filesystem_ownership)
-ilemu_configure_module(ilemu_kernel_bsd_filesystem_ownership)
-target_link_libraries(ilemu_kernel_bsd_filesystem_ownership PRIVATE
-    iLEmu::filesystem
-    iLEmu::foundation)
+add_library(Shade::kernel_bsd_filesystem_ownership ALIAS
+    shade_kernel_bsd_filesystem_ownership)
+shade_configure_module(shade_kernel_bsd_filesystem_ownership)
+target_link_libraries(shade_kernel_bsd_filesystem_ownership PRIVATE
+    Shade::filesystem
+    Shade::foundation)
 
-add_library(ilemu_kernel_bsd_filesystem_locking STATIC
+add_library(shade_kernel_bsd_filesystem_locking STATIC
     bsd/filesystem/locking.cpp)
-add_library(iLEmu::kernel_bsd_filesystem_locking ALIAS
-    ilemu_kernel_bsd_filesystem_locking)
-ilemu_configure_module(ilemu_kernel_bsd_filesystem_locking)
-target_link_libraries(ilemu_kernel_bsd_filesystem_locking PRIVATE
-    iLEmu::filesystem
-    iLEmu::foundation)
+add_library(Shade::kernel_bsd_filesystem_locking ALIAS
+    shade_kernel_bsd_filesystem_locking)
+shade_configure_module(shade_kernel_bsd_filesystem_locking)
+target_link_libraries(shade_kernel_bsd_filesystem_locking PRIVATE
+    Shade::filesystem
+    Shade::foundation)
 
-add_library(ilemu_kernel_bsd_filesystem_persistence STATIC
+add_library(shade_kernel_bsd_filesystem_persistence STATIC
     bsd/filesystem/persistence.cpp)
-add_library(iLEmu::kernel_bsd_filesystem_persistence ALIAS
-    ilemu_kernel_bsd_filesystem_persistence)
-ilemu_configure_module(ilemu_kernel_bsd_filesystem_persistence)
-target_link_libraries(ilemu_kernel_bsd_filesystem_persistence PRIVATE
-    iLEmu::filesystem
-    iLEmu::foundation)
+add_library(Shade::kernel_bsd_filesystem_persistence ALIAS
+    shade_kernel_bsd_filesystem_persistence)
+shade_configure_module(shade_kernel_bsd_filesystem_persistence)
+target_link_libraries(shade_kernel_bsd_filesystem_persistence PRIVATE
+    Shade::filesystem
+    Shade::foundation)
 
-add_library(ilemu_kernel_bsd_filesystem_timestamps STATIC
+add_library(shade_kernel_bsd_filesystem_timestamps STATIC
     bsd/filesystem/timestamps.cpp)
-add_library(iLEmu::kernel_bsd_filesystem_timestamps ALIAS
-    ilemu_kernel_bsd_filesystem_timestamps)
-ilemu_configure_module(ilemu_kernel_bsd_filesystem_timestamps)
-target_link_libraries(ilemu_kernel_bsd_filesystem_timestamps PRIVATE
-    iLEmu::filesystem
-    iLEmu::foundation)
+add_library(Shade::kernel_bsd_filesystem_timestamps ALIAS
+    shade_kernel_bsd_filesystem_timestamps)
+shade_configure_module(shade_kernel_bsd_filesystem_timestamps)
+target_link_libraries(shade_kernel_bsd_filesystem_timestamps PRIVATE
+    Shade::filesystem
+    Shade::foundation)
 
-add_library(ilemu_kernel_bsd_control STATIC
+add_library(shade_kernel_bsd_control STATIC
     bsd/network/control/control.cpp
     bsd/network/control/syscalls.cpp)
-add_library(iLEmu::kernel_bsd_control ALIAS
-    ilemu_kernel_bsd_control)
-ilemu_configure_module(ilemu_kernel_bsd_control)
-target_link_libraries(ilemu_kernel_bsd_control PRIVATE
-    iLEmu::foundation)
+add_library(Shade::kernel_bsd_control ALIAS
+    shade_kernel_bsd_control)
+shade_configure_module(shade_kernel_bsd_control)
+target_link_libraries(shade_kernel_bsd_control PRIVATE
+    Shade::foundation)
 
-add_library(ilemu_kernel_bsd_virtual_udp STATIC
+add_library(shade_kernel_bsd_virtual_udp STATIC
     bsd/network/virtual_udp.cpp)
-add_library(iLEmu::kernel_bsd_virtual_udp ALIAS
-    ilemu_kernel_bsd_virtual_udp)
-ilemu_configure_module(ilemu_kernel_bsd_virtual_udp)
-target_link_libraries(ilemu_kernel_bsd_virtual_udp PRIVATE
-    iLEmu::foundation)
+add_library(Shade::kernel_bsd_virtual_udp ALIAS
+    shade_kernel_bsd_virtual_udp)
+shade_configure_module(shade_kernel_bsd_virtual_udp)
+target_link_libraries(shade_kernel_bsd_virtual_udp PRIVATE
+    Shade::foundation)
 
-add_library(ilemu_kernel_bsd_virtual_udp_syscalls STATIC
+add_library(shade_kernel_bsd_virtual_udp_syscalls STATIC
     bsd/network/virtual_udp_syscalls.cpp)
-add_library(iLEmu::kernel_bsd_virtual_udp_syscalls ALIAS
-    ilemu_kernel_bsd_virtual_udp_syscalls)
-ilemu_configure_module(ilemu_kernel_bsd_virtual_udp_syscalls)
-target_link_libraries(ilemu_kernel_bsd_virtual_udp_syscalls PRIVATE
-    iLEmu::kernel_bsd_virtual_udp
-    iLEmu::foundation)
+add_library(Shade::kernel_bsd_virtual_udp_syscalls ALIAS
+    shade_kernel_bsd_virtual_udp_syscalls)
+shade_configure_module(shade_kernel_bsd_virtual_udp_syscalls)
+target_link_libraries(shade_kernel_bsd_virtual_udp_syscalls PRIVATE
+    Shade::kernel_bsd_virtual_udp
+    Shade::foundation)
 
-add_library(ilemu_kernel_bsd_process STATIC
+add_library(shade_kernel_bsd_process STATIC
     bsd/process/credentials.cpp
     bsd/process/diagnostics.cpp
     bsd/process/information.cpp
@@ -167,32 +167,32 @@ add_library(ilemu_kernel_bsd_process STATIC
     bsd/process/resource_monitor.cpp
     bsd/process/uuid_policy.cpp
     bsd/process/spawn.cpp)
-add_library(iLEmu::kernel_bsd_process ALIAS
-    ilemu_kernel_bsd_process)
-ilemu_configure_module(ilemu_kernel_bsd_process)
-target_link_libraries(ilemu_kernel_bsd_process PRIVATE
-    iLEmu::foundation)
+add_library(Shade::kernel_bsd_process ALIAS
+    shade_kernel_bsd_process)
+shade_configure_module(shade_kernel_bsd_process)
+target_link_libraries(shade_kernel_bsd_process PRIVATE
+    Shade::foundation)
 
-add_library(ilemu_kernel_bsd_security STATIC
+add_library(shade_kernel_bsd_security STATIC
     bsd/security/code_signing.cpp
     bsd/security/extensions.cpp
     bsd/security/mac.cpp
     bsd/security/sandbox.cpp)
-add_library(iLEmu::kernel_bsd_security ALIAS
-    ilemu_kernel_bsd_security)
-ilemu_configure_module(ilemu_kernel_bsd_security)
-target_link_libraries(ilemu_kernel_bsd_security PRIVATE
-    iLEmu::foundation)
+add_library(Shade::kernel_bsd_security ALIAS
+    shade_kernel_bsd_security)
+shade_configure_module(shade_kernel_bsd_security)
+target_link_libraries(shade_kernel_bsd_security PRIVATE
+    Shade::foundation)
 
-add_library(ilemu_kernel_bsd_vm_shared_region STATIC
+add_library(shade_kernel_bsd_vm_shared_region STATIC
     bsd/vm/shared_region.cpp)
-add_library(iLEmu::kernel_bsd_vm_shared_region ALIAS
-    ilemu_kernel_bsd_vm_shared_region)
-ilemu_configure_module(ilemu_kernel_bsd_vm_shared_region)
-target_link_libraries(ilemu_kernel_bsd_vm_shared_region PRIVATE
-    iLEmu::foundation)
+add_library(Shade::kernel_bsd_vm_shared_region ALIAS
+    shade_kernel_bsd_vm_shared_region)
+shade_configure_module(shade_kernel_bsd_vm_shared_region)
+target_link_libraries(shade_kernel_bsd_vm_shared_region PRIVATE
+    Shade::foundation)
 
-target_sources(ilemu_kernel PRIVATE
+target_sources(shade_kernel PRIVATE
     bsd/dispatch.cpp
     bsd/platform.cpp
     bsd/pthread_runtime.cpp
@@ -214,178 +214,178 @@ target_sources(ilemu_kernel PRIVATE
     bsd/kqueue.cpp
     bsd/device/offline_serial.cpp
     bsd/support.cpp)
-target_link_libraries(ilemu_kernel PRIVATE
-    iLEmu::kernel_bsd_baseband_device
-    iLEmu::kernel_bsd_control
-    iLEmu::kernel_bsd_debug
-    iLEmu::kernel_bsd_filesystem_control
-    iLEmu::kernel_bsd_filesystem_persistence
-    iLEmu::kernel_bsd_filesystem_timestamps
-    iLEmu::kernel_bsd_filesystem_locking
-    iLEmu::kernel_bsd_filesystem_ownership
-    iLEmu::kernel_bsd_virtual_udp_syscalls
-    iLEmu::kernel_bsd_virtual_udp
-    iLEmu::kernel_bsd_process
-    iLEmu::kernel_bsd_security
-    iLEmu::kernel_bsd_vm_shared_region
-    iLEmu::kernel_bsd_signal
-    iLEmu::kernel_bsd_sysctl)
+target_link_libraries(shade_kernel PRIVATE
+    Shade::kernel_bsd_baseband_device
+    Shade::kernel_bsd_control
+    Shade::kernel_bsd_debug
+    Shade::kernel_bsd_filesystem_control
+    Shade::kernel_bsd_filesystem_persistence
+    Shade::kernel_bsd_filesystem_timestamps
+    Shade::kernel_bsd_filesystem_locking
+    Shade::kernel_bsd_filesystem_ownership
+    Shade::kernel_bsd_virtual_udp_syscalls
+    Shade::kernel_bsd_virtual_udp
+    Shade::kernel_bsd_process
+    Shade::kernel_bsd_security
+    Shade::kernel_bsd_vm_shared_region
+    Shade::kernel_bsd_signal
+    Shade::kernel_bsd_sysctl)
 
-add_library(ilemu_kernel_iokit_audio STATIC
+add_library(shade_kernel_iokit_audio STATIC
     iokit/audio/device_catalog.cpp
     iokit/audio/abi.cpp
     iokit/audio/property_notifications.cpp
     iokit/audio/service.cpp)
-add_library(iLEmu::kernel_iokit_audio ALIAS
-    ilemu_kernel_iokit_audio)
-ilemu_configure_module(ilemu_kernel_iokit_audio)
-target_link_libraries(ilemu_kernel_iokit_audio PRIVATE
-    iLEmu::foundation)
+add_library(Shade::kernel_iokit_audio ALIAS
+    shade_kernel_iokit_audio)
+shade_configure_module(shade_kernel_iokit_audio)
+target_link_libraries(shade_kernel_iokit_audio PRIVATE
+    Shade::foundation)
 
-add_library(ilemu_kernel_iokit_baseband STATIC
+add_library(shade_kernel_iokit_baseband STATIC
     iokit/baseband/ip_appender.cpp
     iokit/baseband/service.cpp)
-add_library(iLEmu::kernel_iokit_baseband ALIAS
-    ilemu_kernel_iokit_baseband)
-ilemu_configure_module(ilemu_kernel_iokit_baseband)
-target_link_libraries(ilemu_kernel_iokit_baseband PRIVATE
-    iLEmu::foundation)
+add_library(Shade::kernel_iokit_baseband ALIAS
+    shade_kernel_iokit_baseband)
+shade_configure_module(shade_kernel_iokit_baseband)
+target_link_libraries(shade_kernel_iokit_baseband PRIVATE
+    Shade::foundation)
 
-add_library(ilemu_kernel_iokit_camera STATIC
+add_library(shade_kernel_iokit_camera STATIC
     iokit/camera/service.cpp)
-add_library(iLEmu::kernel_iokit_camera ALIAS
-    ilemu_kernel_iokit_camera)
-ilemu_configure_module(ilemu_kernel_iokit_camera)
-target_link_libraries(ilemu_kernel_iokit_camera PRIVATE
-    iLEmu::foundation)
+add_library(Shade::kernel_iokit_camera ALIAS
+    shade_kernel_iokit_camera)
+shade_configure_module(shade_kernel_iokit_camera)
+target_link_libraries(shade_kernel_iokit_camera PRIVATE
+    Shade::foundation)
 
-add_library(ilemu_kernel_iokit_display STATIC
+add_library(shade_kernel_iokit_display STATIC
     iokit/display/backlight.cpp
     iokit/display/vsync.cpp)
-add_library(iLEmu::kernel_iokit_display ALIAS
-    ilemu_kernel_iokit_display)
-ilemu_configure_module(ilemu_kernel_iokit_display)
-target_link_libraries(ilemu_kernel_iokit_display PRIVATE
-    iLEmu::foundation)
+add_library(Shade::kernel_iokit_display ALIAS
+    shade_kernel_iokit_display)
+shade_configure_module(shade_kernel_iokit_display)
+target_link_libraries(shade_kernel_iokit_display PRIVATE
+    Shade::foundation)
 if(TARGET PkgConfig::PLIST)
-    target_link_libraries(ilemu_kernel_iokit_display PRIVATE PkgConfig::PLIST)
-    target_compile_definitions(ilemu_kernel_iokit_display PRIVATE ILEMU_HAS_LIBPLIST=1)
+    target_link_libraries(shade_kernel_iokit_display PRIVATE PkgConfig::PLIST)
+    target_compile_definitions(shade_kernel_iokit_display PRIVATE SHADE_HAS_LIBPLIST=1)
 endif()
 
-add_library(ilemu_kernel_iokit_graphics STATIC
+add_library(shade_kernel_iokit_graphics STATIC
     iokit/graphics/service.cpp)
-add_library(iLEmu::kernel_iokit_graphics ALIAS
-    ilemu_kernel_iokit_graphics)
-ilemu_configure_module(ilemu_kernel_iokit_graphics)
-target_link_libraries(ilemu_kernel_iokit_graphics PRIVATE
-    iLEmu::foundation)
+add_library(Shade::kernel_iokit_graphics ALIAS
+    shade_kernel_iokit_graphics)
+shade_configure_module(shade_kernel_iokit_graphics)
+target_link_libraries(shade_kernel_iokit_graphics PRIVATE
+    Shade::foundation)
 
-add_library(ilemu_kernel_iokit_hid STATIC
+add_library(shade_kernel_iokit_hid STATIC
     iokit/hid/service.cpp)
-add_library(iLEmu::kernel_iokit_hid ALIAS
-    ilemu_kernel_iokit_hid)
-ilemu_configure_module(ilemu_kernel_iokit_hid)
-target_link_libraries(ilemu_kernel_iokit_hid PRIVATE
-    iLEmu::foundation)
+add_library(Shade::kernel_iokit_hid ALIAS
+    shade_kernel_iokit_hid)
+shade_configure_module(shade_kernel_iokit_hid)
+target_link_libraries(shade_kernel_iokit_hid PRIVATE
+    Shade::foundation)
 
-add_library(ilemu_kernel_iokit_jpeg STATIC
+add_library(shade_kernel_iokit_jpeg STATIC
     iokit/jpeg/service.cpp)
-add_library(iLEmu::kernel_iokit_jpeg ALIAS
-    ilemu_kernel_iokit_jpeg)
-ilemu_configure_module(ilemu_kernel_iokit_jpeg)
-target_link_libraries(ilemu_kernel_iokit_jpeg PRIVATE
-    iLEmu::foundation
-    iLEmu::graphics
-    iLEmu::media)
+add_library(Shade::kernel_iokit_jpeg ALIAS
+    shade_kernel_iokit_jpeg)
+shade_configure_module(shade_kernel_iokit_jpeg)
+target_link_libraries(shade_kernel_iokit_jpeg PRIVATE
+    Shade::foundation
+    Shade::graphics
+    Shade::media)
 
-add_library(ilemu_kernel_iokit_keybag STATIC
+add_library(shade_kernel_iokit_keybag STATIC
     iokit/keybag/service.cpp)
-add_library(iLEmu::kernel_iokit_keybag ALIAS
-    ilemu_kernel_iokit_keybag)
-ilemu_configure_module(ilemu_kernel_iokit_keybag)
-target_link_libraries(ilemu_kernel_iokit_keybag PRIVATE
-    iLEmu::foundation iLEmu::crypto)
+add_library(Shade::kernel_iokit_keybag ALIAS
+    shade_kernel_iokit_keybag)
+shade_configure_module(shade_kernel_iokit_keybag)
+target_link_libraries(shade_kernel_iokit_keybag PRIVATE
+    Shade::foundation Shade::crypto)
 
-add_library(ilemu_kernel_iokit_mbx STATIC
+add_library(shade_kernel_iokit_mbx STATIC
     iokit/mbx/service.cpp)
-add_library(iLEmu::kernel_iokit_mbx ALIAS
-    ilemu_kernel_iokit_mbx)
-ilemu_configure_module(ilemu_kernel_iokit_mbx)
-target_link_libraries(ilemu_kernel_iokit_mbx PRIVATE
-    iLEmu::foundation)
+add_library(Shade::kernel_iokit_mbx ALIAS
+    shade_kernel_iokit_mbx)
+shade_configure_module(shade_kernel_iokit_mbx)
+target_link_libraries(shade_kernel_iokit_mbx PRIVATE
+    Shade::foundation)
 
-add_library(ilemu_kernel_iokit_mobile_file_integrity STATIC
+add_library(shade_kernel_iokit_mobile_file_integrity STATIC
     iokit/mobile_file_integrity/service.cpp)
-add_library(iLEmu::kernel_iokit_mobile_file_integrity ALIAS
-    ilemu_kernel_iokit_mobile_file_integrity)
-ilemu_configure_module(ilemu_kernel_iokit_mobile_file_integrity)
-target_link_libraries(ilemu_kernel_iokit_mobile_file_integrity PRIVATE
-    iLEmu::foundation)
+add_library(Shade::kernel_iokit_mobile_file_integrity ALIAS
+    shade_kernel_iokit_mobile_file_integrity)
+shade_configure_module(shade_kernel_iokit_mobile_file_integrity)
+target_link_libraries(shade_kernel_iokit_mobile_file_integrity PRIVATE
+    Shade::foundation)
 
-add_library(ilemu_kernel_iokit_power STATIC
+add_library(shade_kernel_iokit_power STATIC
     iokit/battery.cpp
     iokit/environment.cpp
     iokit/power.cpp)
-add_library(iLEmu::kernel_iokit_power ALIAS
-    ilemu_kernel_iokit_power)
-ilemu_configure_module(ilemu_kernel_iokit_power)
-target_link_libraries(ilemu_kernel_iokit_power PRIVATE
-    iLEmu::foundation)
+add_library(Shade::kernel_iokit_power ALIAS
+    shade_kernel_iokit_power)
+shade_configure_module(shade_kernel_iokit_power)
+target_link_libraries(shade_kernel_iokit_power PRIVATE
+    Shade::foundation)
 
-add_library(ilemu_kernel_mach_transport STATIC
+add_library(shade_kernel_mach_transport STATIC
     mach/transport/descriptor.cpp
     mach/transport/kernel_mach_ipc.cpp)
-add_library(iLEmu::kernel_mach_transport ALIAS
-    ilemu_kernel_mach_transport)
-ilemu_configure_module(ilemu_kernel_mach_transport)
+add_library(Shade::kernel_mach_transport ALIAS
+    shade_kernel_mach_transport)
+shade_configure_module(shade_kernel_mach_transport)
 
-add_library(ilemu_kernel_mach_port STATIC
+add_library(shade_kernel_mach_port STATIC
     mach/port/context.cpp
     mach/port/enumeration.cpp
     mach/port/kernel_rpc.cpp
     mach/port/guarded.cpp
     mach/port/limits.cpp
     mach/port/membership.cpp)
-add_library(iLEmu::kernel_mach_port ALIAS
-    ilemu_kernel_mach_port)
-ilemu_configure_module(ilemu_kernel_mach_port)
-target_link_libraries(ilemu_kernel_mach_port PRIVATE
-    iLEmu::foundation)
+add_library(Shade::kernel_mach_port ALIAS
+    shade_kernel_mach_port)
+shade_configure_module(shade_kernel_mach_port)
+target_link_libraries(shade_kernel_mach_port PRIVATE
+    Shade::foundation)
 
-add_library(ilemu_kernel_mach_processor STATIC
+add_library(shade_kernel_mach_processor STATIC
     mach/processor/processor_set.cpp)
-add_library(iLEmu::kernel_mach_processor ALIAS
-    ilemu_kernel_mach_processor)
-ilemu_configure_module(ilemu_kernel_mach_processor)
-target_link_libraries(ilemu_kernel_mach_processor PRIVATE
-    iLEmu::foundation
-    iLEmu::mach)
+add_library(Shade::kernel_mach_processor ALIAS
+    shade_kernel_mach_processor)
+shade_configure_module(shade_kernel_mach_processor)
+target_link_libraries(shade_kernel_mach_processor PRIVATE
+    Shade::foundation
+    Shade::mach)
 
-add_library(ilemu_kernel_mach_task STATIC
+add_library(shade_kernel_mach_task STATIC
     mach/task/identity.cpp
     mach/task/info.cpp
     mach/task/enumeration.cpp
     mach/task/exception_ports.cpp)
-add_library(iLEmu::kernel_mach_task ALIAS
-    ilemu_kernel_mach_task)
-ilemu_configure_module(ilemu_kernel_mach_task)
-target_link_libraries(ilemu_kernel_mach_task PRIVATE
-    iLEmu::foundation
-    iLEmu::mach)
+add_library(Shade::kernel_mach_task ALIAS
+    shade_kernel_mach_task)
+shade_configure_module(shade_kernel_mach_task)
+target_link_libraries(shade_kernel_mach_task PRIVATE
+    Shade::foundation
+    Shade::mach)
 
-add_library(ilemu_kernel_mach_thread STATIC
+add_library(shade_kernel_mach_thread STATIC
     mach/thread/creation.cpp
     mach/thread/lifecycle.cpp
     mach/thread/self.cpp
     mach/thread/state.cpp)
-add_library(iLEmu::kernel_mach_thread ALIAS
-    ilemu_kernel_mach_thread)
-ilemu_configure_module(ilemu_kernel_mach_thread)
-target_link_libraries(ilemu_kernel_mach_thread PRIVATE
-    iLEmu::foundation
-    iLEmu::mach)
+add_library(Shade::kernel_mach_thread ALIAS
+    shade_kernel_mach_thread)
+shade_configure_module(shade_kernel_mach_thread)
+target_link_libraries(shade_kernel_mach_thread PRIVATE
+    Shade::foundation
+    Shade::mach)
 
-add_library(ilemu_kernel_mach_vm STATIC
+add_library(shade_kernel_mach_vm STATIC
     mach/vm/allocate.cpp
     mach/vm/copy.cpp
     mach/vm/deallocate.cpp
@@ -398,22 +398,22 @@ add_library(ilemu_kernel_mach_vm STATIC
     mach/vm/read.cpp
     mach/vm/remap.cpp
     mach/vm/region.cpp)
-add_library(iLEmu::kernel_mach_vm ALIAS
-    ilemu_kernel_mach_vm)
-ilemu_configure_module(ilemu_kernel_mach_vm)
-target_link_libraries(ilemu_kernel_mach_vm PRIVATE
-    iLEmu::foundation)
+add_library(Shade::kernel_mach_vm ALIAS
+    shade_kernel_mach_vm)
+shade_configure_module(shade_kernel_mach_vm)
+target_link_libraries(shade_kernel_mach_vm PRIVATE
+    Shade::foundation)
 
-add_library(ilemu_kernel_mach_input STATIC
+add_library(shade_kernel_mach_input STATIC
     mach/input/graphics_services.cpp
     mach/input/graphics_services_input_abi.cpp)
-add_library(iLEmu::kernel_mach_input ALIAS ilemu_kernel_mach_input)
-ilemu_configure_module(ilemu_kernel_mach_input)
-target_link_libraries(ilemu_kernel_mach_input PUBLIC
-    iLEmu::foundation
-    iLEmu::mach)
+add_library(Shade::kernel_mach_input ALIAS shade_kernel_mach_input)
+shade_configure_module(shade_kernel_mach_input)
+target_link_libraries(shade_kernel_mach_input PUBLIC
+    Shade::foundation
+    Shade::mach)
 
-target_sources(ilemu_kernel PRIVATE
+target_sources(shade_kernel PRIVATE
     mach/support.cpp
     mach/ipc.cpp
     mach/kevent_receive.cpp
@@ -426,26 +426,26 @@ target_sources(ilemu_kernel PRIVATE
     mach/notification_message.cpp
     mach/send_possible.cpp
     mach/traps.cpp)
-target_link_libraries(ilemu_kernel PRIVATE
-    iLEmu::kernel_mach_transport
-    iLEmu::kernel_mach_port
-    iLEmu::kernel_mach_processor
-    iLEmu::kernel_mach_task
-    iLEmu::kernel_mach_thread
-    iLEmu::kernel_mach_vm
-    iLEmu::kernel_mach_input)
+target_link_libraries(shade_kernel PRIVATE
+    Shade::kernel_mach_transport
+    Shade::kernel_mach_port
+    Shade::kernel_mach_processor
+    Shade::kernel_mach_task
+    Shade::kernel_mach_thread
+    Shade::kernel_mach_vm
+    Shade::kernel_mach_input)
 
-target_link_libraries(ilemu_kernel PRIVATE
-    iLEmu::kernel_graphics
-    iLEmu::device_state
-    iLEmu::kernel_iokit_audio
-    iLEmu::kernel_iokit_baseband
-    iLEmu::kernel_iokit_camera
-    iLEmu::kernel_iokit_power
-    iLEmu::kernel_iokit_display
-    iLEmu::kernel_iokit_graphics
-    iLEmu::kernel_iokit_hid
-    iLEmu::kernel_iokit_jpeg
-    iLEmu::kernel_iokit_keybag
-    iLEmu::kernel_iokit_mbx
-    iLEmu::kernel_iokit_mobile_file_integrity)
+target_link_libraries(shade_kernel PRIVATE
+    Shade::kernel_graphics
+    Shade::device_state
+    Shade::kernel_iokit_audio
+    Shade::kernel_iokit_baseband
+    Shade::kernel_iokit_camera
+    Shade::kernel_iokit_power
+    Shade::kernel_iokit_display
+    Shade::kernel_iokit_graphics
+    Shade::kernel_iokit_hid
+    Shade::kernel_iokit_jpeg
+    Shade::kernel_iokit_keybag
+    Shade::kernel_iokit_mbx
+    Shade::kernel_iokit_mobile_file_integrity)

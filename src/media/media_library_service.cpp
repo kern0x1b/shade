@@ -7,7 +7,7 @@
 
 #include "media/media_library_service.hpp"
 
-namespace ilemu::media_library_service {
+namespace shade::media_library_service {
 
 bool can_serve_empty_catalogue(const std::filesystem::path& rootfs)
 {
@@ -47,4 +47,4 @@ bool is_request_identifier(std::uint32_t identifier)
     return identifier >= 990000U && identifier < 990100U;
 }
 
-} // namespace ilemu::media_library_service
+} // namespace shade::media_library_service

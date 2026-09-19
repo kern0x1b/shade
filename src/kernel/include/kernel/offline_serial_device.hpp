@@ -17,7 +17,7 @@
 
 #include "kernel/darwin_tty_abi.hpp"
 
-namespace ilemu::bsd::offline_serial_device {
+namespace shade::bsd::offline_serial_device {
 
 // A controller may be absent while its firmware-defined serial node remains
 // discoverable. The descriptor implements ordinary TTY setup and a minimal
@@ -49,4 +49,4 @@ private:
 
 [[nodiscard]] bool is_path(std::string_view candidate);
 
-} // namespace ilemu::bsd::offline_serial_device
+} // namespace shade::bsd::offline_serial_device

@@ -19,7 +19,7 @@
 #include "foundation/darwin_errno.hpp"
 #include "network/darwin_socket_abi.hpp"
 
-namespace ilemu::darwin {
+namespace shade::darwin {
 
 // Darwin 8 / iPhoneOS 1.0 ABI values used at the compatibility boundary.
 // Keep these names here instead of scattering host-incompatible literals
@@ -412,4 +412,4 @@ namespace memory_sync_flag {
     inline constexpr std::uint32_t synchronous = 0x0010;
 } // namespace memory_sync_flag
 
-} // namespace ilemu::darwin
+} // namespace shade::darwin

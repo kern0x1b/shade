@@ -40,7 +40,7 @@
 #include "graphics/gles_resources.hpp"
 #include "graphics/gles_sampler_state.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr VkFormat color_format = VK_FORMAT_B8G8R8A8_UNORM;
@@ -830,9 +830,9 @@ std::vector<std::uint32_t> compile_shader(std::string_view source,
                 white);
             auto application = make_vulkan_structure<VkApplicationInfo>(
                 VK_STRUCTURE_TYPE_APPLICATION_INFO);
-            application.pApplicationName = "iLEmu";
+            application.pApplicationName = "Shade";
             application.applicationVersion = VK_MAKE_VERSION(0, 1, 0);
-            application.pEngineName = "iLEmu GLES HLE";
+            application.pEngineName = "Shade GLES HLE";
             application.engineVersion = VK_MAKE_VERSION(0, 1, 0);
             application.apiVersion = VK_API_VERSION_1_0;
 
@@ -919,7 +919,7 @@ std::vector<std::uint32_t> compile_shader(std::string_view source,
                     physical_device_ = candidate;
                     hardware_accelerated_ = !cpu_device;
                     queue_family_ = family;
-                    renderer_name_ = "iLEmu GLES 1.1 Vulkan (" +
+                    renderer_name_ = "Shade GLES 1.1 Vulkan (" +
                                      std::string { properties.deviceName } +
                                      ")";
                     break;
@@ -5057,4 +5057,4 @@ std::unique_ptr<GlesRenderer> create_vulkan_gles_renderer(
     }
 }
 
-} // namespace ilemu
+} // namespace shade

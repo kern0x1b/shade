@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace ilemu {
+namespace shade {
 class UserlandHleRegistry;
 void register_hid_switch_queries(UserlandHleRegistry& registry);
-} // namespace ilemu
+} // namespace shade

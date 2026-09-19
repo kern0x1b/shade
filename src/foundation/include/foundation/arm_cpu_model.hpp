@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <memory>
 
-namespace ilemu {
+namespace shade {
 
 inline constexpr std::uint32_t arm_mach_cpu_type = 12U;
 
@@ -59,7 +59,7 @@ enum class ArmUnpredictableInstructionPolicy : std::uint8_t {
 }
 
 // A device-specific ARM core model. It selects both the decoder architecture
-// and a static instruction-issue baseline. Dynarmic queries timing while
+// and a static instruction-issue baseline. Umbra queries timing while
 // translating a block and embeds the result in its cycle count, so this
 // abstraction does not add a virtual call to execution of an already compiled
 // block. Cache, TLB, pipeline dependency, and branch-predictor state remain
@@ -90,4 +90,4 @@ public:
 // Used by CPU-only helpers and tests that do not select a DeviceModel.
 [[nodiscard]] const ArmCpuModel& default_arm_cpu_model();
 
-} // namespace ilemu
+} // namespace shade

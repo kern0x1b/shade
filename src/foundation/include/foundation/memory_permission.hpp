@@ -8,7 +8,7 @@
 
 #include <cstdint>
 
-namespace ilemu {
+namespace shade {
 
 enum class MemoryPermission : std::uint8_t {
     None = 0,
@@ -36,4 +36,4 @@ constexpr bool has_permission(MemoryPermission value, MemoryPermission required)
            static_cast<unsigned>(required);
 }
 
-} // namespace ilemu
+} // namespace shade

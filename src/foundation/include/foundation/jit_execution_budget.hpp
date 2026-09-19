@@ -10,7 +10,7 @@
 #include <chrono>
 #include <cstdint>
 
-namespace ilemu {
+namespace shade {
 
 // Converts a wall-time cooperation target into a one-shot native-block
 // budget. The estimate is executor-local because translation density and
@@ -44,4 +44,4 @@ private:
     };
 };
 
-} // namespace ilemu
+} // namespace shade

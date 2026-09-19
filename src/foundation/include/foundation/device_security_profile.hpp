@@ -7,7 +7,7 @@
 #include <array>
 #include <cstddef>
 
-namespace ilemu {
+namespace shade {
 
 inline constexpr std::array<std::byte, 52>
     default_virtual_effaceable_storage_blob {
@@ -96,4 +96,4 @@ inline constexpr KeyBagCapabilities virtual_keybag_capabilities {
     .virtual_effaceable_storage_available = true,
 };
 
-} // namespace ilemu
+} // namespace shade

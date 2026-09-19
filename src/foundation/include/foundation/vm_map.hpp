@@ -14,7 +14,7 @@
 
 #include "foundation/memory_permission.hpp"
 
-namespace ilemu {
+namespace shade {
 
 enum class VmInheritance : std::uint8_t {
     Share = 0,
@@ -65,4 +65,4 @@ private:
     std::map<std::uint32_t, Region> regions_;
 };
 
-} // namespace ilemu
+} // namespace shade

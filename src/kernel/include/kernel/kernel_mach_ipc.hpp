@@ -14,7 +14,7 @@
 
 #include "kernel/kernel_shared_state.hpp"
 
-namespace ilemu::mach_ipc {
+namespace shade::mach_ipc {
 
 struct ReceivedMessage {
     std::vector<std::byte> bytes;
@@ -44,4 +44,4 @@ struct ReceivedMessage {
     std::uint32_t sequence_number = 0, std::uint64_t context = 0,
     DarwinMachVmAddressWidth context_width = DarwinMachVmAddressWidth::Natural32);
 
-} // namespace ilemu::mach_ipc
+} // namespace shade::mach_ipc

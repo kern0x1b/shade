@@ -16,7 +16,7 @@
 #include <string>
 #include <string_view>
 
-namespace ilemu {
+namespace shade {
 
 class UserlandHleCall;
 class UserlandHleRegistry;
@@ -88,4 +88,4 @@ private:
     std::set<RegistrationKey> owned_registrations_;
 };
 
-} // namespace ilemu
+} // namespace shade

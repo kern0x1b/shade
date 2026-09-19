@@ -18,7 +18,7 @@
 #include <cstdint>
 #include <span>
 
-namespace ilemu::mach_vm_support {
+namespace shade::mach_vm_support {
 
 inline constexpr std::uint32_t kern_success = 0;
 inline constexpr std::uint32_t kern_invalid_address = 1;
@@ -58,4 +58,4 @@ inline bool write_simple_reply(AddressSpace& memory, std::uint32_t address,
     return write_words(memory, address, reply);
 }
 
-} // namespace ilemu::mach_vm_support
+} // namespace shade::mach_vm_support

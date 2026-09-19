@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <string_view>
 
-namespace ilemu {
+namespace shade {
 
 void CompatibilityKernel::install_commpage()
 {
@@ -45,4 +45,4 @@ void CompatibilityKernel::install_commpage()
         install(0xffff4000U);
 }
 
-} // namespace ilemu
+} // namespace shade

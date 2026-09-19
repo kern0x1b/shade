@@ -9,7 +9,7 @@
 
 #include "runtime/session_host.hpp"
 
-namespace ilemu {
+namespace shade {
 
 // The CLI's composition root connects optional native adapters to a session.
 class DesktopHost final : public SessionHost {
@@ -25,4 +25,4 @@ public:
     memory_budget_snapshot() const override;
 };
 
-} // namespace ilemu
+} // namespace shade

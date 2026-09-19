@@ -14,7 +14,7 @@
 #include "device_state/darwin_kernel_configuration.hpp"
 #include "foundation/output.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     template <class Enum>
@@ -100,4 +100,4 @@ void inspect_abi(const std::optional<std::filesystem::path>& rootfs,
     output.write(text.str());
 }
 
-} // namespace ilemu
+} // namespace shade

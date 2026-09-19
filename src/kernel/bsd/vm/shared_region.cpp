@@ -28,7 +28,7 @@
 #include <utility>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     // The iPhoneOS 1 ARM dyld uses five 32-bit words here.  This differs from
@@ -963,4 +963,4 @@ bool CompatibilityKernel::dispatch_bsd_shared_region(
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

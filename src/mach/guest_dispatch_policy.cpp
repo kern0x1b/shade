@@ -9,7 +9,7 @@
 
 #include <stdexcept>
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     [[nodiscard]] bool runnable(
@@ -213,4 +213,4 @@ GuestDispatchDecision GuestDispatchPolicy::decide(
     return result;
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -22,7 +22,7 @@
 #include <string_view>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 enum class HostNetworkPolicy : std::uint8_t {
     Isolated,
@@ -124,4 +124,4 @@ private:
     bool receive_hop_limit_ { };
 };
 
-} // namespace ilemu
+} // namespace shade

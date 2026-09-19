@@ -9,7 +9,7 @@
 
 #include <cstdint>
 
-namespace ilemu::mbx2d_abi {
+namespace shade::mbx2d_abi {
 
 inline constexpr std::uint32_t success = 0;
 inline constexpr std::uint32_t failure = 1;
@@ -90,4 +90,4 @@ inline constexpr std::uint32_t layerkit_mask_source_word = 0x00000006U;
 inline constexpr std::uint32_t layerkit_mask_destination_word = 0x00000010U;
 inline constexpr std::uint32_t layerkit_mask_operation_word = 0x00000a00U;
 
-} // namespace ilemu::mbx2d_abi
+} // namespace shade::mbx2d_abi

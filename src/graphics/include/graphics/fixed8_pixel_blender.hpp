@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <span>
 
-namespace ilemu {
+namespace shade {
 
 // Premultiplied pixel arithmetic with a 256-step, truncating alpha factor.
 // This is the integer scanline convention; normalized GLES blending differs.
@@ -21,4 +21,4 @@ public:
         std::span<std::uint32_t> result);
 };
 
-} // namespace ilemu
+} // namespace shade

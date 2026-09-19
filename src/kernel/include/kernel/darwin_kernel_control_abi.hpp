@@ -13,7 +13,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace ilemu::darwin::kernel_control {
+namespace shade::darwin::kernel_control {
 
 // XNU bsd/sys/sys_domain.h and bsd/sys/kern_control.h.
 inline constexpr std::uint32_t protocol_family_system = 32;
@@ -39,4 +39,4 @@ inline constexpr std::uint32_t socket_address_reserved_count = 5;
 // _IOWR('N', 3, struct ctl_info), where sizeof(ctl_info) == 100 on ARM32.
 inline constexpr std::uint32_t ioctl_get_info = 0xc0644e03U;
 
-} // namespace ilemu::darwin::kernel_control
+} // namespace shade::darwin::kernel_control

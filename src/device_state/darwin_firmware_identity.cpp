@@ -13,11 +13,11 @@
 #include <cstdint>
 #include <string_view>
 
-#if defined(ILEMU_HAS_LIBPLIST)
+#if defined(SHADE_HAS_LIBPLIST)
 #include <plist/plist.h>
 #endif
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     std::string read_file(const std::filesystem::path& path)
@@ -58,7 +58,7 @@ namespace {
         const auto bytes = read_file(
             rootfs / "System/Library/CoreServices/SystemVersion.plist");
         SystemVersion result;
-#if defined(ILEMU_HAS_LIBPLIST)
+#if defined(SHADE_HAS_LIBPLIST)
         plist_t parsed = nullptr;
         plist_format_t format = PLIST_FORMAT_NONE;
         if (!bytes.empty() &&
@@ -97,4 +97,4 @@ std::string read_darwin_build_version(const std::filesystem::path& rootfs)
     return read_system_version(rootfs).build_version;
 }
 
-} // namespace ilemu
+} // namespace shade

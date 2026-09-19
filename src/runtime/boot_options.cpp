@@ -6,7 +6,7 @@
 
 #include "runtime/boot_options.hpp"
 
-namespace ilemu {
+namespace shade {
 
 std::filesystem::path default_host_cache_directory(
     const std::filesystem::path& rootfs)
@@ -17,7 +17,7 @@ std::filesystem::path default_host_cache_directory(
         rootfs_name == normalized.root_name()) {
         rootfs_name = "rootfs";
     }
-    return normalized.parent_path() / ".ilemu-cache" / rootfs_name;
+    return normalized.parent_path() / ".shade-cache" / rootfs_name;
 }
 
-} // namespace ilemu
+} // namespace shade

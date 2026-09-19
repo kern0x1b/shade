@@ -14,7 +14,7 @@
 #include <mutex>
 #include <string>
 
-namespace ilemu::kernel_iokit::keybag {
+namespace shade::kernel_iokit::keybag {
 namespace {
 
     constexpr std::string_view registry_path {
@@ -280,4 +280,4 @@ std::optional<MethodResult> dispatch_effaceable_storage_connect_method(
     return MethodResult { iokit_abi::unsupported, { }, { } };
 }
 
-} // namespace ilemu::kernel_iokit::keybag
+} // namespace shade::kernel_iokit::keybag

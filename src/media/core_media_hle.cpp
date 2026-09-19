@@ -12,7 +12,7 @@
 
 #include "foundation/userland_hle.hpp"
 
-namespace ilemu {
+namespace shade {
 namespace {
 
     constexpr std::string_view core_media_image {
@@ -32,4 +32,4 @@ void CoreMediaHle::copy_device_route_for_audio_category(UserlandHleCall& call)
     call.resume_original_persistently();
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -18,7 +18,7 @@
 #include <span>
 #include <vector>
 
-namespace ilemu {
+namespace shade {
 
 class AddressSpace;
 class HostGraphicsDevice;
@@ -119,4 +119,4 @@ private:
     std::uint64_t next_texture_revision_ { 1 };
 };
 
-} // namespace ilemu
+} // namespace shade

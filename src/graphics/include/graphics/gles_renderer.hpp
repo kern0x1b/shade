@@ -22,7 +22,7 @@
 #include "graphics/host_graphics.hpp"
 #include "foundation/performance.hpp"
 
-namespace ilemu {
+namespace shade {
 
 struct DisplayFrame;
 
@@ -143,4 +143,4 @@ void release_gles_render_targets(std::span<const GlesRenderTargetKey> targets);
 // The command-line host calls this after all guest runtimes have unwound.
 void shutdown_gles_renderer();
 
-} // namespace ilemu
+} // namespace shade

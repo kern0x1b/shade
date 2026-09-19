@@ -16,7 +16,7 @@
 #include <cstdint>
 #include <string>
 
-namespace ilemu {
+namespace shade {
 
 bool CompatibilityKernel::dispatch_bsd_security(Cpu& cpu, std::uint32_t number)
 {
@@ -74,4 +74,4 @@ bool CompatibilityKernel::dispatch_bsd_security(Cpu& cpu, std::uint32_t number)
     return true;
 }
 
-} // namespace ilemu
+} // namespace shade

@@ -26,7 +26,7 @@
 #include "foundation/arm_cpu_model.hpp"
 #include "foundation/content_identity.hpp"
 
-namespace ilemu {
+namespace shade {
 
 class AddressSpace;
 class Cpu;
@@ -482,4 +482,4 @@ struct UserlandHleStats {
 
 [[nodiscard]] UserlandHleStats userland_hle_stats() noexcept;
 
-} // namespace ilemu
+} // namespace shade

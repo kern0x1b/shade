@@ -12,7 +12,7 @@
 #include <mutex>
 #include <optional>
 
-namespace ilemu {
+namespace shade {
 
 std::optional<CompatibilityKernel::MachReceiveResult>
 CompatibilityKernel::receive_kevent_mach_message(
@@ -49,4 +49,4 @@ CompatibilityKernel::receive_kevent_mach_message(
     return receive_mach_message_locked(receive, false, waking_blocked_receiver);
 }
 
-} // namespace ilemu
+} // namespace shade

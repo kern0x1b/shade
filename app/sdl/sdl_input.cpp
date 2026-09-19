@@ -13,14 +13,14 @@
 
 #include "graphics/display.hpp"
 
-#if defined(ILEMU_HAS_SDL2)
+#if defined(SHADE_HAS_SDL2)
 #include <SDL.h>
 #endif
 
-namespace ilemu {
+namespace shade {
 namespace {
 
-#if defined(ILEMU_HAS_SDL2)
+#if defined(SHADE_HAS_SDL2)
     DisplayGeometry input_coordinate_geometry(SDL_Window* window)
     {
         int width { };
@@ -119,7 +119,7 @@ namespace {
 
 bool SdlInput::poll(SDL_Window* window)
 {
-#if defined(ILEMU_HAS_SDL2)
+#if defined(SHADE_HAS_SDL2)
     SDL_Event event { };
     while (SDL_PollEvent(&event) != 0) {
         const auto coordinates = input_coordinate_geometry(window);
@@ -135,7 +135,7 @@ bool SdlInput::poll(SDL_Window* window)
 
 bool SdlInput::wait(SDL_Window* window, std::chrono::nanoseconds timeout)
 {
-#if defined(ILEMU_HAS_SDL2)
+#if defined(SHADE_HAS_SDL2)
     if (!running_)
         return false;
     int timeout_milliseconds = 0;
@@ -175,7 +175,7 @@ bool SdlInput::wait(SDL_Window* window, std::chrono::nanoseconds timeout)
 void SdlInput::process_event(const SDL_Event& event, int window_width,
     int window_height, DisplayViewport viewport)
 {
-#if defined(ILEMU_HAS_SDL2)
+#if defined(SHADE_HAS_SDL2)
     switch (event.type) {
     case SDL_WINDOWEVENT:
         switch (event.window.event) {
@@ -305,4 +305,4 @@ std::vector<RingerSwitchInput> SdlInput::take_ringer_switch_events()
     return events;
 }
 
-} // namespace ilemu
+} // namespace shade

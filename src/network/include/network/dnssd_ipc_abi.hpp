@@ -16,7 +16,7 @@
 #include <string_view>
 #include <vector>
 
-namespace ilemu::dnssd_ipc {
+namespace shade::dnssd_ipc {
 
 // DNSService IPC ABI used by the mDNSResponderSystemLibraries-120 client in
 // iPhoneOS 1.0.  The wire header is converted one 32-bit word at a time; the
@@ -354,4 +354,4 @@ decode_get_address_info_reply(std::span<const std::byte> wire)
     };
 }
 
-} // namespace ilemu::dnssd_ipc
+} // namespace shade::dnssd_ipc
