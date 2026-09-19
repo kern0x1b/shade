@@ -210,17 +210,96 @@ namespace {
         },
     };
 
-    // Voice is a routing-control endpoint, not a host PCM stream. The native
-    // HAL and routing engine own its property synchronizer and DSP graph.
+    // Voice is the application processor's side of a call: AppleSecondaryAudio
+    // on the codec's I2S bus, as an iPhone 4S on iOS 6.1.3 publishes it
+    // (IOAudio2Device "Voice", read from the device's registry). From 6.1.3,
+    // VirtualAudio opens the route only after finding its input stream.
+    constexpr IOAudio2StreamFormatDescription voice_format(
+        std::uint32_t sample_rate, std::uint32_t bits_per_channel)
+    {
+        const std::uint32_t bytes_per_frame = bits_per_channel == 16U ? 4U : 8U;
+        return {
+            .sample_rate = sample_rate,
+            .format_id = linear_pcm_format,
+            .format_flags = bits_per_channel == 16U ? linear_pcm_flags : 0x04U,
+            .bytes_per_packet = bytes_per_frame,
+            .frames_per_packet = 1,
+            .bytes_per_frame = bytes_per_frame,
+            .channels_per_frame = 2,
+            .bits_per_channel = bits_per_channel,
+        };
+    }
+
+    constexpr auto voice_formats = [] {
+        constexpr std::array<std::uint32_t, 9> rates { 8000U, 11025U, 12000U,
+            16000U, 22050U, 24000U, 32000U, 44100U, 48000U };
+        std::array<IOAudio2StreamFormatDescription, rates.size() * 3U> formats { };
+        std::size_t index = 0;
+        for (const auto rate : rates) {
+            for (const auto bits : { 16U, 20U, 24U })
+                formats[index++] = voice_format(rate, bits);
+        }
+        return formats;
+    }();
+
+    constexpr std::uint32_t voice_io_buffer_frame_size = 3072U;
+
+    constexpr std::array voice_streams {
+        IOAudio2StreamDescription {
+            .identifier = 100,
+            .direction = IOAudio2StreamDirection::Input,
+            .starting_channel = 1,
+            .buffer_mapping_options = 1,
+            .buffer_size = voice_io_buffer_frame_size * 4U,
+            .format = voice_format(8000U, 16U),
+            .available_formats = voice_formats,
+        },
+        IOAudio2StreamDescription {
+            .identifier = 200,
+            .direction = IOAudio2StreamDirection::Output,
+            .starting_channel = 1,
+            .buffer_mapping_options = 1,
+            .buffer_size = voice_io_buffer_frame_size * 4U,
+            .format = voice_format(8000U, 16U),
+            .available_formats = voice_formats,
+        },
+    };
+
     constexpr auto application_voice_source = four_cc('a', 'p', '2', 'v');
+    constexpr auto dsp_voice_source = four_cc('a', 'p', '2', 'd');
+    constexpr auto voice_dsp = four_cc('d', 's', 'p', '2');
     constexpr std::array voice_sources {
+        IOAudio2SelectorItemDescription { application_voice_source, "Codec" },
         IOAudio2SelectorItemDescription {
-            application_voice_source, "Application Processor" },
+            four_cc('b', 't', 'h', 's'), "Bluetooth" },
+        IOAudio2SelectorItemDescription { dsp_voice_source, "DSP" },
+    };
+    constexpr std::array voice_destinations {
+        IOAudio2SelectorItemDescription { voice_dsp, "DSP" },
+        IOAudio2SelectorItemDescription { dsp_voice_source, "AP" },
+        IOAudio2SelectorItemDescription { 0U, "Disabled" },
+    };
+    constexpr std::array voice_clock_sources {
+        IOAudio2SelectorItemDescription { voice_dsp, "DSP" },
+        IOAudio2SelectorItemDescription { four_cc('i', '2', 's', 'M'), "System" },
+        IOAudio2SelectorItemDescription {
+            four_cc('b', 'b', '2', 'w'), "Baseband" },
+    };
+    constexpr std::array voice_destination_properties {
+        four_cc('m', 'd', 'd', 's'), four_cc('m', 'd', 'd', '#'),
+        four_cc('m', 'd', 'd', 'c'),
     };
     constexpr std::array voice_controls {
-        IOAudio2ControlDescription { 1U, selector_control_base_class,
+        IOAudio2ControlDescription { 300U, selector_control_base_class,
             data_source_control_class, four_cc('g', 'l', 'o', 'b'), 0U,
             application_voice_source, false, std::nullopt, voice_sources },
+        IOAudio2ControlDescription { 301U, selector_control_base_class,
+            four_cc('d', 'e', 's', 't'), playthrough_scope, 0U, voice_dsp,
+            false, std::nullopt, voice_destinations,
+            voice_destination_properties },
+        IOAudio2ControlDescription { 302U, selector_control_base_class,
+            four_cc('c', 'l', 'c', 'k'), four_cc('g', 'l', 'o', 'b'), 0U,
+            voice_dsp, false, std::nullopt, voice_clock_sources },
     };
 
     constexpr std::array device_catalog {
@@ -244,12 +323,16 @@ namespace {
         },
         IOAudio2DeviceDescription {
             .name = "Voice",
-            .manufacturer = "Apple Computer, Inc.",
+            .manufacturer = "Apple Inc.",
             .uid = "Voice",
             .transport_type = built_in_transport_type,
-            .io_buffer_frame_size = 1024,
-            .streams = { },
+            .io_buffer_frame_size = voice_io_buffer_frame_size,
+            .streams = voice_streams,
             .controls = voice_controls,
+            .input_latency = 12,
+            .output_latency = 13,
+            .input_safety_offset = 48,
+            .output_safety_offset = 48,
         },
     };
 

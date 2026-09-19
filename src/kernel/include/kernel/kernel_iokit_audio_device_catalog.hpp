@@ -61,6 +61,9 @@ struct IOAudio2ControlDescription {
     bool read_only;
     std::optional<IOAudio2ControlRangeDescription> range;
     std::span<const IOAudio2SelectorItemDescription> items;
+    // The device properties a change of this selector also changes; the
+    // driver publishes them so the HAL knows which listeners to notify.
+    std::span<const std::uint32_t> property_selectors { };
 };
 
 struct IOAudio2DeviceDescription {
@@ -74,6 +77,12 @@ struct IOAudio2DeviceDescription {
     std::uint32_t io_buffer_frame_size;
     std::span<const IOAudio2StreamDescription> streams;
     std::span<const IOAudio2ControlDescription> controls;
+    // Frames the hardware adds on either side of the I/O cycle, as the
+    // driver publishes them.
+    std::uint32_t input_latency { };
+    std::uint32_t output_latency { };
+    std::uint32_t input_safety_offset { };
+    std::uint32_t output_safety_offset { };
 };
 
 // A device catalog models hardware endpoints. Firmware-facing ABI details

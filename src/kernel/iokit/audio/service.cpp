@@ -310,6 +310,14 @@ namespace {
                 properties.emplace(profile.registry.control_selectors,
                     array_property(std::move(selector_items)));
             }
+            if (!control.property_selectors.empty()) {
+                std::vector<KernelSharedState::IOKitRegistryProperty> selectors;
+                selectors.reserve(control.property_selectors.size());
+                for (const auto selector : control.property_selectors)
+                    selectors.push_back(number_property(selector));
+                properties.emplace(profile.registry.control_property_selectors,
+                    array_property(std::move(selectors)));
+            }
             if (control.range) {
                 std::map<std::string, KernelSharedState::IOKitRegistryProperty>
                     range_properties;
@@ -876,12 +884,14 @@ std::vector<std::uint32_t> ensure_services_locked(KernelSharedState& state)
             number_property(~std::uint32_t { 0 }));
         properties.emplace(profile.registry.io_buffer_frame_size,
             number_property(device.io_buffer_frame_size));
-        properties.emplace(
-            profile.registry.input_safety_offset, number_property(0));
-        properties.emplace(
-            profile.registry.output_safety_offset, number_property(0));
-        properties.emplace(profile.registry.input_latency, number_property(0));
-        properties.emplace(profile.registry.output_latency, number_property(0));
+        properties.emplace(profile.registry.input_safety_offset,
+            number_property(device.input_safety_offset));
+        properties.emplace(profile.registry.output_safety_offset,
+            number_property(device.output_safety_offset));
+        properties.emplace(profile.registry.input_latency,
+            number_property(device.input_latency));
+        properties.emplace(profile.registry.output_latency,
+            number_property(device.output_latency));
         if (!device.streams.empty()) {
             properties.emplace(profile.registry.sample_rate,
                 number64_property(fixed_sample_rate(
