@@ -5,7 +5,7 @@ Shade is Charon's emulator for legacy iPhone OS and iOS userlands on macOS
 arm64 hosts. It is licensed under the Mozilla Public License 2.0; see LICENSE.
 
 The JIT core, kept as a separate submodule, is licensed under the BSD Zero
-Clause License; see the LICENSE.txt in its tree.
+Clause License; see the LICENSE in its tree.
 
 Third-party components
 ----------------------
