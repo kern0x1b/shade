@@ -83,7 +83,7 @@ the host's, which the guest's own watchdogs need.
 
 | Document | About |
 | --- | --- |
-| [CLAUDE.md](CLAUDE.md) | the contributor guide |
+| [AGENTS.md](AGENTS.md) | the contributor guide |
 | [CHANGELOG.md](CHANGELOG.md) | what changed |
 | [THIRD-PARTY.md](THIRD-PARTY.md) | what is bundled or linked, and under which license |
 
