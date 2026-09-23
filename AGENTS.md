@@ -61,7 +61,7 @@ lines, the frame counter and the processes that started.
 - Every source file starts with the MPL-2.0 notice; keep it on a file you change or
   add.
 - Commits: plain imperative subject, a body that says why, and the
-  `Co-Authored-By: Claude <noreply@anthropic.com>` trailer.
+  writing agent's own `Co-Authored-By:` trailer.
 - No personal data in tracked files: no device addresses, host names or absolute
   paths.
 - Version numbers are Shade's own, from `v0.1.0`; `CHANGELOG.md` records every
