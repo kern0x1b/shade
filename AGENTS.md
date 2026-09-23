@@ -1,121 +1,68 @@
-# shade / iLEmu
+# Contributor guide
 
-## 1. What this is
+Working notes for whoever is changing Shade, human or AI.
 
-A from-scratch iOS/Darwin emulator. CMake project name is `iLEmu`
-(`project(iLEmu ...)` in `CMakeLists.txt`); the built executable is `ilemu`.
-It boots an ARM32 iPhoneOS userland (from an externally supplied, extracted
-firmware rootfs — never checked in here) against a reimplemented Darwin/XNU
-kernel personality (Mach, BSD, IOKit) running on Dynarmic, an ARM
-recompiler/JIT vendored as the `external/dynarmic` submodule. The host side
-renders through a software or Vulkan GLES path and displays via SDL2.
+## What this is
 
-This repository builds and tests standalone; it does not itself contain
-firmware images, device automation, or the surrounding workspace's
-"emulator-lab" tooling. Its own commits (e.g. `29bcf3ec`, `c8de818c`) show it
-being consumed as a package (`ilemu`) built and patched by a sibling repo
-("Charon") elsewhere in this workspace — treat that relationship as
-external; nothing in this repo's build depends on it.
+An emulator that boots a legacy iOS firmware's own userland. It does not emulate
+hardware registers: it emulates an XNU kernel (system calls, Mach, IOKit) and the
+devices the firmware asks about, and lets the firmware's real launchd, daemons and
+frameworks run on top, on a JIT-translated ARM CPU (`external/umbra`).
 
-## 2. Layout
+## Build and run
 
-- `CMakeLists.txt` — single entry point for the whole project (see §3).
-- `src/<module>/` — one static library per module, each with its own
-  `CMakeLists.txt` and `include/<module>/` public headers:
-  - `foundation/` — the ARM CPU model on top of Dynarmic, address space,
-    dyld shared cache, Mach-O loading, executable catalog, firmware
-    preparation, JIT artifact/cache-governor code.
-  - `kernel/` — the Darwin kernel personality, split into `mach/`
-    (tasks, threads, ports, VM, scheduler), `bsd/` (VM, filesystem,
-    network, process, signal, security, sysctl, device), and `iokit/`
-    (hid, display, graphics, audio, camera, baseband, keybag, mbx, jpeg,
-    mobile file integrity).
-  - `device_state/` — Darwin identity/config state: firmware identity,
-    kernel identity, lockdown, launchd job catalog, network preferences.
-  - `graphics/` — the GLES rasterizer/renderer, boot logo, CoreAnimation
-    remote ABI, LayerKit compatibility.
-  - `mach/`, `filesystem/`, `network/`, `storage/`, `telephony/`, `media/`,
-    `bluetooth/`, `crypto/`, `debug/`, `host/`, `runtime/` — one module
-    each; `host/` is the only module gated on host libraries (ffmpeg for
-    audio decode, native GLES).
-- `app/` — the `ilemu` executable: CLI dispatch (`main.cpp`), the SDL2
-  display/input/audio backend (`app/sdl/`), and live control
-  (`app/control/`).
-- `tools/` — `prepare_boot_logo.py` (host-side firmware asset prep via
-  XPwn) and `tools/guest/` (an optional ARMv6 guest probe binary, built
-  with a separate cctools-port linker, not part of the normal build).
-- `external/` — `dynarmic` and `ext-boost` as git submodules (see
-  `.gitmodules`); `vulkan-memory-allocator` is vendored directly (not a
-  submodule) as an unmodified single header.
-- No `tests/` directory exists in this repo. `CMakeLists.txt` looks for one
-  at `ILEMU_TESTS_DIR` (default `<source>/tests`) and only wires it in via
-  `add_subdirectory` if present under `BUILD_TESTING` — a surrounding
-  workspace checkout can supply that tree without changing this file.
+See the README. The program is `build/shade`. A quick check that a build works:
+`shade profile --list`, then a boot of a root filesystem with `--display headless
+--gles-backend software --time-scale 10` and a look at the log for `[cpu] fatal`
+lines, the frame counter and the processes that started.
 
-## 3. Build
+## Layout
 
-```
-git submodule update --init --recursive
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build -j
-```
+- `app/` the verbs, the live control channel (`--control-stdin`), the SDL window.
+- `src/runtime/` the session: boot options, the scheduler loop, the pacer.
+- `src/kernel/` the BSD and Mach side of the kernel; `src/mach/` Mach messaging
+  and the execution policies; `src/device_state/` what the firmware is told about
+  the device (identity, kernel configuration, activation).
+- `src/foundation/` the address space, the CPU wrapper around Umbra, file page
+  cache and host file watcher.
+- `src/graphics/`, `src/media/`, `src/network/`, `src/telephony/`,
+  `src/bluetooth/`, `src/storage/`, `src/crypto/` the devices and frameworks the
+  guest talks to; `src/host/` is what they use on the Mac.
+- `src/debug/` the gdb remote stub (`--gdb PORT`): registers, memory, software
+  breakpoints, all processes as `pPID.TID`.
+- `external/` see `THIRD-PARTY.md`; do not edit the vendored trees.
 
-Requires CMake ≥ 3.24, a C++20 compiler, and Threads. `external/dynarmic`
-and `external/ext-boost` must be checked out first — CMake configure fails
-fast (`FATAL_ERROR`) with a clear message if either is missing.
+## Things that bite
 
-Optional, auto-detected through `find_package`/`pkg-config` and safe to be
-absent:
-- `ILEMU_ENABLE_SDL2` (default ON) — needs `sdl2` via pkg-config; without it
-  `ilemu` builds but has no display backend.
-- `ILEMU_ENABLE_VULKAN` (default ON) — needs the Vulkan SDK; falls back to
-  the software GLES path if not found.
-- `ffmpeg` (`libavformat`/`libavcodec`/`libavutil`/`libswresample`) and
-  `libplist-2.0` via pkg-config, for audio decode and plist handling.
+- **A guest second is slower than a device's.** Without `--time-scale 10` the
+  guest's own watchdogs and RPC deadlines expire before it finishes: iOS 6.1.3 loses
+  SpringBoard every 100 s to a mediaserverd timeout.
+- **Firmware jobs come from a cache on iOS 6.1.** launchd stats only the
+  LaunchDaemons plists that the cache inside the dyld shared cache lists, so a
+  plist added to that folder is never started. `/etc/launchd.conf` is still read,
+  and its `bsexec` line starts a program - but launchctl waits for it, so a program
+  that stays has to leave launchctl behind (fork, parent exits).
+- **An audio device the firmware needs must be described completely.** iOS 6.1.3's
+  audio plug-in opens a route only after finding the Voice device's input stream;
+  without one it throws with its state lock held and mediaserverd deadlocks.
+  Describe devices from a registry dump of a real one, never from a guess.
+- **A fault ends the process.** A CPU fault - a bad access, a non-executable page -
+  ends the guest process; no Mach exception and no signal is raised yet.
+- **Names the emulator writes.** `.shade-device-state` (the device state next to a
+  run), `.shade-cache`, `shade-shared-cache-<uid>` in the temporary directory, and
+  the label the device's class keys are derived under in `src/crypto/host`; changing
+  the last invalidates every saved device state.
+- **Logs are the interface.** Charon reads the emulator's log lines
+  (`[process] spawn-setexec`, `[cpu] fatal`, `[display] frame=`); do not reword them
+  without changing its reader.
 
-The resulting binary is `build/ilemu`. It is a CLI with subcommands, not a
-GUI launcher — run `./build/ilemu help` for the full list. Two subcommands
-need no firmware rootfs and are the right smoke check after a build:
+## Conventions
 
-```
-./build/ilemu smoke
-./build/ilemu benchmark arm
-```
-
-Everything else (`boot`, `inspect`, `catalog`, `firmware prepare`,
-`disasm`, `abi`) takes `--rootfs DIR` pointing at an extracted iPhoneOS
-firmware tree, which this repo does not provide or commit (see `.gitignore`:
-`/firmwares/`, `/build/`, `/.cache-mem/`).
-
-## 4. Conventions
-
-- Commit subjects are lowercase, imperative, usually `<area>: Sentence.`
-  where `<area>` is a module name (`mach:`, `kernel:`, `hid:`, `graphics:`,
-  `memory:`, `iokit:`, `vm:`, `host:`, `runtime:`, ...) matching a `src/`
-  subdirectory; a few commits (submodule bumps, patch imports) omit the
-  prefix. No conventional-commit type prefixes (`feat:`, `fix:`).
-- License is MPL-2.0; every source and CMake file opens with the standard
-  MPL boilerplate comment — keep it on new files.
-- `.clang-format` bases on WebKit style (brace/indent/pointer conventions),
-  80-column limit, aligned operands, no forced operator-line breaks.
-- `.gitignore` excludes `/build/`, `*.log`, `/firmwares/`, `/.cache-mem/`,
-  `/tools/__pycache__/` — firmware dumps, logs, and build/cache output
-  never belong in a commit here.
-- New modules under `src/` need a matching `include/<module>/` root and a
-  call to `ilemu_configure_module()` in their `CMakeLists.txt`, which wires
-  the include path and (for `kernel/*` subtargets) the shared
-  `iLEmu::kernel_api` interface.
-
-## 5. Traps
-
-- `ILEMU_ENABLE_IPO` (default ON) is not just an optimization toggle: the
-  CMake comment notes startup time is dominated by Dynarmic's small IR and
-  emission helpers, which IPO lets the compiler inline across library
-  boundaries. Turning it off for a faster Release build will quietly
-  regress JIT startup performance.
-- Configuring the project runs `git apply` against the checked-out
-  `external/dynarmic` submodule (a small iLEmu-specific test-emit-failure
-  patch at `tools/dynarmic_ilemu_test_emit_failure.patch`), reversing it if
-  already applied. Bumping the submodule to a revision the patch no longer
-  applies cleanly to turns into a configure-time `FATAL_ERROR`, not a build
-  failure — check that patch before updating `external/dynarmic`.
+- Every source file starts with the MPL-2.0 notice; keep it on a file you change or
+  add.
+- Commits: plain imperative subject, a body that says why, and the
+  `Co-Authored-By: Claude <noreply@anthropic.com>` trailer.
+- No personal data in tracked files: no device addresses, host names or absolute
+  paths.
+- Version numbers are Shade's own, from `v0.1.0`; `CHANGELOG.md` records every
+  release.
