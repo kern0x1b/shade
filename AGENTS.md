@@ -11,10 +11,10 @@ frameworks run on top, on a JIT-translated ARM CPU (`external/umbra`).
 
 ## Build and run
 
-See the README. The program is `build/shade`. A quick check that a build works:
-`shade profile --list`, then a boot of a root filesystem with `--display headless
---gles-backend software --time-scale 10` and a look at the log for `[cpu] fatal`
-lines, the frame counter and the processes that started.
+The program is `build/shade`; the skill `shade-boot` (`.agents/skills/shade-boot/SKILL.md`)
+builds it, boots a root filesystem and reads the log.
+
+Workspace-wide procedures are skills in `$HOME/Git/projects/ios/.agents/skills/`: `device-session` (claim, run, install, launch, tap on a real device), `canon-install`, `patch-merge`, `worktree-sweep`, `session-handoff`, `band-launch`, `band-supervise`. A session started inside this repository does not list them — read `<name>/SKILL.md` there.
 
 ## Layout
 
