@@ -31,6 +31,7 @@ enum class LiveControlCommandKind {
     RingerSilent,
     Snapshot,
     SnapshotSequence,
+    Settle,
     PerfBegin,
     PerfEnd,
     Status,

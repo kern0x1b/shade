@@ -797,21 +797,22 @@ void EmulatorSession::run()
                 std::chrono::steady_clock::now().time_since_epoch())
                 .count());
     };
-    const auto mark_transition_input_complete = [&](std::string_view kind) {
-        const auto completed_at = steady_nanoseconds();
-        if (!runtimes.empty())
-            runtimes.front()
-                ->kernel->mark_foreground_transition_input_complete();
-        std::lock_guard lock { transition_attribution.mutex };
+    // A transition is watched until the display content has not changed for
+    // internal_stability_vsync_pulses display periods of guest time; its
+    // internal-stable marker says so. An input's transition is watched from
+    // the first frame submitted after it; a settle's from the frame on screen,
+    // since nothing may be drawn again.
+    const auto begin_transition = [&](std::uint64_t started_at,
+                                      std::uint64_t on_screen) {
         transition_attribution.active_transition_id =
             ++transition_attribution.next_transition_id;
         transition_attribution.internal_stability_active.store(
             true, std::memory_order_release);
-        transition_attribution.input_complete_nanoseconds = completed_at;
-        transition_attribution.awaiting_first_submission = true;
+        transition_attribution.input_complete_nanoseconds = started_at;
+        transition_attribution.awaiting_first_submission = on_screen == 0;
         transition_attribution.internal_stability_marker_emitted = false;
         transition_attribution.stability_baseline_set = false;
-        transition_attribution.first_submission_sequence = 0;
+        transition_attribution.first_submission_sequence = on_screen;
         transition_attribution.latest_content_revision = 0;
         transition_attribution.stability_baseline_vsync_pulses = 0;
         transition_attribution.stability_baseline_display_time = 0;
@@ -819,11 +820,32 @@ void EmulatorSession::run()
         transition_attribution.stability_content_reset_count = 0;
         transition_attribution.stability_last_observed_content_revision = 0;
         transition_attribution.stability_last_observed_vsync_pulses = 0;
+    };
+    const auto mark_transition_input_complete = [&](std::string_view kind) {
+        const auto completed_at = steady_nanoseconds();
+        if (!runtimes.empty())
+            runtimes.front()
+                ->kernel->mark_foreground_transition_input_complete();
+        std::lock_guard lock { transition_attribution.mutex };
+        begin_transition(completed_at, 0);
         output.marker(
             "[transition] input-complete id=" +
             std::to_string(transition_attribution.active_transition_id) +
             " kind=" + std::string { kind } +
             " completed-ns=" + std::to_string(completed_at));
+    };
+    const auto begin_settle = [&]() {
+        const auto started_at = steady_nanoseconds();
+        const auto on_screen = runtimes.empty()
+            ? std::uint64_t { 0 }
+            : runtimes.front()->kernel->display_submitted_frames();
+        std::lock_guard lock { transition_attribution.mutex };
+        begin_transition(started_at, on_screen);
+        output.marker(
+            "[transition] settle id=" +
+            std::to_string(transition_attribution.active_transition_id) +
+            " sequence=" + std::to_string(on_screen) +
+            " started-ns=" + std::to_string(started_at));
     };
     const auto timing_p95 =
         [&artifact_compaction_telemetry](
@@ -2881,6 +2903,9 @@ void EmulatorSession::run()
                         " count=" + std::to_string(command.snapshot_count));
                     break;
                 }
+                case LiveControlCommandKind::Settle:
+                    begin_settle();
+                    break;
                 case LiveControlCommandKind::PerfBegin:
                     if (!performance_counters().enabled()) {
                         output.marker("[control] error: perf-begin requires "
@@ -3012,6 +3037,7 @@ void EmulatorSession::run()
                         "volume-up; volume-down; snapshot PATH; "
                         "ringer ring|silent; "
                         "snapshot-sequence PATH-PREFIX INTERVAL-MS COUNT; "
+                        "settle; "
                         "perf-begin LABEL; perf-end; "
                         "status; ps [PID|NAME]; threads PID|NAME; quit");
                     break;

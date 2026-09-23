@@ -220,6 +220,12 @@ std::vector<LiveControlCommand> LiveControl::parse_line(std::string line)
         return { simple_command(LiveControlCommandKind::Quit) };
     if (operation == "status")
         return { simple_command(LiveControlCommandKind::Status) };
+    if (operation == "settle") {
+        std::string trailing;
+        if (parser >> trailing)
+            return { error_command("settle does not accept arguments") };
+        return { simple_command(LiveControlCommandKind::Settle) };
+    }
     if (operation == "help")
         return { simple_command(LiveControlCommandKind::Help) };
     if (operation == "ps" || operation == "processes" ||
