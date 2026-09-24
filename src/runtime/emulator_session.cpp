@@ -52,6 +52,7 @@
 #include <thread>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -445,6 +446,10 @@ void EmulatorSession::run()
         std::uint64_t stability_content_reset_count { };
         std::uint64_t stability_last_observed_content_revision { };
         std::uint64_t stability_last_observed_vsync_pulses { };
+        // Catch-ups to host time inside the window being counted, and the
+        // guest time they moved on that the guest was owed and did not run.
+        std::uint64_t stability_window_host_syncs { };
+        std::uint64_t stability_window_starved_time { };
     } transition_attribution;
     std::optional<std::string> pending_touch_input_completion;
     std::optional<std::string> pending_button_input_completion;
@@ -820,6 +825,8 @@ void EmulatorSession::run()
         transition_attribution.stability_content_reset_count = 0;
         transition_attribution.stability_last_observed_content_revision = 0;
         transition_attribution.stability_last_observed_vsync_pulses = 0;
+        transition_attribution.stability_window_host_syncs = 0;
+        transition_attribution.stability_window_starved_time = 0;
     };
     const auto mark_transition_input_complete = [&](std::string_view kind) {
         const auto completed_at = steady_nanoseconds();
@@ -2378,6 +2385,8 @@ void EmulatorSession::run()
             transition_attribution.stability_baseline_display_time =
                 display_time;
             transition_attribution.stability_baseline_set = true;
+            transition_attribution.stability_window_host_syncs = 0;
+            transition_attribution.stability_window_starved_time = 0;
             return;
         }
         if (content_revision !=
@@ -2393,19 +2402,24 @@ void EmulatorSession::run()
             transition_attribution.stability_baseline_display_time =
                 display_time;
             transition_attribution.stability_baseline_set = true;
+            transition_attribution.stability_window_host_syncs = 0;
+            transition_attribution.stability_window_starved_time = 0;
             return;
         }
         constexpr auto display_period =
             iokit_abi::display_vsync::period_absolute_time;
         constexpr auto internal_stability_display_time =
             internal_stability_vsync_pulses * display_period;
-        if (display_time <
-                transition_attribution.stability_baseline_display_time ||
-            display_time -
-                    transition_attribution.stability_baseline_display_time <
-                internal_stability_display_time) {
+        const auto window_time = display_time >
+                transition_attribution.stability_baseline_display_time
+            ? display_time -
+                transition_attribution.stability_baseline_display_time
+            : std::uint64_t { 0 };
+        const auto attended_time = window_time -
+            std::min(window_time,
+                transition_attribution.stability_window_starved_time);
+        if (attended_time < internal_stability_display_time)
             return;
-        }
         transition_attribution.internal_stability_marker_emitted = true;
         transition_attribution.internal_stability_active.store(
             false, std::memory_order_release);
@@ -2420,11 +2434,13 @@ void EmulatorSession::run()
             " content-revision=" +
             std::to_string(transition_attribution.latest_content_revision) +
             " delivered-vsync-pulses=" + std::to_string(vsync_pulses) +
-            " stable-display-periods=" +
+            " host-syncs=" +
+            std::to_string(transition_attribution.stability_window_host_syncs) +
+            " starved-display-periods=" +
             std::to_string(
-                (display_time -
-                    transition_attribution.stability_baseline_display_time) /
-                display_period) +
+                (window_time - attended_time) / display_period) +
+            " stable-display-periods=" +
+            std::to_string(attended_time / display_period) +
             " stable-ns=" + std::to_string(stable_nanoseconds) +
             " input-complete-ns=" +
             std::to_string(transition_attribution.input_complete_nanoseconds));
@@ -2438,6 +2454,33 @@ void EmulatorSession::run()
     std::uint64_t guest_timer_overshoot_max_nanoseconds { };
     std::optional<std::uint64_t> observed_guest_timer_deadline;
     DeadlineQueue<std::uint32_t, std::uint64_t> guest_deadlines;
+    // The earliest deadline any guest process waits for: its timers, waits
+    // with a timeout and the display's next VSync.
+    const auto next_guest_deadline = [&]() {
+        for (const auto& runtime : runtimes) {
+            const auto process_id = runtime->kernel->process().pid;
+            // An exited Runtime may remain here while asynchronous image
+            // work drains. Its timers no longer have Guest-visible
+            // lifetime, so retire the keyed cache entry immediately rather
+            // than letting a past deadline spin the host loop.
+            if (runtime->kernel->process().exited) {
+                guest_deadlines.erase(process_id);
+                continue;
+            }
+            const auto deadline = runtime->kernel->timer_deadline_snapshot();
+            if (!runtime->timer_deadline_observed ||
+                runtime->timer_deadline_generation != deadline.generation) {
+                if (deadline.deadline) {
+                    guest_deadlines.upsert(process_id, *deadline.deadline);
+                } else {
+                    guest_deadlines.erase(process_id);
+                }
+                runtime->timer_deadline_generation = deadline.generation;
+                runtime->timer_deadline_observed = true;
+            }
+        }
+        return guest_deadlines.next_deadline();
+    };
     if (device_time_policy == DeviceTimePolicy::HostMappedInteractive) {
         realtime_pacer.emplace(
             initial_runtime->kernel->current_absolute_time(),
@@ -2460,6 +2503,39 @@ void EmulatorSession::run()
         output.line("[clock] mode=virtual-rtc seed=host-once rate=realtime "
                     "timezone=guest");
     }
+    // A still screen is counted in guest time, and without --ticks guest time
+    // follows the host's whether or not the guest ran. As QEMU's -icount
+    // sleep=on counts virtual time, a catch-up counts what the guest executed
+    // since the previous one and, when it has nothing runnable, the time it
+    // waited up to its earliest deadline; past that deadline a timer or VSync
+    // was due that it did not get to run. The rest was owed and not given, a
+    // starved guest cannot draw in it, and it is kept out of the window.
+    GuestTickClock executed_time_clock { guest_ticks_per_second };
+    std::uint64_t executed_ticks_since_catch_up { };
+    const auto account_stability_catch_up = [&](std::uint64_t advance) {
+        const auto executed = executed_time_clock.absolute_time_units(
+            std::exchange(executed_ticks_since_catch_up, 0));
+        if (!transition_attribution.internal_stability_active.load(
+                std::memory_order_acquire)) {
+            return;
+        }
+        auto waited = std::uint64_t { 0 };
+        if (scheduler.runnable_count() == 0) {
+            const auto now = initial_runtime->kernel->current_absolute_time();
+            const auto deadline = next_guest_deadline();
+            waited = !deadline ? advance
+                : *deadline > now ? *deadline - now
+                                  : std::uint64_t { 0 };
+        }
+        std::lock_guard lock { transition_attribution.mutex };
+        if (!transition_attribution.stability_baseline_set)
+            return;
+        const auto attended =
+            std::min(advance, executed + std::min(advance, waited));
+        ++transition_attribution.stability_window_host_syncs;
+        transition_attribution.stability_window_starved_time +=
+            advance - attended;
+    };
     // Interactive DeviceMonotonicTime is mapped to host steady time exactly
     // once. CPU execution accounting never advances this domain; after a slow
     // translated slice or host-backed syscall, the next synchronization moves
@@ -2488,6 +2564,7 @@ void EmulatorSession::run()
                 display_clock_window->host_sync_deficit_max_nanoseconds,
                 deficit);
         }
+        account_stability_catch_up(deficit);
         initial_runtime->kernel->advance_absolute_time(host_time);
         for (auto& runtime : runtimes) {
             if (runtime.get() != initial_runtime &&
@@ -4131,6 +4208,8 @@ void EmulatorSession::run()
             if (hard_stop)
                 break;
         }
+        if (realtime_pacer)
+            executed_ticks_since_catch_up += scheduler_round_ticks;
         if (device_time_policy == DeviceTimePolicy::DeterministicExecution) {
             // Bounded runs derive DeterministicTime from executed guest ticks.
             // CPU usage and quantum accounting already happened in
@@ -4411,31 +4490,7 @@ void EmulatorSession::run()
             // runtimes are still represented without turning the idle loop into
             // a queue probe.
             observe_runtime_jit_memory_if_due();
-            std::optional<std::uint64_t> next_deadline;
-            for (const auto& runtime : runtimes) {
-                const auto process_id = runtime->kernel->process().pid;
-                // An exited Runtime may remain here while asynchronous image
-                // work drains. Its timers no longer have Guest-visible
-                // lifetime, so retire the keyed cache entry immediately rather
-                // than letting a past deadline spin the host loop.
-                if (runtime->kernel->process().exited) {
-                    guest_deadlines.erase(process_id);
-                    continue;
-                }
-                const auto deadline =
-                    runtime->kernel->timer_deadline_snapshot();
-                if (!runtime->timer_deadline_observed ||
-                    runtime->timer_deadline_generation != deadline.generation) {
-                    if (deadline.deadline) {
-                        guest_deadlines.upsert(process_id, *deadline.deadline);
-                    } else {
-                        guest_deadlines.erase(process_id);
-                    }
-                    runtime->timer_deadline_generation = deadline.generation;
-                    runtime->timer_deadline_observed = true;
-                }
-            }
-            next_deadline = guest_deadlines.next_deadline();
+            const auto next_deadline = next_guest_deadline();
             const auto next_host_deadline = next_host_control_deadline();
             std::optional<HostResourceController::Clock::time_point>
                 host_compile_deadline;
@@ -4685,6 +4740,11 @@ void EmulatorSession::run()
                         // responsive.
                         continue;
                     }
+                    const auto current_time =
+                        initial_runtime->kernel->current_absolute_time();
+                    if (*next_deadline > current_time)
+                        account_stability_catch_up(
+                            *next_deadline - current_time);
                 }
                 initial_runtime->kernel->advance_absolute_time(*next_deadline);
                 for (auto& runtime : runtimes) {

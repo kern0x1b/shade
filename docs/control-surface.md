@@ -40,7 +40,7 @@ Coordinates are UI points, portrait, origin top-left: 320x480 on iPhone/iPod, 76
 | `button home/lock/volume-up/volume-down down/up`, `hold BUTTON MS`, `volume-up`, `volume-down`, `ringer ring/silent` | `button event queued` ... |
 | `snapshot PATH` (.png/.bmp/else PPM) | `snapshot=PATH frame=N` (a failed write kills shade) |
 | `snapshot-sequence PREFIX INTERVAL-MS COUNT` | one line per PPM |
-| `settle` | `[transition] settle id=N`, then `[transition] internal-stable id=N` once the display content has not changed for 60 display periods of guest time, counted from the frame on screen (its `input-complete-ns` is the settle's start). Like an input, it replaces the transition being watched |
+| `settle` | `[transition] settle id=N`, then `[transition] internal-stable id=N` once the display content has not changed for 60 display periods of guest time, counted from the frame on screen (its `input-complete-ns` is the settle's start). Without `--ticks` the guest clock follows the host's whether or not the guest ran, so the window counts only the guest time the guest had: a catch-up (`host-syncs=`) counts what the guest executed since the previous one and, when it had nothing runnable, the time it waited up to its earliest timer or VSync deadline; the rest, time it was owed and did not get, is left out (`starved-display-periods=`), and `stable-display-periods=` is what was counted. Like an input, it replaces the transition being watched |
 | `status` | `status frame= submitted-frame= processes= threads= runnable= active-process= display-power=on/off` |
 | `ps [PID/NAME]` | `process pid= ppid= state= exit= signal= name= path=` per process, then `processes matches=N` |
 | `threads PID/NAME` | pc/lr/sp, frame-pointer backtrace, wait reason per thread |
