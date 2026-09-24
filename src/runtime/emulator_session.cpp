@@ -2508,8 +2508,12 @@ void EmulatorSession::run()
     // sleep=on counts virtual time, a catch-up counts what the guest executed
     // since the previous one and, when it has nothing runnable, the time it
     // waited up to its earliest deadline; past that deadline a timer or VSync
-    // was due that it did not get to run. The rest was owed and not given, a
-    // starved guest cannot draw in it, and it is kept out of the window.
+    // was due that it did not get to run. The clock stands still while the
+    // guest executes, so both are measured from the previous catch-up: from
+    // there the guest worked for what it executed and slept up to the
+    // deadline, and it had the later of the two, not their sum. The rest
+    // was owed and not given, a starved guest cannot draw in it, and it is
+    // kept out of the window.
     GuestTickClock executed_time_clock { guest_ticks_per_second };
     std::uint64_t executed_ticks_since_catch_up { };
     const auto account_stability_catch_up = [&](std::uint64_t advance) {
@@ -2530,8 +2534,7 @@ void EmulatorSession::run()
         std::lock_guard lock { transition_attribution.mutex };
         if (!transition_attribution.stability_baseline_set)
             return;
-        const auto attended =
-            std::min(advance, executed + std::min(advance, waited));
+        const auto attended = std::min(advance, std::max(executed, waited));
         ++transition_attribution.stability_window_host_syncs;
         transition_attribution.stability_window_starved_time +=
             advance - attended;
