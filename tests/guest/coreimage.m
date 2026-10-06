@@ -141,6 +141,62 @@ static void expectBitmap(const char *name, CIImage *input, CIContext *context, C
     check(name, same, why);
 }
 
+// A pixel of an image (row counted from the top), read from a copy of the whole image drawn into a
+// premultiplied RGBA bitmap of its own size, replacing what was there.
+static void pixelAt(CGImageRef image, int x, int y, uint8_t out[4])
+{
+    size_t width = CGImageGetWidth(image), height = CGImageGetHeight(image);
+    CGColorSpaceRef space = CGColorSpaceCreateDeviceRGB();
+    CGContextRef bitmap = CGBitmapContextCreate(NULL, width, height, 8, width * 4, space, kCGImageAlphaPremultipliedLast);
+    CGColorSpaceRelease(space);
+    CGContextSetBlendMode(bitmap, kCGBlendModeCopy);
+    CGContextDrawImage(bitmap, CGRectMake(0, 0, width, height), image);
+    const uint8_t *bytes = CGBitmapContextGetData(bitmap);
+    memcpy(out, bytes + (size_t)y * width * 4 + (size_t)x * 4, 4);
+    CGContextRelease(bitmap);
+}
+
+// CIGaussianBlur over a 40x20 picture of a red half and a blue half, drawn over the whole extent the
+// blur makes (it widens the picture by three times the radius on every side): where the halves meet
+// the pixel is a mixture of the two colours.
+static void expectBlur(const char *name, CIContext *context)
+{
+    CGColorSpaceRef space = CGColorSpaceCreateDeviceRGB();
+    CGContextRef bitmap = CGBitmapContextCreate(NULL, 40, 20, 8, 160, space, kCGImageAlphaPremultipliedLast);
+    CGColorSpaceRelease(space);
+    uint8_t *bytes = CGBitmapContextGetData(bitmap);
+    for (int y = 0; y < 20; y++) {
+        for (int x = 0; x < 40; x++) {
+            uint8_t *p = bytes + y * 160 + x * 4;
+            p[0] = x < 20 ? 255 : 0;
+            p[1] = 0;
+            p[2] = x < 20 ? 0 : 255;
+            p[3] = 255;
+        }
+    }
+    CGImageRef source = CGBitmapContextCreateImage(bitmap);
+    CGContextRelease(bitmap);
+    CIImage *input = [CIImage imageWithCGImage:source];
+    CGImageRelease(source);
+    CIFilter *blur = [CIFilter filterWithName:@"CIGaussianBlur"];
+    [blur setValue:input forKey:@"inputImage"];
+    [blur setValue:@6 forKey:@"inputRadius"];
+    CIImage *output = [blur valueForKey:@"outputImage"];
+    CGRect produced = [output extent];
+    printf("note blur extent %g,%g %gx%g\n", produced.origin.x, produced.origin.y, produced.size.width, produced.size.height);
+    CGImageRef drawn = [context createCGImage:output fromRect:produced];
+    if (!drawn) {
+        check(name, NO, "no image");
+        return;
+    }
+    uint8_t middle[4] = {0, 0, 0, 0};
+    pixelAt(drawn, (int)(20 - produced.origin.x), (int)(produced.size.height / 2), middle);
+    CGImageRelease(drawn);
+    char why[96];
+    snprintf(why, sizeof why, "the middle reads %d,%d,%d,%d", middle[0], middle[1], middle[2], middle[3]);
+    check(name, middle[0] > 30 && middle[2] > 30, why);
+}
+
 // bootstrap_look_up is not in the SDK's public headers.
 extern kern_return_t bootstrap_look_up(mach_port_t bootstrap, const char *name, mach_port_t *service);
 
@@ -205,6 +261,7 @@ int main(void)
             CIImage *bitmap = [CIImage imageWithBitmapData:data bytesPerRow:16 size:CGSizeMake(4, 4) format:kCIFormatRGBA8 colorSpace:rgb];
             CGColorSpaceRelease(rgb);
             expectBitmap("CPU half-alpha bitmap image to RGBA8", bitmap, cpu, kCIFormatRGBA8, half);
+            expectBlur("CPU blur mixes the colours either side of a line", cpu);
         }
 
         if (es2) {
@@ -213,6 +270,7 @@ int main(void)
             if (gpu) {
                 expectPixel("GL opaque source", gpu, 255, 0, 0, 255, NO);
                 expectPixel("GL half-alpha source", gpu, 128, 0, 0, 128, YES);
+                expectBlur("GL blur mixes the colours either side of a line", gpu);
             }
         } else {
             printf("skip the default renderer: no ES2 context to run it on\n");

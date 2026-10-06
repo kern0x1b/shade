@@ -65,6 +65,8 @@ inline constexpr std::uint32_t hardware_byte_order = 4;
 inline constexpr std::uint32_t hardware_physical_memory = 5;
 inline constexpr std::uint32_t hardware_user_memory = 6;
 inline constexpr std::uint32_t hardware_page_size = 7;
+inline constexpr std::uint32_t hardware_bus_frequency = 14;
+inline constexpr std::uint32_t hardware_cpu_frequency = 15;
 inline constexpr std::uint32_t hardware_cache_line = 16;
 inline constexpr std::uint32_t hardware_l1_i_cache_size = 17;
 inline constexpr std::uint32_t hardware_l1_d_cache_size = 18;
@@ -74,6 +76,14 @@ inline constexpr std::uint32_t hardware_l3_settings = 21;
 inline constexpr std::uint32_t hardware_l3_cache_size = 22;
 inline constexpr std::uint32_t hardware_memory_size = 24;
 inline constexpr std::uint32_t hardware_available_cpu = 25;
+// hw.* nodes XNU registers with OID_AUTO: their numbers start at CTL_AUTO_START
+// and guests only learn them through sysctl.name2oid.
+inline constexpr std::uint32_t hardware_physical_cpu = 0x100;
+inline constexpr std::uint32_t hardware_physical_cpu_max = 0x101;
+inline constexpr std::uint32_t hardware_logical_cpu = 0x102;
+inline constexpr std::uint32_t hardware_logical_cpu_max = 0x103;
+inline constexpr std::uint32_t hardware_cpu_frequency_max = 0x104;
+inline constexpr std::uint32_t hardware_bus_frequency_max = 0x105;
 
 struct ObjectIdentifier {
     std::array<std::uint32_t, 2> components { };

@@ -8,8 +8,9 @@ signal handler (`smc.c`).
 `purgable.c` sets and reads back a memory object's
 purgeable state word.
 `remap_task.c` remaps memory into another task.
+`sysctl_hw.c` reads the hw.* processor nodes and compares the counts with `host_info`.
 `coreimage.m` draws with Core Image (an EAGL context, the CPU renderer, the
-default renderer) and reads the pixels back.
+default renderer), including a Gaussian blur, and reads the pixels back.
 `longrun.c` stays for a given number of seconds, for looking at what the
 rest of a boot does meanwhile.
 
@@ -21,6 +22,7 @@ Each prints one line per check and exits with the number of failures.
     $CC -o remap remap.c
     $CC -o purgable purgable.c
     $CC -o remap_task remap_task.c
+    $CC -o sysctl_hw sysctl_hw.c
     $CC -fobjc-arc -framework Foundation -framework CoreGraphics -framework CoreImage \
         -framework OpenGLES -o coreimage coreimage.m
     $CC -dynamiclib -DIMAGE_VALUE=1 -install_name /usr/local/lib/charon-remap-1.dylib -o charon-remap-1.dylib remap_image.c

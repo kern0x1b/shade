@@ -2514,7 +2514,15 @@ void CompatibilityKernel::dispatch_bsd_events(Cpu& cpu, std::uint32_t number)
                     *mib1 == darwin::sysctl::hardware_l2_cache_size ||
                     *mib1 == darwin::sysctl::hardware_l3_settings ||
                     *mib1 == darwin::sysctl::hardware_l3_cache_size ||
-                    *mib1 == darwin::sysctl::hardware_available_cpu))) {
+                    *mib1 == darwin::sysctl::hardware_available_cpu ||
+                    *mib1 == darwin::sysctl::hardware_bus_frequency ||
+                    *mib1 == darwin::sysctl::hardware_cpu_frequency ||
+                    *mib1 == darwin::sysctl::hardware_physical_cpu ||
+                    *mib1 == darwin::sysctl::hardware_physical_cpu_max ||
+                    *mib1 == darwin::sysctl::hardware_logical_cpu ||
+                    *mib1 == darwin::sysctl::hardware_logical_cpu_max ||
+                    *mib1 == darwin::sysctl::hardware_cpu_frequency_max ||
+                    *mib1 == darwin::sysctl::hardware_bus_frequency_max))) {
             // Common read-only capacity/boot values plus HW_NCPU.
             if (registers[4] != 0) {
                 bsd_error(cpu, 1); // EPERM: read-only MIB
@@ -2611,9 +2619,23 @@ void CompatibilityKernel::dispatch_bsd_events(Cpu& cpu, std::uint32_t number)
                     case darwin::sysctl::hardware_l3_cache_size:
                         value = 0;
                         break; // HW_L3{SETTINGS,CACHESIZE}
+                    case darwin::sysctl::hardware_bus_frequency:
+                    case darwin::sysctl::hardware_bus_frequency_max:
+                        value = device_model_.processor.bus_hz;
+                        break; // HW_BUS_FREQ
+                    case darwin::sysctl::hardware_cpu_frequency:
+                    case darwin::sysctl::hardware_cpu_frequency_max:
+                        value = device_model_.processor.frequency_hz();
+                        break; // HW_CPU_FREQ
+                    case darwin::sysctl::hardware_physical_cpu:
+                    case darwin::sysctl::hardware_physical_cpu_max:
+                        value = std::min<std::uint32_t>(
+                            device_model_.processor.topology.physical_core_count,
+                            virtual_processor_count_);
+                        break; // hw.physicalcpu
                     default:
-                        value = 1;
-                        break; // CPU counts
+                        value = virtual_processor_count_;
+                        break; // HW_NCPU, HW_AVAILCPU, hw.logicalcpu
                     }
                 }
                 if (!memory_.write32(registers[2], value)) {

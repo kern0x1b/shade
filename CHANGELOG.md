@@ -25,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   ordering bit, a group), as the kernel does.
 - `vm_remap` places memory into another task: Core Image's compiler daemon loads
   its kernels, so Core Image draws a source with alpha.
+- The guest answers hw.activecpu, hw.physicalcpu, hw.logicalcpu, hw.cpufrequency,
+  hw.busfrequency and their `_max` forms from the device profile, and hw.ncpu with
+  the processor count the kernel has: OpenCL sized its CPU device from stack
+  garbage, so Core Image's Gaussian blur (a one-dimensional kernel) drew nothing.
 - The host's memory is read on macOS: the JIT sized its code cache from zeros.
 - iOS 6.1.3 boots on the iPhone 4S with mediaserverd running: it needs the Voice
   device's input stream.
