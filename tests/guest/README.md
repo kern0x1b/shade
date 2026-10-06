@@ -4,8 +4,11 @@ Small armv7 programs that run inside the emulated device and check what only a
 running guest shows: signal frames and fault delivery (`signals.c`), stale
 translations after images are swapped or protections change (`remap.c`,
 `remap_image.c`), and code rewritten through a second view of a page or from a
-signal handler (`smc.c`). `longrun.c` stays for a given number of seconds, for
-looking at what the rest of a boot does meanwhile.
+signal handler (`smc.c`).
+`coreimage.m` draws with Core Image (an EAGL context, the CPU renderer, the
+default renderer) and reads the pixels back.
+`longrun.c` stays for a given number of seconds, for looking at what the
+rest of a boot does meanwhile.
 
 Each prints one line per check and exits with the number of failures.
 
@@ -13,6 +16,8 @@ Each prints one line per check and exits with the number of failures.
     $CC -mthumb -o signals signals.c
     $CC -o smc smc.c
     $CC -o remap remap.c
+    $CC -fobjc-arc -framework Foundation -framework CoreGraphics -framework CoreImage \
+        -framework OpenGLES -o coreimage coreimage.m
     $CC -dynamiclib -DIMAGE_VALUE=1 -install_name /usr/local/lib/charon-remap-1.dylib -o charon-remap-1.dylib remap_image.c
     $CC -dynamiclib -DIMAGE_VALUE=2 -install_name /usr/local/lib/charon-remap-2.dylib -o charon-remap-2.dylib remap_image.c
 
