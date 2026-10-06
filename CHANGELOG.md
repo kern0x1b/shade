@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   before this is made again.
 
 ### Fixed
+- OpenGL ES contexts are made on iOS 6.1.3's GLEngine, whose dispatch table is
+  larger than the earlier ones: EAGLContext no longer answers nil.
 - The host's memory is read on macOS: the JIT sized its code cache from zeros.
 - iOS 6.1.3 boots on the iPhone 4S with mediaserverd running: it needs the Voice
   device's input stream.

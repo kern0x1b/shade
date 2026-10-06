@@ -11,10 +11,38 @@
 
 namespace shade {
 
+namespace {
+    // The layout of the flags word a GLI driver is given when EAGL creates a
+    // context, by the size of the dispatch table the driver reports. The 0xe48
+    // row is read from the iOS 6.1.3 GLEngine's gliCreateContext: bit 4 selects
+    // an ES 3 context, else bit 3 an ES 2 one, else bit 2 an ES 1 one.
+    struct FlagsLayout {
+        std::uint32_t dispatch_bytes;
+        std::uint32_t mask;
+        std::uint32_t es1;
+        std::uint32_t es2;
+        std::uint32_t es3; // zero where the driver has no ES 3 context
+    };
+    constexpr std::array<FlagsLayout, 3> flags_layouts {
+        FlagsLayout { 0xe24U, 0x0cU, 0x04U, 0x08U, 0U },
+        FlagsLayout { 0xe48U, 0x1cU, 0x04U, 0x08U, 0x10U },
+        FlagsLayout { 0x102cU, 0x78U, 0x10U, 0x20U, 0x40U },
+    };
+
+    const FlagsLayout* flags_layout(std::uint32_t dispatch_bytes)
+    {
+        for (const auto& layout : flags_layouts) {
+            if (layout.dispatch_bytes == dispatch_bytes)
+                return &layout;
+        }
+        return nullptr;
+    }
+}
+
 std::optional<EaglContextFirstArm32Profile>
 EaglContextFirstArm32Profile::from_dispatch_bytes(std::uint32_t bytes)
 {
-    if (bytes == 0xe24U || bytes == 0x102cU)
+    if (flags_layout(bytes) != nullptr)
         return EaglContextFirstArm32Profile { bytes };
     return std::nullopt;
 }
@@ -22,13 +50,15 @@ EaglContextFirstArm32Profile::from_dispatch_bytes(std::uint32_t bytes)
 std::optional<std::uint32_t> EaglContextFirstArm32Profile::client_api(
     std::uint32_t flags) const
 {
-    const bool extended_api = dispatch_bytes_ == 0x102cU;
-    const auto api_flags = flags & (extended_api ? 0x78U : 0x0cU);
-    if (api_flags == (extended_api ? 0x10U : 0x04U))
+    const auto* layout = flags_layout(dispatch_bytes_);
+    if (layout == nullptr)
+        return std::nullopt;
+    const auto api_flags = flags & layout->mask;
+    if (api_flags == layout->es1)
         return 1U;
-    if (api_flags == (extended_api ? 0x20U : 0x08U))
+    if (api_flags == layout->es2)
         return 2U;
-    if (extended_api && api_flags == 0x40U)
+    if (layout->es3 != 0U && api_flags == layout->es3)
         return 3U;
     return std::nullopt;
 }
