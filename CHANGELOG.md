@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Fixed
 - OpenGL ES contexts are made on iOS 6.1.3's GLEngine, whose dispatch table is
   larger than the earlier ones: EAGLContext no longer answers nil.
+- A memory object's purgeable state takes the whole state word (volatile with an
+  ordering bit, a group), as the kernel does.
 - The host's memory is read on macOS: the JIT sized its code cache from zeros.
 - iOS 6.1.3 boots on the iPhone 4S with mediaserverd running: it needs the Voice
   device's input stream.

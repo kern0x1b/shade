@@ -5,6 +5,8 @@ running guest shows: signal frames and fault delivery (`signals.c`), stale
 translations after images are swapped or protections change (`remap.c`,
 `remap_image.c`), and code rewritten through a second view of a page or from a
 signal handler (`smc.c`).
+`purgable.c` sets and reads back a memory object's
+purgeable state word.
 `coreimage.m` draws with Core Image (an EAGL context, the CPU renderer, the
 default renderer) and reads the pixels back.
 `longrun.c` stays for a given number of seconds, for looking at what the
@@ -16,6 +18,7 @@ Each prints one line per check and exits with the number of failures.
     $CC -mthumb -o signals signals.c
     $CC -o smc smc.c
     $CC -o remap remap.c
+    $CC -o purgable purgable.c
     $CC -fobjc-arc -framework Foundation -framework CoreGraphics -framework CoreImage \
         -framework OpenGLES -o coreimage coreimage.m
     $CC -dynamiclib -DIMAGE_VALUE=1 -install_name /usr/local/lib/charon-remap-1.dylib -o charon-remap-1.dylib remap_image.c

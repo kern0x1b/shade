@@ -34,7 +34,17 @@ namespace {
     constexpr std::uint32_t vm_purgable_set_state = 0U;
     constexpr std::uint32_t vm_purgable_get_state = 1U;
     constexpr std::uint32_t vm_purgable_nonvolatile = 0U;
-    constexpr std::uint32_t vm_purgable_empty = 2U;
+    constexpr std::uint32_t vm_purgable_state_mask = 3U;
+    // A state word also carries a volatile group (bits 8-10), a behavior
+    // (bit 6), an ordering (bit 5), an obsolete order flag (bit 4) and debug
+    // flags (bits 12-13); osfmk/mach/vm_purgable.h in xnu-2050.48.11 names
+    // them VM_PURGABLE_ALL_MASKS together with the state. vm_map_purgable_control
+    // refuses a set request with any other bit, and the object keeps only the
+    // state: the queue a volatile object waits in is not part of what a state
+    // query or the previous state answers.
+    constexpr std::uint32_t vm_purgable_all_masks =
+        vm_purgable_state_mask | (1U << 4U) | (1U << 5U) | (1U << 6U) |
+        (7U << 8U) | (3U << 12U);
 
     constexpr std::uint32_t page_base(std::uint32_t address)
     {
@@ -95,13 +105,13 @@ bool CompatibilityKernel::dispatch_mach_vm_purgable_message(
                            ? vm_purgable_nonvolatile
                            : state->second;
     } else if (*control == vm_purgable_set_state &&
-               *input_state <= vm_purgable_empty) {
+               (*input_state & ~vm_purgable_all_masks) == 0U) {
         const auto key = page_base(*address);
         const auto previous = vm_purgable_states_.find(key);
         output_state = previous == vm_purgable_states_.end()
                            ? vm_purgable_nonvolatile
                            : previous->second;
-        vm_purgable_states_[key] = *input_state;
+        vm_purgable_states_[key] = *input_state & vm_purgable_state_mask;
     } else {
         result = kern_invalid_argument;
     }
