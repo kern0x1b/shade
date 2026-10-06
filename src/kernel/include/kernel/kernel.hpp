@@ -146,6 +146,30 @@ public:
     using TaskMemoryShareQuery =
         std::function<std::optional<SharedTaskMemoryRange>(
             std::uint32_t, std::uint32_t, std::uint32_t)>;
+    // Pages to place in an address space as a vm_remap does: where (or
+    // anywhere under a mask), with what protection, shared or copied.
+    struct RemapPlacement {
+        std::uint32_t requested_address { };
+        std::uint32_t size { };
+        std::uint32_t mask { };
+        bool anywhere { };
+        bool copy { };
+        std::uint32_t inheritance { };
+        SharedTaskMemoryRange source;
+    };
+    struct RemapResult {
+        std::uint32_t result { };
+        std::uint32_t address { };
+    };
+    // Maps the placement into the address space of another process, which the
+    // handler finds by process identifier; nothing answers for a process that
+    // is gone.
+    using TaskMemoryRemapHandler =
+        std::function<std::optional<RemapResult>(std::uint32_t, RemapPlacement)>;
+    // The placement of a vm_remap in one address space, which is the same
+    // wherever the caller's task name pointed.
+    [[nodiscard]] static RemapResult remap_into(
+        AddressSpace& memory, RemapPlacement placement);
     using MappedExecutableHandler =
         std::function<void(const std::filesystem::path&, std::uint32_t,
             std::uint32_t, std::uint64_t)>;
@@ -279,6 +303,10 @@ public:
     void set_task_memory_share_query(TaskMemoryShareQuery query)
     {
         task_memory_share_query_ = std::move(query);
+    }
+    void set_task_memory_remap_handler(TaskMemoryRemapHandler handler)
+    {
+        task_memory_remap_handler_ = std::move(handler);
     }
     [[nodiscard]] std::uint32_t deliver_signal(std::uint32_t signal);
     // A fault taken by the guest thread on a processor, as the CPU reported
@@ -1021,6 +1049,7 @@ private:
     SignalDeliveryHandler signal_delivery_handler_;
     TaskMemoryRegionQuery task_memory_region_query_;
     TaskMemoryShareQuery task_memory_share_query_;
+    TaskMemoryRemapHandler task_memory_remap_handler_;
     std::map<std::size_t, SchedulerYieldRequest> scheduler_yields_;
     std::map<std::size_t, XnuThreadId> scheduler_handoffs_;
     std::map<std::size_t, PendingWait> pending_waits_;

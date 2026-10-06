@@ -68,6 +68,37 @@ namespace {
 
 } // namespace
 
+CompatibilityKernel::RemapResult CompatibilityKernel::remap_into(
+    AddressSpace& memory, RemapPlacement placement)
+{
+    auto address = placement.requested_address;
+    if (placement.anywhere) {
+        address = find_free_guest_region(
+            memory, default_dynamic_base, placement.size, placement.mask)
+                      .value_or(0U);
+    }
+    if (address == 0U || address % AddressSpace::page_size != 0U ||
+        (address & placement.mask) != 0U ||
+        guest_region_overlaps(memory, address, placement.size)) {
+        return { kern_no_space, address };
+    }
+    auto pages = std::move(placement.source.pages);
+    if (placement.copy) {
+        for (auto& page : pages)
+            page = std::make_shared<GuestPageBacking>(*page);
+    }
+    bool mapped = memory.map_page_backings(address, placement.size,
+        placement.source.permissions, pages,
+        placement.copy ? AddressSpace::PageMappingMode::CopyOnWrite
+                       : AddressSpace::PageMappingMode::Shared);
+    if (mapped && !memory.inherit(address, placement.size,
+                      static_cast<VmInheritance>(placement.inheritance))) {
+        static_cast<void>(memory.unmap(address, placement.size));
+        mapped = false;
+    }
+    return { mapped ? kern_success : kern_no_space, address };
+}
+
 bool CompatibilityKernel::dispatch_mach_vm_remap_message(
     Cpu& cpu, const MachMessageRequest& request)
 {
@@ -164,7 +195,7 @@ bool CompatibilityKernel::dispatch_mach_vm_remap_message(
         static_cast<std::uint64_t>(source_address) + size.value_or(0U) >
             (std::uint64_t { 1 } << 32U) ||
         *inheritance > maximum_inheritance || !target_pid || !source_pid ||
-        *target_pid != process_.pid) {
+        (*target_pid != process_.pid && !task_memory_remap_handler_)) {
         result = kern_invalid_argument;
     }
 
@@ -184,49 +215,36 @@ bool CompatibilityKernel::dispatch_mach_vm_remap_message(
     if (result == kern_success && !source)
         result = kern_invalid_address;
 
-    if (result == kern_success &&
-        (*flags & darwin::mach::vm_flags_anywhere) != 0U) {
-        target_address =
-            find_free_guest_region(memory_, default_dynamic_base, *size, mask)
-                .value_or(0U);
-    }
-    if (result == kern_success &&
-        (target_address == 0U ||
-            target_address % AddressSpace::page_size != 0U ||
-            (target_address & mask) != 0U)) {
-        result = kern_no_space;
-    }
-
-    if (result == kern_success &&
-        guest_region_overlaps(memory_, target_address, *size)) {
-        if ((*flags & darwin::mach::vm_flags_overwrite) == 0U ||
+    const bool anywhere = (*flags & darwin::mach::vm_flags_anywhere) != 0U;
+    const auto protection =
+        source ? darwin_permissions(source->permissions) : 0U;
+    if (result == kern_success && *target_pid != process_.pid) {
+        // Another task's mappings are not unmapped from here, so an overwrite
+        // that would replace one is refused like any other overlap.
+        const auto placed = task_memory_remap_handler_(*target_pid,
+            RemapPlacement { target_address, *size, mask, anywhere,
+                *copy != 0U, *inheritance, std::move(*source) });
+        result = placed ? placed->result : kern_invalid_argument;
+        if (placed)
+            target_address = placed->address;
+    } else if (result == kern_success) {
+        if (!anywhere && (*flags & darwin::mach::vm_flags_overwrite) != 0U &&
+            target_address != 0U &&
+            target_address % AddressSpace::page_size == 0U &&
+            (target_address & mask) == 0U &&
+            guest_region_overlaps(memory_, target_address, *size) &&
             !unmap_memory(cpu, target_address, *size)) {
             result = kern_no_space;
         }
+        if (result == kern_success) {
+            auto placed = remap_into(memory_,
+                RemapPlacement { target_address, *size, mask, anywhere,
+                    *copy != 0U, *inheritance, std::move(*source) });
+            result = placed.result;
+            target_address = placed.address;
+        }
     }
 
-    bool mapped = false;
-    if (result == kern_success) {
-        auto pages = std::move(source->pages);
-        if (*copy != 0U) {
-            for (auto& page : pages)
-                page = std::make_shared<GuestPageBacking>(*page);
-        }
-        mapped = memory_.map_page_backings(target_address, *size,
-            source->permissions, pages,
-            *copy != 0U ? AddressSpace::PageMappingMode::CopyOnWrite
-                        : AddressSpace::PageMappingMode::Shared);
-        if (mapped && !memory_.inherit(target_address, *size,
-                          static_cast<VmInheritance>(*inheritance))) {
-            static_cast<void>(memory_.unmap(target_address, *size));
-            mapped = false;
-        }
-        if (!mapped)
-            result = kern_no_space;
-    }
-
-    const auto protection =
-        source ? darwin_permissions(source->permissions) : 0U;
     std::vector<std::uint32_t> reply {
         darwin::mig_wire::message_bits(
             darwin::mig_wire::disposition_move_send_once),

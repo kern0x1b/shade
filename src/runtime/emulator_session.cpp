@@ -2038,6 +2038,16 @@ void EmulatorSession::run()
                     std::move(*pages), region->permissions
                 };
             });
+        runtime.kernel->set_task_memory_remap_handler(
+            [&runtime_index](std::uint32_t pid,
+                CompatibilityKernel::RemapPlacement placement)
+                -> std::optional<CompatibilityKernel::RemapResult> {
+                const auto* runtime = runtime_index.find(pid);
+                if (runtime == nullptr)
+                    return std::nullopt;
+                return CompatibilityKernel::remap_into(
+                    *runtime->memory, std::move(placement));
+            });
         runtime.kernel->set_scheduler_preemption_query(
             [runtime_ptr, &scheduler, disable_scheduler_preemption](
                 std::size_t processor) {

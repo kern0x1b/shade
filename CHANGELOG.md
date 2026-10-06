@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   larger than the earlier ones: EAGLContext no longer answers nil.
 - A memory object's purgeable state takes the whole state word (volatile with an
   ordering bit, a group), as the kernel does.
+- `vm_remap` places memory into another task: Core Image's compiler daemon loads
+  its kernels, so Core Image draws a source with alpha.
 - The host's memory is read on macOS: the JIT sized its code cache from zeros.
 - iOS 6.1.3 boots on the iPhone 4S with mediaserverd running: it needs the Voice
   device's input stream.
