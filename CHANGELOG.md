@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 - The iPhone 4S's Voice audio device with its input and output streams, formats,
   buffer, latencies and controls as a real device publishes them.
+- `glReadPixels` reads RGBA bytes back from a framebuffer, a renderbuffer or the
+  drawable, with the pack alignment and the rectangle clipped to the frame.
 
 ### Changed
 - The project is named Shade, and its JIT core Umbra: the namespace, build files,

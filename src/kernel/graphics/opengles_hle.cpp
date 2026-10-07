@@ -1370,6 +1370,114 @@ void OpenGlesHle::draw(UserlandHleCall& call, bool indexed)
     }
 }
 
+void OpenGlesHle::read_pixels(UserlandHleCall& call)
+{
+    auto* context = current_context(call);
+    if (context == nullptr) {
+        set_gl_error(call, gles_abi::invalid_operation);
+        return;
+    }
+    const auto x = static_cast<std::int32_t>(call.argument(0));
+    const auto y = static_cast<std::int32_t>(call.argument(1));
+    const auto width = static_cast<std::int32_t>(call.argument(2));
+    const auto height = static_cast<std::int32_t>(call.argument(3));
+    const auto format = call.argument(4);
+    const auto type = call.argument(5);
+    const auto destination = call.argument(6);
+    if (width < 0 || height < 0) {
+        set_gl_error(call, gles_abi::invalid_value);
+        return;
+    }
+    // GLES 2 guarantees only this pair; the tests and engines that read
+    // pixels back ask for it.
+    if (format != gles_abi::rgba || type != gles_abi::unsigned_byte) {
+        set_gl_error(call, gles_abi::invalid_operation);
+        return;
+    }
+    if (width == 0 || height == 0)
+        return;
+    if (destination == 0U) {
+        set_gl_error(call, gles_abi::invalid_value);
+        return;
+    }
+    const auto binding = resolve_render_target(call, *context);
+    if (!binding) {
+        set_gl_error(call, gles_abi::invalid_operation);
+        return;
+    }
+    auto frame = render_target(call, *binding);
+    if (!frame) {
+        set_gl_error(call, gles_abi::invalid_operation);
+        return;
+    }
+    if (binding->host_surface && renderer_->accelerated()) {
+        // The newest image lives with the GPU: bring it back and read the
+        // surface's CPU copy, as a texture sampled by a shader is.
+        if (!renderer_->map_cpu(
+                *binding->host_surface, true, PerfCpuMapReason::SoftwareFallback)) {
+            set_gl_error(call, gles_abi::invalid_operation);
+            return;
+        }
+        auto mapping = binding->host_surface->map_cpu(
+            false, PerfCpuMapReason::SoftwareFallback);
+        frame->width = mapping.frame().width;
+        frame->height = mapping.frame().height;
+        frame->pixels = mapping.frame().pixels;
+    } else if (!renderer_->synchronize(*frame, binding->key)) {
+        set_gl_error(call, gles_abi::invalid_operation);
+        return;
+    }
+    if (frame->pixels.size() !=
+        static_cast<std::size_t>(frame->width) * frame->height) {
+        set_gl_error(call, gles_abi::invalid_operation);
+        return;
+    }
+    const auto alignment = std::max<std::uint32_t>(1U, context->pack_alignment);
+    const auto unpadded_row = static_cast<std::uint64_t>(width) * 4U;
+    const auto row_bytes = (unpadded_row + alignment - 1U) / alignment *
+                           alignment;
+    const auto last_byte = static_cast<std::uint64_t>(destination) +
+                           row_bytes * static_cast<std::uint64_t>(height - 1) +
+                           unpadded_row;
+    if (last_byte > std::numeric_limits<std::uint32_t>::max()) {
+        set_gl_error(call, gles_abi::invalid_operation);
+        return;
+    }
+    const auto frame_height = static_cast<std::int64_t>(frame->height);
+    for (std::int32_t row = 0; row < height; ++row) {
+        // GL rows count up from the lower edge. A texture-backed target keeps
+        // its first row there; a drawable's rows are in panel order.
+        const auto gl_row = static_cast<std::int64_t>(y) + row;
+        if (gl_row < 0 || gl_row >= frame_height)
+            continue;
+        const auto source_row = binding->inverted_vertical
+                                    ? gl_row
+                                    : frame_height - 1 - gl_row;
+        for (std::int32_t column = 0; column < width; ++column) {
+            const auto gl_column = static_cast<std::int64_t>(x) + column;
+            if (gl_column < 0 ||
+                gl_column >= static_cast<std::int64_t>(frame->width))
+                continue;
+            const auto pixel = frame->pixels[static_cast<std::size_t>(
+                source_row * frame->width + gl_column)];
+            const auto address = static_cast<std::uint32_t>(destination +
+                                 row_bytes * static_cast<std::uint64_t>(row) +
+                                 static_cast<std::uint64_t>(column) * 4U);
+            const std::array<std::uint8_t, 4> bytes {
+                static_cast<std::uint8_t>(pixel >> 16U),
+                static_cast<std::uint8_t>(pixel >> 8U),
+                static_cast<std::uint8_t>(pixel),
+                static_cast<std::uint8_t>(pixel >> 24U) };
+            for (std::uint32_t index = 0; index < bytes.size(); ++index) {
+                if (!call.memory().write8(address + index, bytes[index])) {
+                    set_gl_error(call, gles_abi::invalid_operation);
+                    return;
+                }
+            }
+        }
+    }
+}
+
 void OpenGlesHle::register_eagl(UserlandHleRegistry& registry)
 {
     // Resolve the native capability without patching its Objective-C entry.
@@ -3819,6 +3927,8 @@ void OpenGlesHle::register_gles(UserlandHleRegistry& registry)
     });
     add("_glDrawArrays", [this](UserlandHleCall& call) { draw(call, false); });
     add("_glDrawElements", [this](UserlandHleCall& call) { draw(call, true); });
+    add("_glReadPixels",
+        [this](UserlandHleCall& call) { read_pixels(call); });
     add("_glFlush", [this](UserlandHleCall& call) {
         auto* context = current_context(call);
         const auto binding = context != nullptr

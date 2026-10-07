@@ -231,6 +231,7 @@ private:
     [[nodiscard]] std::shared_ptr<HostSurface> acquire_compatibility_surface(
         HostSurfaceDescriptor descriptor);
     void draw(UserlandHleCall& call, bool indexed);
+    void read_pixels(UserlandHleCall& call);
     [[nodiscard]] bool display_write_allowed(UserlandHleCall& call) const;
     void register_eagl(UserlandHleRegistry& registry);
     void register_egl(UserlandHleRegistry& registry);

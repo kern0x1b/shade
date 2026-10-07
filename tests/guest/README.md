@@ -11,6 +11,7 @@ purgeable state word.
 `sysctl_hw.c` reads the hw.* processor nodes and compares the counts with `host_info`.
 `coreimage.m` draws with Core Image (an EAGL context, the CPU renderer, the
 default renderer), including a Gaussian blur, and reads the pixels back.
+`gles2.m` makes an OpenGL ES 2 context and reads a framebuffer back with `glReadPixels`.
 `longrun.c` stays for a given number of seconds, for looking at what the
 rest of a boot does meanwhile.
 
@@ -25,6 +26,7 @@ Each prints one line per check and exits with the number of failures.
     $CC -o sysctl_hw sysctl_hw.c
     $CC -fobjc-arc -framework Foundation -framework CoreGraphics -framework CoreImage \
         -framework OpenGLES -o coreimage coreimage.m
+    $CC -fobjc-arc -framework Foundation -framework OpenGLES -o gles2 gles2.m
     $CC -dynamiclib -DIMAGE_VALUE=1 -install_name /usr/local/lib/charon-remap-1.dylib -o charon-remap-1.dylib remap_image.c
     $CC -dynamiclib -DIMAGE_VALUE=2 -install_name /usr/local/lib/charon-remap-2.dylib -o charon-remap-2.dylib remap_image.c
 
