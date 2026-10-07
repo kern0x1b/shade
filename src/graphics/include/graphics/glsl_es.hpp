@@ -17,6 +17,10 @@
 
 namespace shade::glsl {
 
+// The longest shader source the compiler takes, in bytes (what glShaderSource
+// hands it is cut at the same length).
+inline constexpr std::size_t maximum_source_bytes = 256U * 1024U;
+
 enum class Stage : std::uint8_t {
     Vertex,
     Fragment,
@@ -80,8 +84,9 @@ struct Variable {
 class Module {
 public:
     // Compiles one shader. A shader that is not valid GLSL ES 1.00, or uses a
-    // part of the language this compiler does not carry, is refused with its
-    // reason (and line) appended to log.
+    // part of the language this compiler does not carry, or is longer than
+    // maximum_source_bytes, or whose macros expand to more than the compiler
+    // will hold, is refused with its reason (and line) appended to log.
     [[nodiscard]] static std::shared_ptr<const Module> compile(
         std::string_view source, Stage stage, std::string& log);
 

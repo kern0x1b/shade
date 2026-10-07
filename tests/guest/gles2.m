@@ -200,6 +200,26 @@ static GLuint texture2x2(const uint8_t texels[16])
     return texture;
 }
 
+// unit written count times, in a new allocation.
+static char *repeated(const char *unit, int count)
+{
+    size_t length = strlen(unit);
+    char *result = malloc(length * (size_t)count + 1);
+    for (int i = 0; i < count; i++)
+        memcpy(result + length * (size_t)i, unit, length);
+    result[length * (size_t)count] = 0;
+    return result;
+}
+
+// text followed by more, in a new allocation; text is freed.
+static char *appended(char *text, const char *more)
+{
+    size_t length = strlen(text), extra = strlen(more);
+    char *result = realloc(text, length + extra + 1);
+    memcpy(result + length, more, extra + 1);
+    return result;
+}
+
 static void testCompiling(void)
 {
     char log[512];
@@ -274,6 +294,52 @@ static void testCompiling(void)
         "attribute vec4 position;\nfloat f() { float a[256]; float b[256]; float c[256]; float d[256]; float e[256]; e[255] = 1.0; return e[255]; }\n"
         "void main() { gl_Position = position * f(); }\n", log, sizeof log);
     check("so do the variables of a function main calls", shader == 0 && strstr(log, "'f'") != NULL, log);
+
+    // Macros that expand into more than the compiler will hold (sixteen copies of the macro
+    // before it, eight deep: 16^8 tokens from a few hundred bytes) are refused, quickly, with
+    // the reason in the log; macros a shader really uses expand.
+    char *bomb = repeated("#define A0 x x x x x x x x x x x x x x x x\n", 1);
+    for (int level = 1; level <= 7; level++) {
+        char line[512], unit[64];
+        snprintf(unit, sizeof unit, "A%d ", level - 1);
+        char *body = repeated(unit, 16);
+        snprintf(line, sizeof line, "#define A%d %s\n", level, body);
+        free(body);
+        bomb = appended(bomb, line);
+    }
+    bomb = appended(bomb, "void main() { A7 }\n");
+    shader = compile(GL_FRAGMENT_SHADER, bomb, log, sizeof log);
+    check("macros that expand to 16^8 tokens do not compile", shader == 0, "compiled");
+    check("and the log says why", strstr(log, "too many tokens") != NULL, log);
+    free(bomb);
+
+    char *empty = appended(repeated("#define E\n", 1), "#define B0 E E E E E E E E E E E E E E E E\n");
+    for (int level = 1; level <= 8; level++) {
+        char line[512], unit[64];
+        snprintf(unit, sizeof unit, "B%d ", level - 1);
+        char *body = repeated(unit, 16);
+        snprintf(line, sizeof line, "#define B%d %s\n", level, body);
+        free(body);
+        empty = appended(empty, line);
+    }
+    empty = appended(empty, "void main() { B8 gl_FragColor = vec4(1.0); }\n");
+    shader = compile(GL_FRAGMENT_SHADER, empty, log, sizeof log);
+    check("macros that expand to nothing, 16^8 times, do not compile", shader == 0 && strstr(log, "too much text") != NULL, log);
+    free(empty);
+
+    shader = compile(GL_FRAGMENT_SHADER,
+        "precision mediump float;\n#define A x = x + 1.0;\n#define B A A A A\n#define C B B B B\n"
+        "void main() { float x = 0.0;\n C C C C C C C C\n gl_FragColor = vec4(x / 128.0); }\n", log, sizeof log);
+    check("macros three deep expand", shader != 0, log);
+
+    // glShaderSource takes at most 256 KiB of source.
+    char *big = repeated("// a comment line that adds up to more than the source a shader may have\n", 4000);
+    shader = glCreateShader(GL_FRAGMENT_SHADER);
+    const char *bigSource = big;
+    (void)glGetError();
+    glShaderSource(shader, 1, &bigSource, NULL);
+    check("glShaderSource refuses more than 256 KiB of source", glGetError() == GL_INVALID_VALUE, "no GL_INVALID_VALUE");
+    free(big);
 }
 
 static void testDrawing(void)

@@ -424,6 +424,14 @@ namespace {
     // holds this many in all (main's frame and every active call's).
     constexpr std::uint32_t stack_values = 1024;
 
+    // What macro expansion may produce. Both bounds are far above any shader
+    // of the era (the compositor's are a few hundred tokens) and keep a guest's
+    // macros from growing the host's memory or time without limit: a macro
+    // that expands to sixteen copies of another, eight deep, is 16^8 tokens
+    // from a few hundred bytes of source.
+    constexpr std::size_t maximum_tokens = 65536;
+    constexpr std::size_t maximum_scanned_bytes = 4U * 1024U * 1024U;
+
     struct CompileError {
         int line { };
         std::string message;
@@ -495,6 +503,11 @@ namespace {
         {
             if (depth > 16)
                 refuse(first_line, "macro expansion is too deep");
+            // Every text scanned is counted, the source and each expansion of
+            // a macro, so an expansion that produces no token is bounded too.
+            scanned_ += text.size() + 1;
+            if (scanned_ > maximum_scanned_bytes)
+                refuse(first_line, "the shader's macros expand to too much text");
             std::size_t i = 0;
             int line = first_line;
             bool line_start = true;
@@ -502,6 +515,8 @@ namespace {
                             double number) {
                 if (!active())
                     return;
+                if (tokens_.size() >= maximum_tokens)
+                    refuse(line, "the shader expands to too many tokens");
                 Token token;
                 token.type = type;
                 token.text = std::move(value);
@@ -773,6 +788,7 @@ namespace {
         std::map<std::string, std::string> macros_;
         std::vector<Condition> conditions_;
         std::vector<Token> tokens_;
+        std::size_t scanned_ { };
         int line_ { 1 };
     };
 
@@ -2904,6 +2920,11 @@ std::shared_ptr<const Module> Module::compile(
     std::string_view source, Stage stage, std::string& log)
 {
     auto impl = std::make_shared<Impl>();
+    if (source.size() > maximum_source_bytes) {
+        log += "ERROR: 0:1: the shader source is longer than " +
+               std::to_string(maximum_source_bytes) + " bytes\n";
+        return nullptr;
+    }
     try {
         Parser parser { Lexer { source }.run(), stage, *impl };
         parser.unit();

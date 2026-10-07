@@ -60,7 +60,6 @@ inline constexpr std::uint32_t active_attributes = 0x8b89U;
 inline constexpr std::uint32_t shader_source_length = 0x8b88U;
 inline constexpr std::uint32_t shader_type = 0x8b4fU;
 inline constexpr std::size_t maximum_vertex_attributes = 8;
-inline constexpr std::size_t maximum_shader_source_bytes = 256U * 1024U;
 inline constexpr std::uint32_t array_buffer = 0x8892U;
 inline constexpr std::uint32_t element_array_buffer = 0x8893U;
 inline constexpr std::uint32_t buffer_size = 0x8764U;

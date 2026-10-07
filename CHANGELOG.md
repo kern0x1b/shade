@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   that did not link is an error. Core Image's OpenGL ES path draws with it.
   The variables of a shader function take at most 1024 values (an array counts its length); a
   shader that declares more does not compile, and the info log names the function.
+  A shader whose macros expand to more than 65536 tokens or 4 MiB of text, or whose source is longer
+  than 256 KiB, does not compile either (the info log says which).
 
 ### Changed
 - The project is named Shade, and its JIT core Umbra: the namespace, build files,

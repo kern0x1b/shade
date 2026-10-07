@@ -270,7 +270,7 @@ void OpenGlesHle::register_programmable_gles(UserlandHleRegistry& registry)
                 const auto length = static_cast<std::int32_t>(*raw_length);
                 if (length >= 0) {
                     if (static_cast<std::size_t>(length) >
-                        gles_abi::maximum_shader_source_bytes) {
+                        glsl::maximum_source_bytes) {
                         set_gl_error(call, gles_abi::invalid_value);
                         return;
                     }
@@ -285,9 +285,9 @@ void OpenGlesHle::register_programmable_gles(UserlandHleRegistry& registry)
             }
             if (!part) {
                 part = call.memory().read_c_string(
-                    *address, gles_abi::maximum_shader_source_bytes);
+                    *address, glsl::maximum_source_bytes);
             }
-            if (!part || source.size() > gles_abi::maximum_shader_source_bytes -
+            if (!part || source.size() > glsl::maximum_source_bytes -
                                              part->size()) {
                 set_gl_error(call, gles_abi::invalid_value);
                 return;
