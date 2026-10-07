@@ -527,7 +527,8 @@ namespace {
             // a macro, so an expansion that produces no token is bounded too.
             scanned_ += text.size() + 1;
             if (scanned_ > maximum_scanned_bytes)
-                refuse(first_line, "the shader's macros expand to too much text");
+                refuse(
+                    first_line, "the shader's macros expand to too much text");
             std::size_t i = 0;
             int line = first_line;
             bool line_start = true;
@@ -3099,7 +3100,8 @@ bool Instance::run(const TextureAccess* textures)
         const auto& main = *impl.main;
         // The compiler refuses a bigger frame; the run does not rest on that.
         if (main.frame_size > stack_values)
-            fail(main.body->line, "the stack is too small for main's variables");
+            fail(
+                main.body->line, "the stack is too small for main's variables");
         state.top = main.frame_size;
         const auto flow = state.exec(*main.body);
         if (flow == Flow::Discard) {
