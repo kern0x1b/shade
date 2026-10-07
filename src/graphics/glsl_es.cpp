@@ -420,6 +420,10 @@ namespace {
         return static_cast<int>(std::clamp(x, -limit, limit));
     }
 
+    // The values one call's locals may take on the run's stack; the stack
+    // holds this many in all (main's frame and every active call's).
+    constexpr std::uint32_t stack_values = 1024;
+
     struct CompileError {
         int line { };
         std::string message;
@@ -961,6 +965,19 @@ namespace {
             declare_global(name, type, 0, Storage::Builtin, read_only);
         }
 
+        // Gives the function being parsed count more values of frame. A frame
+        // that cannot fit the run's stack is refused here, where the guest's
+        // declaration is, never at run time after a write has gone past it.
+        void reserve(std::uint32_t count, int line)
+        {
+            if (count > stack_values - frame_size_)
+                refuse(line, "the variables of '" + function_name_ +
+                                 "' need more than " +
+                                 std::to_string(stack_values) +
+                                 " values of local storage");
+            frame_size_ += count;
+        }
+
         Symbol declare_local(
             const std::string& name, TypeId type, std::uint32_t array_size)
         {
@@ -971,7 +988,7 @@ namespace {
             symbol.type = type;
             symbol.array_size = array_size;
             symbol.slot = frame_size_;
-            frame_size_ += std::max(array_size, 1U);
+            reserve(std::max(array_size, 1U), peek().line);
             scope[name] = symbol;
             return symbol;
         }
@@ -1100,6 +1117,7 @@ namespace {
             auto function = std::make_unique<ast::Function>();
             function->name = identifier();
             function->result = result;
+            function_name_ = function->name;
             expect("(");
             scopes_.emplace_back();
             frame_size_ = 0;
@@ -1127,7 +1145,8 @@ namespace {
                             refuse(line, "array parameters are not supported");
                         parameter.slot = declare_local(name, *type, 0).slot;
                     } else {
-                        parameter.slot = frame_size_++;
+                        parameter.slot = frame_size_;
+                        reserve(1U, line);
                     }
                     function->parameters.push_back(parameter);
                 } while (accept(","));
@@ -1752,6 +1771,7 @@ namespace {
         Module::Impl& impl_;
         std::vector<std::map<std::string, Symbol>> scopes_;
         std::uint32_t frame_size_ { };
+        std::string function_name_;
         ast::Function* current_ { };
         int loop_depth_ { };
     };
@@ -1766,7 +1786,6 @@ namespace {
         throw RunError { line, std::move(message) };
     }
 
-    constexpr std::uint32_t stack_values = 1024;
     constexpr std::uint32_t maximum_depth = 32;
     constexpr std::uint64_t maximum_steps = 4'000'000;
 
@@ -2961,6 +2980,9 @@ bool Instance::run(const TextureAccess* textures)
             state.globals[initializer.slot] = value;
         }
         const auto& main = *impl.main;
+        // The compiler refuses a bigger frame; the run does not rest on that.
+        if (main.frame_size > stack_values)
+            fail(main.body->line, "the stack is too small for main's variables");
         state.top = main.frame_size;
         const auto flow = state.exec(*main.body);
         if (flow == Flow::Discard) {

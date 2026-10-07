@@ -258,6 +258,22 @@ static void testCompiling(void)
     program = build(plainVertex,
         "precision mediump float;\nvarying vec2 p;\nvoid main() { gl_FragColor = vec4(p, 0.0, 1.0); }\n", log, sizeof log);
     check("a program whose shaders agree links", program != 0, log);
+
+    // The variables of a function take their place on a stack of 1024 values: a shader that asks
+    // for more is refused where it declares them (it used to write past the host's stack at run).
+    static const char *fits = "precision mediump float;\nvoid main() {\n float a[256]; float b[256]; float c[256]; float d[256];\n"
+        " d[255] = 1.0; gl_FragColor = vec4(d[255]);\n}\n";
+    static const char *tooMuch = "precision mediump float;\nvoid main() {\n float a[256]; float b[256]; float c[256]; float d[256]; float e[256];\n"
+        " e[255] = 1.0; gl_FragColor = vec4(e[255]);\n}\n";
+    GLuint shader = compile(GL_FRAGMENT_SHADER, fits, log, sizeof log);
+    check("variables that fill the stack exactly compile", shader != 0, log);
+    shader = compile(GL_FRAGMENT_SHADER, tooMuch, log, sizeof log);
+    check("variables that need more than the stack do not compile", shader == 0, "compiled");
+    check("and the log names the function", strstr(log, "'main'") != NULL && strstr(log, "0:3") != NULL, log);
+    shader = compile(GL_VERTEX_SHADER,
+        "attribute vec4 position;\nfloat f() { float a[256]; float b[256]; float c[256]; float d[256]; float e[256]; e[255] = 1.0; return e[255]; }\n"
+        "void main() { gl_Position = position * f(); }\n", log, sizeof log);
+    check("so do the variables of a function main calls", shader == 0 && strstr(log, "'f'") != NULL, log);
 }
 
 static void testDrawing(void)
