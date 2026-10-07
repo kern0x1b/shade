@@ -444,6 +444,12 @@ namespace {
     constexpr int maximum_parse_nesting = 32;
     constexpr std::uint16_t maximum_tree_height = 128;
     constexpr std::uint32_t maximum_run_nesting = 256;
+
+    // The values of a shader's globals, attributes, uniforms and varyings
+    // together (an array counts its length; a matrix is one value). Every
+    // instance of a module holds a copy, and a guest can declare thousands of
+    // arrays of 256 in a few kilobytes of source.
+    constexpr std::size_t maximum_global_values = 4096;
     constexpr std::size_t maximum_scanned_bytes = 4U * 1024U * 1024U;
 
     struct CompileError {
@@ -958,6 +964,11 @@ namespace {
         {
             const auto slot =
                 static_cast<std::uint32_t>(impl_.initial_globals.size());
+            if (count > maximum_global_values - impl_.initial_globals.size())
+                refuse(peek().line, "the shader's global variables need more "
+                                    "than " +
+                                        std::to_string(maximum_global_values) +
+                                        " values of storage");
             for (std::uint32_t i = 0; i < count; ++i)
                 impl_.initial_globals.push_back(ast::make(type));
             return slot;

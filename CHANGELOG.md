@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   Statements and expressions nest at most 32 deep and an expression tree is at most 128 tall, so a
   shader of a few thousand parentheses, braces or terms is refused instead of overrunning the host
   thread's stack; a run nests at most 256 evaluations and statements, calls included.
+  The globals of a shader (uniforms, varyings, plain globals) take at most 4096 values.
 
 ### Changed
 - The project is named Shade, and its JIT core Umbra: the namespace, build files,

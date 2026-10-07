@@ -363,6 +363,31 @@ static void testCompiling(void)
         " { { { { { { { { { { float x = sin(sin(sin(sin(sin(sin(1.0)))))); } } } } } } } } } }\n}\n", log, sizeof log);
     check("twenty parentheses and ten blocks compile", shader != 0, log);
 
+    // The globals of a shader (uniforms, varyings and plain globals; an array counts its length)
+    // take at most 4096 values: every instance holds a copy, and a guest can declare thousands of
+    // arrays of 256 in a few kilobytes.
+    char *globals = repeated("precision mediump float;\n", 1);
+    for (int i = 0; i < 15; i++) {
+        char line[64];
+        snprintf(line, sizeof line, "float g%d[256];\n", i);
+        globals = appended(globals, line);
+    }
+    globals = appended(globals, "void main() { gl_FragColor = vec4(g0[0]); }\n");
+    shader = compile(GL_FRAGMENT_SHADER, globals, log, sizeof log);
+    check("fifteen global arrays of 256 compile", shader != 0, log);
+    free(globals);
+    globals = repeated("precision mediump float;\n", 1);
+    for (int i = 0; i < 20; i++) {
+        char line[64];
+        snprintf(line, sizeof line, "float g%d[256];\n", i);
+        globals = appended(globals, line);
+    }
+    globals = appended(globals, "void main() { gl_FragColor = vec4(g0[0]); }\n");
+    shader = compile(GL_FRAGMENT_SHADER, globals, log, sizeof log);
+    check("twenty global arrays of 256 do not compile, and the log names the globals",
+        shader == 0 && strstr(log, "global variables") != NULL, log);
+    free(globals);
+
     // glShaderSource takes at most 256 KiB of source.
     char *big = repeated("// a comment line that adds up to more than the source a shader may have\n", 4000);
     shader = glCreateShader(GL_FRAGMENT_SHADER);
