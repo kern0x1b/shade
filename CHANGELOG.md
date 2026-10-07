@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   shader that declares more does not compile, and the info log names the function.
   A shader whose macros expand to more than 65536 tokens or 4 MiB of text, or whose source is longer
   than 256 KiB, does not compile either (the info log says which).
+  Statements and expressions nest at most 32 deep and an expression tree is at most 128 tall, so a
+  shader of a few thousand parentheses, braces or terms is refused instead of overrunning the host
+  thread's stack; a run nests at most 256 evaluations and statements, calls included.
 
 ### Changed
 - The project is named Shade, and its JIT core Umbra: the namespace, build files,

@@ -344,6 +344,8 @@ namespace ast {
         const std::vector<Function*>* overloads { };
         std::string name;
         std::vector<std::unique_ptr<Node>> args;
+        // 1 for a leaf, else one more than the tallest argument.
+        std::uint16_t height { 1 };
     };
 
     struct Statement {
@@ -430,6 +432,18 @@ namespace {
     // that expands to sixteen copies of another, eight deep, is 16^8 tokens
     // from a few hundred bytes of source.
     constexpr std::size_t maximum_tokens = 65536;
+
+    // How deep a shader may nest, in what the compiler and the run recurse
+    // through. A guest chooses the shape of its source, and a few thousand
+    // tokens of "(" or "{" or "a+a+a+..." would take a host thread's stack
+    // (a guest's GL calls run on a thread with the default 512 KB). The parser
+    // recurses at most maximum_parse_nesting levels of statements and
+    // expressions; a tree is at most maximum_tree_height tall, so building,
+    // running and destroying it recurse as far; and a run, whatever the calls
+    // between, nests at most maximum_run_nesting evaluations and statements.
+    constexpr int maximum_parse_nesting = 32;
+    constexpr std::uint16_t maximum_tree_height = 128;
+    constexpr std::uint32_t maximum_run_nesting = 256;
     constexpr std::size_t maximum_scanned_bytes = 4U * 1024U * 1024U;
 
     struct CompileError {
@@ -1303,6 +1317,7 @@ namespace {
         std::unique_ptr<ast::Statement> statement()
         {
             const int line = peek().line;
+            const Nesting nesting { *this, line };
             if (accept("{"))
                 return block_rest();
             if (accept(";"))
@@ -1419,6 +1434,37 @@ namespace {
 
         // Expressions --------------------------------------------------------
 
+        // Gives parent its next argument, keeping the tree within bounds.
+        void add_arg(ast::Node& parent, std::unique_ptr<ast::Node> child)
+        {
+            const auto height = static_cast<unsigned>(child->height) + 1U;
+            if (height > maximum_tree_height)
+                refuse(parent.line, "the expression is nested too deeply");
+            parent.height = std::max<std::uint16_t>(
+                parent.height, static_cast<std::uint16_t>(height));
+            parent.args.push_back(std::move(child));
+        }
+
+        // Counts one level of the parser's recursion for as long as it lives.
+        class Nesting {
+        public:
+            Nesting(Parser& parser, int line)
+                : parser_(parser)
+            {
+                if (++parser_.nesting_ > maximum_parse_nesting) {
+                    --parser_.nesting_;
+                    refuse(line, "the shader nests statements or "
+                                 "expressions too deeply");
+                }
+            }
+            ~Nesting() { --parser_.nesting_; }
+            Nesting(const Nesting&) = delete;
+            Nesting& operator=(const Nesting&) = delete;
+
+        private:
+            Parser& parser_;
+        };
+
         std::unique_ptr<ast::Node> node(ast::Node::Type type, int line)
         {
             auto result = std::make_unique<ast::Node>();
@@ -1433,9 +1479,9 @@ namespace {
             if (!is_punct(","))
                 return result;
             auto sequence = node(ast::Node::Type::Sequence, peek().line);
-            sequence->args.push_back(std::move(result));
+            add_arg(*sequence, std::move(result));
             while (accept(","))
-                sequence->args.push_back(assignment());
+                add_arg(*sequence, assignment());
             return sequence;
         }
 
@@ -1457,6 +1503,7 @@ namespace {
 
         std::unique_ptr<ast::Node> assignment()
         {
+            const Nesting nesting { *this, peek().line };
             auto left = conditional();
             const auto& token = peek();
             if (token.type != Token::Type::Punct)
@@ -1480,8 +1527,8 @@ namespace {
             require_writable(*left, line);
             auto result = node(ast::Node::Type::Assign, line);
             result->op = op;
-            result->args.push_back(std::move(left));
-            result->args.push_back(assignment());
+            add_arg(*result, std::move(left));
+            add_arg(*result, assignment());
             return result;
         }
 
@@ -1493,10 +1540,10 @@ namespace {
             const int line = peek().line;
             ++at_;
             auto result = node(ast::Node::Type::Conditional, line);
-            result->args.push_back(std::move(condition));
-            result->args.push_back(expression());
+            add_arg(*result, std::move(condition));
+            add_arg(*result, expression());
             expect(":");
-            result->args.push_back(assignment());
+            add_arg(*result, assignment());
             return result;
         }
 
@@ -1506,8 +1553,8 @@ namespace {
         {
             auto result = node(type, line);
             result->op = op;
-            result->args.push_back(std::move(left));
-            result->args.push_back(std::move(right));
+            add_arg(*result, std::move(left));
+            add_arg(*result, std::move(right));
             return result;
         }
 
@@ -1612,22 +1659,24 @@ namespace {
         {
             const int line = peek().line;
             if (is_punct("-") || is_punct("+") || is_punct("!")) {
+                const Nesting nesting { *this, line };
                 const auto op = is_punct("-") ? ast::Op::Neg
                                               : (is_punct("+") ? ast::Op::Plus
                                                                : ast::Op::Not);
                 ++at_;
                 auto result = node(ast::Node::Type::Unary, line);
                 result->op = op;
-                result->args.push_back(unary());
+                add_arg(*result, unary());
                 return result;
             }
             if (is_punct("++") || is_punct("--")) {
+                const Nesting nesting { *this, line };
                 const auto op = is_punct("++") ? ast::Op::Add : ast::Op::Sub;
                 ++at_;
                 auto result = node(ast::Node::Type::Increment, line);
                 result->op = op;
                 result->prefix = true;
-                result->args.push_back(unary());
+                add_arg(*result, unary());
                 require_writable(*result->args[0], line);
                 return result;
             }
@@ -1660,8 +1709,8 @@ namespace {
                     index->array_index =
                         result->type == ast::Node::Type::Variable &&
                         result->array_size != 0;
-                    index->args.push_back(std::move(result));
-                    index->args.push_back(expression());
+                    add_arg(*index, std::move(result));
+                    add_arg(*index, expression());
                     expect("]");
                     result = std::move(index);
                 } else if (accept(".")) {
@@ -1676,7 +1725,7 @@ namespace {
                             refuse(line, "'" + field + "' is not a swizzle");
                         swizzle->swizzle[swizzle->swizzle_count++] = *index;
                     }
-                    swizzle->args.push_back(std::move(result));
+                    add_arg(*swizzle, std::move(result));
                     result = std::move(swizzle);
                 } else if (is_punct("++") || is_punct("--")) {
                     const auto op =
@@ -1684,7 +1733,7 @@ namespace {
                     ++at_;
                     auto step = node(ast::Node::Type::Increment, line);
                     step->op = op;
-                    step->args.push_back(std::move(result));
+                    add_arg(*step, std::move(result));
                     require_writable(*step->args[0], line);
                     result = std::move(step);
                 } else {
@@ -1771,7 +1820,7 @@ namespace {
                     ++at_;
                 } else {
                     do {
-                        result->args.push_back(assignment());
+                        add_arg(*result, assignment());
                     } while (accept(","));
                 }
             }
@@ -1790,6 +1839,7 @@ namespace {
         std::string function_name_;
         ast::Function* current_ { };
         int loop_depth_ { };
+        int nesting_ { };
     };
 
     struct RunError {
@@ -1835,7 +1885,28 @@ struct Instance::State {
     std::uint32_t base { };
     std::uint32_t top { };
     std::uint32_t depth { };
+    // The evaluations and statements now being executed, calls included.
+    std::uint32_t nesting { };
     Value returned;
+
+    // One level of the run's recursion, counted for as long as it lives (an
+    // exception that leaves the run unwinds the count with it).
+    class Nest {
+    public:
+        Nest(State& state, int line)
+            : state_(state)
+        {
+            if (state_.nesting >= maximum_run_nesting)
+                fail(line, "the shader nests too deeply");
+            ++state_.nesting;
+        }
+        ~Nest() { --state_.nesting; }
+        Nest(const Nest&) = delete;
+        Nest& operator=(const Nest&) = delete;
+
+    private:
+        State& state_;
+    };
 
     Value* slot_of(const ast::Node& variable)
     {
@@ -2656,6 +2727,7 @@ struct Instance::State {
 
     Value eval(const ast::Node& node)
     {
+        const Nest nest { *this, node.line };
         using T = ast::Node::Type;
         switch (node.type) {
         case T::Literal:
@@ -2814,6 +2886,7 @@ struct Instance::State {
 
     Flow exec(const ast::Statement& statement)
     {
+        const Nest nest { *this, statement.line };
         using T = ast::Statement::Type;
         switch (statement.type) {
         case T::Block:
@@ -2991,6 +3064,7 @@ bool Instance::run(const TextureAccess* textures)
     state.base = 0;
     state.top = 0;
     state.depth = 0;
+    state.nesting = 0;
     for (const auto slot : impl.output_slots)
         state.globals[slot] = ast::make(state.globals[slot].type);
     try {

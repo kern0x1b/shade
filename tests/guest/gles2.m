@@ -332,6 +332,37 @@ static void testCompiling(void)
         "void main() { float x = 0.0;\n C C C C C C C C\n gl_FragColor = vec4(x / 128.0); }\n", log, sizeof log);
     check("macros three deep expand", shader != 0, log);
 
+    // How deep a shader may nest is bounded: a guest's GL thread has a small stack, and a few
+    // thousand parentheses, blocks or terms used to run it out (the emulator crashed).
+    static const struct { const char *name; const char *open, *middle, *close; int count; const char *log; } nested[] = {
+        { "parentheses", "(", "1.0", ")", 4000, "too deeply" },
+        { "braces", "{", "", "}", 4000, "too deeply" },
+        { "unary minus", "- ", "1.0", "", 4000, "too deeply" },
+        { "calls", "sin(", "1.0", ")", 4000, "too deeply" },
+        { "ternaries", "true ? ", "1.0", " : 1.0", 4000, "too deeply" },
+        { "terms of a sum", "", "1.0", "+1.0", 4000, "too deeply" },
+    };
+    for (size_t i = 0; i < sizeof nested / sizeof nested[0]; i++) {
+        char *opens = repeated(nested[i].open, nested[i].count), *closes = repeated(nested[i].close, nested[i].count);
+        char *deep = repeated("precision mediump float;\nvoid main() {\n", 1);
+        deep = appended(deep, strcmp(nested[i].open, "{") == 0 ? "" : "gl_FragColor = vec4(");
+        deep = appended(deep, opens);
+        deep = appended(deep, nested[i].middle);
+        deep = appended(deep, closes);
+        deep = appended(deep, strcmp(nested[i].open, "{") == 0 ? "}\n" : ");\n}\n");
+        free(opens);
+        free(closes);
+        shader = compile(GL_FRAGMENT_SHADER, deep, log, sizeof log);
+        char name[96];
+        snprintf(name, sizeof name, "4000 nested %s do not compile, and the log says why", nested[i].name);
+        check(name, shader == 0 && strstr(log, nested[i].log) != NULL, log);
+        free(deep);
+    }
+    shader = compile(GL_FRAGMENT_SHADER,
+        "precision mediump float;\nvoid main() {\n gl_FragColor = vec4(((((((((((((((((((((1.0)))))))))))))))))))));\n"
+        " { { { { { { { { { { float x = sin(sin(sin(sin(sin(sin(1.0)))))); } } } } } } } } } }\n}\n", log, sizeof log);
+    check("twenty parentheses and ten blocks compile", shader != 0, log);
+
     // glShaderSource takes at most 256 KiB of source.
     char *big = repeated("// a comment line that adds up to more than the source a shader may have\n", 4000);
     shader = glCreateShader(GL_FRAGMENT_SHADER);
