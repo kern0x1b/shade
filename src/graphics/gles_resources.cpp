@@ -1004,6 +1004,50 @@ void GlesResourceStore::update_texture_render_target_generation(
             level->second.host_surface->gpu_generation());
 }
 
+bool GlesResourceStore::synchronize_texture_to_cpu(std::uint32_t name,
+    std::uint32_t level_index, HostGraphicsDevice& graphics)
+{
+    auto texture = textures_.find(name);
+    if (name == 0U || texture == textures_.end())
+        return true;
+    auto level = texture->second.levels.find(level_index);
+    if (level == texture->second.levels.end() || !level->second.host_surface)
+        return true;
+    auto& image = level->second;
+    const auto expected = static_cast<std::size_t>(image.width) * image.height;
+    const auto gpu_ahead = image.host_surface->gpu_generation() >
+                           image.host_surface->cpu_generation();
+    if (!gpu_ahead && image.argb.size() == expected)
+        return true;
+    if (gpu_ahead &&
+        graphics.native_image(*image.host_surface).api ==
+            HostNativeImage::Api::None) {
+        return false;
+    }
+    if (!graphics.map_cpu(
+            *image.host_surface, true, PerfCpuMapReason::SoftwareFallback)) {
+        return false;
+    }
+    std::vector<std::uint32_t> pixels;
+    {
+        // The mapping holds the surface's lock: leave it before asking the
+        // surface for its generations.
+        auto mapping = image.host_surface->map_cpu(
+            false, PerfCpuMapReason::SoftwareFallback);
+        const auto& frame = mapping.frame();
+        if (frame.width != image.width || frame.height != image.height ||
+            frame.pixels.size() != expected) {
+            return false;
+        }
+        pixels = frame.pixels;
+    }
+    image.argb = std::move(pixels);
+    image.host_generation = std::max(image.host_surface->cpu_generation(),
+        image.host_surface->gpu_generation());
+    image.revision = allocate_texture_revision();
+    return true;
+}
+
 bool GlesResourceStore::materialize_surface_textures(
     HostGraphicsDevice& graphics)
 {

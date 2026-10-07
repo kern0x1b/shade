@@ -15,6 +15,7 @@
 #include <optional>
 #include <set>
 #include <span>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -23,9 +24,11 @@
 #include "graphics/gles_math.hpp"
 #include "graphics/gles_program_state.hpp"
 #include "graphics/gles_rasterizer.hpp"
+#include "graphics/gles_shaded_rasterizer.hpp"
 #include "graphics/gles_renderer.hpp"
 #include "graphics/gles_resources.hpp"
 #include "graphics/opengles_guest_capabilities.hpp"
+#include "graphics/glsl_es.hpp"
 #include "graphics/scanout_composition.hpp"
 
 namespace shade {
@@ -203,6 +206,21 @@ private:
         const ProgrammableDrawState* programmable = nullptr) const;
     [[nodiscard]] std::optional<ProgrammableDrawState> programmable_draw_state(
         const ContextState& context) const;
+    // The vertices a draw call names, in order.
+    [[nodiscard]] std::optional<std::vector<std::uint32_t>>
+    collect_vertex_indices(UserlandHleCall& call, const ContextState& context,
+        bool indexed, std::int32_t first, std::int32_t count);
+    // A draw of a program that runs in the interpreter: its vertex shader's
+    // results and the fragment shader to shade the triangles with.
+    struct ShadedDraw {
+        std::vector<GlesShadedVertex> vertices;
+        std::vector<GlesShadedVarying> varyings;
+        std::unique_ptr<glsl::Instance> fragment;
+    };
+    [[nodiscard]] std::optional<ShadedDraw> shade_vertices(
+        UserlandHleCall& call, const ContextState& context,
+        const GlesProgramState::Program& program,
+        std::span<const std::uint32_t> indices, std::string& error) const;
     [[nodiscard]] std::optional<std::uint32_t> core_surface_identifier(
         UserlandHleCall& call, std::uint32_t surface) const;
     [[nodiscard]] SurfaceState* current_pixmap_surface(UserlandHleCall& call);
@@ -231,7 +249,13 @@ private:
     [[nodiscard]] std::shared_ptr<HostSurface> acquire_compatibility_surface(
         HostSurfaceDescriptor descriptor);
     void draw(UserlandHleCall& call, bool indexed);
+    void trace_shader_failure(UserlandHleCall& call, const std::string& reason);
+    [[nodiscard]] bool rasterize_shaded(UserlandHleCall& call,
+        const RenderTargetBinding& binding, DisplayFrame& target,
+        const GlesRasterState& state, ShadedDraw& shaded, std::uint32_t mode);
     void read_pixels(UserlandHleCall& call);
+    [[nodiscard]] bool load_target_pixels(
+        const RenderTargetBinding& binding, DisplayFrame& frame);
     [[nodiscard]] bool display_write_allowed(UserlandHleCall& call) const;
     void register_eagl(UserlandHleRegistry& registry);
     void register_egl(UserlandHleRegistry& registry);
@@ -258,6 +282,7 @@ private:
     std::uint32_t egl_error_ { 0x3000U };
     std::uint64_t frame_count_ { };
     std::size_t unsupported_trace_count_ { };
+    std::size_t shader_trace_count_ { };
     std::shared_ptr<DisplayState> display_;
     std::shared_ptr<SurfaceStore> surface_store_;
     std::uint64_t renderer_owner_ { };

@@ -1131,6 +1131,73 @@ bool OpenGlesHle::publish_display_surface(
     return true;
 }
 
+std::optional<std::vector<std::uint32_t>> OpenGlesHle::collect_vertex_indices(
+    UserlandHleCall& call, const ContextState& context, bool indexed,
+    std::int32_t first, std::int32_t count)
+{
+    const auto index_type = indexed ? call.argument(2) : 0;
+    if (indexed && index_type != gles_abi::unsigned_byte &&
+        index_type != gles_abi::unsigned_short) {
+        set_gl_error(call, gles_abi::invalid_enum);
+        return std::nullopt;
+    }
+    const auto index_size = index_type == gles_abi::unsigned_short ? 2U : 1U;
+    const auto index_pointer = indexed ? call.argument(3) : 0;
+    const auto* element_buffer =
+        indexed && context.bound_element_array_buffer != 0
+            ? resources_.buffer(context.bound_element_array_buffer)
+            : nullptr;
+    std::vector<std::uint32_t> indices;
+    indices.reserve(static_cast<std::size_t>(count));
+    for (std::uint32_t item = 0; item < static_cast<std::uint32_t>(count);
+        ++item) {
+        auto vertex_index = static_cast<std::uint32_t>(first) + item;
+        if (indexed) {
+            const auto offset = static_cast<std::uint64_t>(index_pointer) +
+                                static_cast<std::uint64_t>(item) * index_size;
+            if (element_buffer != nullptr) {
+                if (offset > element_buffer->bytes.size() ||
+                    index_size > element_buffer->bytes.size() - offset) {
+                    set_gl_error(call, gles_abi::invalid_operation);
+                    return std::nullopt;
+                }
+                vertex_index = std::to_integer<std::uint32_t>(
+                    element_buffer->bytes[static_cast<std::size_t>(offset)]);
+                if (index_size == 2) {
+                    vertex_index |=
+                        std::to_integer<std::uint32_t>(element_buffer
+                                ->bytes[static_cast<std::size_t>(offset) + 1U])
+                        << 8U;
+                }
+            } else {
+                if (offset > std::numeric_limits<std::uint32_t>::max()) {
+                    set_gl_error(call, gles_abi::invalid_operation);
+                    return std::nullopt;
+                }
+                if (index_size == 2) {
+                    const auto value = call.memory().read16(
+                        static_cast<std::uint32_t>(offset));
+                    if (!value) {
+                        set_gl_error(call, gles_abi::invalid_operation);
+                        return std::nullopt;
+                    }
+                    vertex_index = *value;
+                } else {
+                    const auto value =
+                        call.memory().read8(static_cast<std::uint32_t>(offset));
+                    if (!value) {
+                        set_gl_error(call, gles_abi::invalid_operation);
+                        return std::nullopt;
+                    }
+                    vertex_index = *value;
+                }
+            }
+        }
+        indices.push_back(vertex_index);
+    }
+    return indices;
+}
+
 void OpenGlesHle::draw(UserlandHleCall& call, bool indexed)
 {
     auto* context = current_context(call);
@@ -1157,79 +1224,62 @@ void OpenGlesHle::draw(UserlandHleCall& call, bool indexed)
         set_gl_error(call, gles_abi::out_of_memory);
         return;
     }
-    const auto programmable = programmable_draw_state(*context);
-    if (context->current_program != 0U && !programmable) {
+    const auto* active_program =
+        context->current_program != 0U
+            ? programs_.program(context->current_program)
+            : nullptr;
+    // A draw with a program that did not link is an error.
+    if (context->current_program != 0U &&
+        (active_program == nullptr || !active_program->linked)) {
         set_gl_error(call, gles_abi::invalid_operation);
         return;
     }
-    std::vector<GlesRasterVertex> vertices;
-    vertices.reserve(static_cast<std::size_t>(count));
-    const auto index_type = indexed ? call.argument(2) : 0;
-    if (indexed && index_type != gles_abi::unsigned_byte &&
-        index_type != gles_abi::unsigned_short) {
-        set_gl_error(call, gles_abi::invalid_enum);
+    const auto interpreted = active_program != nullptr &&
+                             active_program->interpreted;
+    const auto programmable =
+        interpreted ? std::nullopt : programmable_draw_state(*context);
+    if (context->current_program != 0U && !interpreted && !programmable) {
+        set_gl_error(call, gles_abi::invalid_operation);
         return;
     }
-    const auto index_size = index_type == gles_abi::unsigned_short ? 2U : 1U;
-    const auto index_pointer = indexed ? call.argument(3) : 0;
-    const auto* element_buffer =
-        indexed && context->bound_element_array_buffer != 0
-            ? resources_.buffer(context->bound_element_array_buffer)
-            : nullptr;
-    for (std::uint32_t item = 0; item < static_cast<std::uint32_t>(count);
-        ++item) {
-        auto vertex_index = static_cast<std::uint32_t>(first) + item;
-        if (indexed) {
-            const auto offset = static_cast<std::uint64_t>(index_pointer) +
-                                static_cast<std::uint64_t>(item) * index_size;
-            if (element_buffer != nullptr) {
-                if (offset > element_buffer->bytes.size() ||
-                    index_size > element_buffer->bytes.size() - offset) {
-                    set_gl_error(call, gles_abi::invalid_operation);
-                    return;
-                }
-                vertex_index = std::to_integer<std::uint32_t>(
-                    element_buffer->bytes[static_cast<std::size_t>(offset)]);
-                if (index_size == 2) {
-                    vertex_index |=
-                        std::to_integer<std::uint32_t>(element_buffer
-                                ->bytes[static_cast<std::size_t>(offset) + 1U])
-                        << 8U;
-                }
-            } else {
-                if (offset > std::numeric_limits<std::uint32_t>::max()) {
-                    set_gl_error(call, gles_abi::invalid_operation);
-                    return;
-                }
-                if (index_size == 2) {
-                    const auto value = call.memory().read16(
-                        static_cast<std::uint32_t>(offset));
-                    if (!value) {
-                        set_gl_error(call, gles_abi::invalid_operation);
-                        return;
-                    }
-                    vertex_index = *value;
-                } else {
-                    const auto value =
-                        call.memory().read8(static_cast<std::uint32_t>(offset));
-                    if (!value) {
-                        set_gl_error(call, gles_abi::invalid_operation);
-                        return;
-                    }
-                    vertex_index = *value;
-                }
-            }
-        }
-        const auto vertex = read_vertex(call, *context, vertex_index,
-            programmable ? &*programmable : nullptr);
-        if (!vertex) {
+    const auto indices =
+        collect_vertex_indices(call, *context, indexed, first, count);
+    if (!indices)
+        return;
+    std::vector<GlesRasterVertex> vertices;
+    std::optional<ShadedDraw> shaded;
+    if (interpreted) {
+        // Points and lines are not drawn with a shader: say so, rather than
+        // draw them without it.
+        if (mode != gles_abi::triangles && mode != gles_abi::triangle_strip &&
+            mode != gles_abi::triangle_fan) {
             set_gl_error(call, gles_abi::invalid_operation);
             return;
         }
-        vertices.push_back(*vertex);
+        if (indices->size() < 3U)
+            return;
+        std::string error;
+        shaded = shade_vertices(call, *context, *active_program, *indices, error);
+        if (!shaded) {
+            trace_shader_failure(call, "vertex shader failed: " + error);
+            set_gl_error(call, gles_abi::invalid_operation);
+            return;
+        }
+    } else {
+        vertices.reserve(indices->size());
+        for (const auto vertex_index : *indices) {
+            const auto vertex = read_vertex(call, *context, vertex_index,
+                programmable ? &*programmable : nullptr);
+            if (!vertex) {
+                set_gl_error(call, gles_abi::invalid_operation);
+                return;
+            }
+            vertices.push_back(*vertex);
+        }
+        if (vertices.size() <
+            GlesPrimitiveAssembler::minimum_vertex_count(mode))
+            return;
     }
-    if (vertices.size() < GlesPrimitiveAssembler::minimum_vertex_count(mode))
-        return;
     const auto binding = resolve_render_target(call, *context);
     if (!binding) {
         set_gl_error(call, gles_abi::invalid_operation);
@@ -1280,11 +1330,14 @@ void OpenGlesHle::draw(UserlandHleCall& call, bool indexed)
         const auto& unit = context->texture_units[unit_index];
         const auto rectangle_enabled =
             programmable ? programmable->rectangle_textures[unit_index]
-                         : unit.texture_rectangle_enabled;
+                         : (!interpreted && unit.texture_rectangle_enabled);
         auto& raster_unit = state.texture_units[unit_index];
+        // A sampler reads the 2D texture bound to its unit.
         raster_unit.enabled =
-            programmable ? programmable->sampled_textures[unit_index]
-                         : rectangle_enabled || unit.texture_2d_enabled;
+            interpreted ? unit.bound_texture_2d != 0U
+            : programmable
+                ? programmable->sampled_textures[unit_index]
+                : rectangle_enabled || unit.texture_2d_enabled;
         raster_unit.rectangle = rectangle_enabled;
         raster_unit.environment =
             programmable ? programmable->texture_environments[unit_index]
@@ -1304,6 +1357,11 @@ void OpenGlesHle::draw(UserlandHleCall& call, bool indexed)
             if (pixmap_surface != nullptr)
                 pixmap_surface->refreshed_textures.insert(raster_unit.texture);
         }
+    }
+    if (interpreted) {
+        if (!rasterize_shaded(call, *binding, *target, state, *shaded, mode))
+            set_gl_error(call, gles_abi::invalid_operation);
+        return;
     }
     bool restored_scanout_background = false;
     if (binding->backing_identifier && binding->host_surface && display_ &&
@@ -1370,6 +1428,28 @@ void OpenGlesHle::draw(UserlandHleCall& call, bool indexed)
     }
 }
 
+bool OpenGlesHle::load_target_pixels(
+    const RenderTargetBinding& binding, DisplayFrame& frame)
+{
+    if (binding.host_surface && renderer_->accelerated()) {
+        // The newest image lives with the GPU and the frame carries no CPU
+        // pixels: bring it back and read the surface's CPU copy, as a texture
+        // sampled by a draw is.
+        if (!renderer_->map_cpu(
+                *binding.host_surface, true, PerfCpuMapReason::SoftwareFallback))
+            return false;
+        auto mapping = binding.host_surface->map_cpu(
+            false, PerfCpuMapReason::SoftwareFallback);
+        frame.width = mapping.frame().width;
+        frame.height = mapping.frame().height;
+        frame.pixels = mapping.frame().pixels;
+    } else if (!renderer_->synchronize(frame, binding.key)) {
+        return false;
+    }
+    return frame.pixels.size() ==
+           static_cast<std::size_t>(frame.width) * frame.height;
+}
+
 void OpenGlesHle::read_pixels(UserlandHleCall& call)
 {
     auto* context = current_context(call);
@@ -1410,25 +1490,7 @@ void OpenGlesHle::read_pixels(UserlandHleCall& call)
         set_gl_error(call, gles_abi::invalid_operation);
         return;
     }
-    if (binding->host_surface && renderer_->accelerated()) {
-        // The newest image lives with the GPU: bring it back and read the
-        // surface's CPU copy, as a texture sampled by a shader is.
-        if (!renderer_->map_cpu(
-                *binding->host_surface, true, PerfCpuMapReason::SoftwareFallback)) {
-            set_gl_error(call, gles_abi::invalid_operation);
-            return;
-        }
-        auto mapping = binding->host_surface->map_cpu(
-            false, PerfCpuMapReason::SoftwareFallback);
-        frame->width = mapping.frame().width;
-        frame->height = mapping.frame().height;
-        frame->pixels = mapping.frame().pixels;
-    } else if (!renderer_->synchronize(*frame, binding->key)) {
-        set_gl_error(call, gles_abi::invalid_operation);
-        return;
-    }
-    if (frame->pixels.size() !=
-        static_cast<std::size_t>(frame->width) * frame->height) {
+    if (!load_target_pixels(*binding, *frame)) {
         set_gl_error(call, gles_abi::invalid_operation);
         return;
     }

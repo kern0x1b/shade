@@ -139,6 +139,15 @@ inline constexpr std::uint32_t zero = 0;
 inline constexpr std::uint32_t one = 1;
 inline constexpr std::uint32_t source_alpha = 0x0302U;
 inline constexpr std::uint32_t one_minus_source_alpha = 0x0303U;
+inline constexpr std::uint32_t destination_alpha = 0x0304U;
+inline constexpr std::uint32_t one_minus_destination_alpha = 0x0305U;
+inline constexpr std::uint32_t destination_color = 0x0306U;
+inline constexpr std::uint32_t one_minus_destination_color = 0x0307U;
+inline constexpr std::uint32_t source_alpha_saturate = 0x0308U;
+inline constexpr std::uint32_t constant_color = 0x8001U;
+inline constexpr std::uint32_t one_minus_constant_color = 0x8002U;
+inline constexpr std::uint32_t constant_alpha = 0x8003U;
+inline constexpr std::uint32_t one_minus_constant_alpha = 0x8004U;
 
 inline constexpr std::uint32_t clockwise = 0x0900U;
 inline constexpr std::uint32_t counter_clockwise = 0x0901U;

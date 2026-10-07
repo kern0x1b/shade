@@ -10,6 +10,8 @@ add_library(shade_graphics STATIC
     gles_primitive_assembler.cpp
     gles_resources.cpp
     gles_rasterizer.cpp
+    gles_shaded_rasterizer.cpp
+    glsl_es.cpp
     gles_math.cpp
     host_graphics.cpp
     frame_file_presenter.cpp

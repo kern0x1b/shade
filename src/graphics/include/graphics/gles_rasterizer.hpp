@@ -78,6 +78,14 @@ struct GlesRasterState {
 
 [[nodiscard]] std::uint32_t premultiply_argb(std::uint32_t pixel);
 
+// Samples level 0 of the texture a unit names at (s, t) with the texture's
+// own wrap and filter modes; gradient is the derivative of (s, t) per pixel
+// in x then y, which picks the minification or magnification filter. Returns
+// opaque white where the unit has no complete texture.
+[[nodiscard]] std::uint32_t sample_raster_texture(const GlesRasterState& state,
+    const GlesRasterTextureUnit& unit, float s, float t,
+    const std::array<float, 4>& gradient);
+
 class GlesSoftwareRasterizer {
 public:
     static bool draw(DisplayFrame& frame,

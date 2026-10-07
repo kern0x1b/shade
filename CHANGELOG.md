@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   buffer, latencies and controls as a real device publishes them.
 - `glReadPixels` reads RGBA bytes back from a framebuffer, a renderbuffer or the
   drawable, with the pack alignment and the rectangle clipped to the frame.
+- A program made of GLSL ES 1.00 shaders that are not the compositor's is compiled, linked and
+  run: the vertex shader per vertex, the fragment shader per pixel (uniforms, attributes, varyings,
+  textures, `discard`, blending), for triangles. A varying the two shaders declare with another type
+  or array size, or that only the fragment shader declares, fails the link; a draw with a program
+  that did not link is an error. Core Image's OpenGL ES path draws with it.
 
 ### Changed
 - The project is named Shade, and its JIT core Umbra: the namespace, build files,

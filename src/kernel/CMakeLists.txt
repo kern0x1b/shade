@@ -48,6 +48,7 @@ add_library(shade_kernel_graphics STATIC
     graphics/opengles_dispatch_hle.cpp
     graphics/core_animation_software_hle.cpp
     graphics/opengles_programmable.cpp
+    graphics/opengles_shaded.cpp
     graphics/mbx_connect_hle.cpp)
 add_library(Shade::kernel_graphics ALIAS shade_kernel_graphics)
 shade_configure_module(shade_kernel_graphics)

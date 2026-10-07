@@ -29,14 +29,33 @@ namespace {
         "/OpenGLES.framework/OpenGLES"
     };
     constexpr std::size_t maximum_shader_strings = 64U;
+    constexpr std::size_t maximum_uniform_floats = 4096U;
 
-    bool write_empty_log(UserlandHleCall& call, std::uint32_t capacity,
-        std::uint32_t length, std::uint32_t output)
+    // Writes as much of an info log as capacity holds, and its length.
+    bool write_log(UserlandHleCall& call, std::string_view text,
+        std::uint32_t capacity, std::uint32_t length, std::uint32_t output)
     {
-        if (length != 0U && !call.memory().write32(length, 0U))
+        const auto count =
+            capacity == 0U ? std::size_t { }
+                           : std::min<std::size_t>(text.size(), capacity - 1U);
+        if (length != 0U &&
+            !call.memory().write32(length, static_cast<std::uint32_t>(count)))
             return false;
-        return capacity == 0U || output == 0U ||
-               call.memory().write8(output, 0U);
+        if (capacity == 0U || output == 0U)
+            return true;
+        for (std::size_t index = 0; index < count; ++index) {
+            if (!call.memory().write8(output + static_cast<std::uint32_t>(index),
+                    static_cast<std::uint8_t>(text[index])))
+                return false;
+        }
+        return call.memory().write8(
+            output + static_cast<std::uint32_t>(count), 0U);
+    }
+
+    // What glGet*iv answers for INFO_LOG_LENGTH: the log and its terminator.
+    std::uint32_t log_length(std::string_view text)
+    {
+        return static_cast<std::uint32_t>(text.size() + 1U);
     }
 
     std::optional<std::vector<float>> read_floats(
@@ -284,9 +303,7 @@ void OpenGlesHle::register_programmable_gles(UserlandHleRegistry& registry)
             set_gl_error(call, gles_abi::invalid_value);
             return;
         }
-        shader->compiled =
-            !shader->source.empty() &&
-            shader->source.find("void main") != std::string::npos;
+        programs_.compile_shader(call.argument(0));
     });
     add("_glDeleteShader", [this](UserlandHleCall& call) {
         if (call.argument(0) != 0U &&
@@ -399,6 +416,96 @@ void OpenGlesHle::register_programmable_gles(UserlandHleRegistry& registry)
     add("_glEnableVertexAttribArray", set_attribute_enabled);
     add("_glDisableVertexAttribArray", set_attribute_enabled);
 
+    // The glUniform calls come in three shapes: the values as arguments, as a
+    // vector of them, or as matrices.
+    enum class UniformForm { Scalars, Vector, Matrix };
+    const auto interpreted_program = [this](UserlandHleCall& call) {
+        const auto* context = current_context(call);
+        const auto* program = context != nullptr && context->current_program != 0U
+                                  ? programs_.program(context->current_program)
+                                  : nullptr;
+        return program != nullptr && program->interpreted;
+    };
+    const auto typed_uniform = [this](UserlandHleCall& call,
+                                   GlesProgramState::UniformKind kind,
+                                   std::size_t components, UniformForm form) {
+        auto* context = current_context(call);
+        const auto location = static_cast<std::int32_t>(call.argument(0));
+        if (location == -1)
+            return;
+        const auto per_element =
+            kind == GlesProgramState::UniformKind::Matrix
+                ? components * components
+                : components;
+        std::size_t count = 1U;
+        std::uint32_t pointer { };
+        if (form != UniformForm::Scalars) {
+            const auto requested = static_cast<std::int32_t>(call.argument(1));
+            if (requested < 0) {
+                set_gl_error(call, gles_abi::invalid_value);
+                return;
+            }
+            if (requested == 0)
+                return;
+            count = static_cast<std::size_t>(requested);
+            if (form == UniformForm::Matrix) {
+                if (call.argument(2) != 0U) {
+                    set_gl_error(call, gles_abi::invalid_value);
+                    return;
+                }
+                pointer = call.argument(3);
+            } else {
+                pointer = call.argument(2);
+            }
+        }
+        if (count > maximum_uniform_floats / per_element ||
+            (form != UniformForm::Scalars && pointer == 0U)) {
+            set_gl_error(call, gles_abi::invalid_value);
+            return;
+        }
+        std::vector<float> values(count * per_element);
+        for (std::size_t index = 0; index < values.size(); ++index) {
+            std::optional<std::uint32_t> word;
+            if (form == UniformForm::Scalars) {
+                word = call.argument(static_cast<std::uint32_t>(1U + index));
+            } else {
+                word = call.memory().read32(
+                    pointer + static_cast<std::uint32_t>(index * 4U));
+            }
+            if (!word) {
+                set_gl_error(call, gles_abi::invalid_value);
+                return;
+            }
+            values[index] =
+                kind == GlesProgramState::UniformKind::Integer
+                    ? static_cast<float>(static_cast<std::int32_t>(*word))
+                    : std::bit_cast<float>(*word);
+        }
+        switch (programs_.set_uniforms(context->current_program, location, kind,
+            components, count, values)) {
+        case GlesProgramState::UniformResult::Set:
+            break;
+        case GlesProgramState::UniformResult::InvalidValue:
+            set_gl_error(call, gles_abi::invalid_value);
+            break;
+        case GlesProgramState::UniformResult::InvalidOperation:
+            set_gl_error(call, gles_abi::invalid_operation);
+            break;
+        }
+    };
+    // A program that runs in the interpreter takes every form; the others keep
+    // the few calls their adapter used, and the rest stay no-ops.
+    const auto add_uniform = [&](std::string symbol,
+                                 GlesProgramState::UniformKind kind,
+                                 std::size_t components, UniformForm form,
+                                 UserlandHleRegistry::Handler legacy) {
+        add(std::move(symbol), [=](UserlandHleCall& call) {
+            if (interpreted_program(call))
+                typed_uniform(call, kind, components, form);
+            else if (legacy)
+                legacy(call);
+        });
+    };
     const auto set_float_uniform = [this](UserlandHleCall& call,
                                        std::size_t components) {
         auto* context = current_context(call);
@@ -422,13 +529,16 @@ void OpenGlesHle::register_programmable_gles(UserlandHleRegistry& registry)
             set_gl_error(call, gles_abi::invalid_operation);
         }
     };
-    add("_glUniform2fv", [set_float_uniform](UserlandHleCall& call) {
-        set_float_uniform(call, 2U);
-    });
-    add("_glUniform4fv", [set_float_uniform](UserlandHleCall& call) {
-        set_float_uniform(call, 4U);
-    });
-    add("_glUniform1f", [this](UserlandHleCall& call) {
+    add_uniform("_glUniform2fv", GlesProgramState::UniformKind::Float, 2U,
+        UniformForm::Vector, [set_float_uniform](UserlandHleCall& call) {
+            set_float_uniform(call, 2U);
+        });
+    add_uniform("_glUniform4fv", GlesProgramState::UniformKind::Float, 4U,
+        UniformForm::Vector, [set_float_uniform](UserlandHleCall& call) {
+            set_float_uniform(call, 4U);
+        });
+    add_uniform("_glUniform1f", GlesProgramState::UniformKind::Float, 1U,
+        UniformForm::Scalars, [this](UserlandHleCall& call) {
         auto* context = current_context(call);
         const auto location = static_cast<std::int32_t>(call.argument(0));
         const std::array value { std::bit_cast<float>(call.argument(1)) };
@@ -439,7 +549,8 @@ void OpenGlesHle::register_programmable_gles(UserlandHleRegistry& registry)
             set_gl_error(call, gles_abi::invalid_operation);
         }
     });
-    add("_glUniform1i", [this](UserlandHleCall& call) {
+    add_uniform("_glUniform1i", GlesProgramState::UniformKind::Integer, 1U,
+        UniformForm::Scalars, [this](UserlandHleCall& call) {
         auto* context = current_context(call);
         const auto location = static_cast<std::int32_t>(call.argument(0));
         if (location == -1)
@@ -450,7 +561,8 @@ void OpenGlesHle::register_programmable_gles(UserlandHleRegistry& registry)
             set_gl_error(call, gles_abi::invalid_operation);
         }
     });
-    add("_glUniformMatrix4fv", [this](UserlandHleCall& call) {
+    add_uniform("_glUniformMatrix4fv", GlesProgramState::UniformKind::Matrix,
+        4U, UniformForm::Matrix, [this](UserlandHleCall& call) {
         auto* context = current_context(call);
         const auto location = static_cast<std::int32_t>(call.argument(0));
         const auto count = static_cast<std::int32_t>(call.argument(1));
@@ -473,6 +585,31 @@ void OpenGlesHle::register_programmable_gles(UserlandHleRegistry& registry)
         }
     });
 
+    for (std::size_t width = 1U; width <= 4U; ++width) {
+        const auto digit = std::to_string(width);
+        if (width != 1U) {
+            add_uniform("_glUniform" + digit + "f",
+                GlesProgramState::UniformKind::Float, width,
+                UniformForm::Scalars, nullptr);
+            add_uniform("_glUniform" + digit + "i",
+                GlesProgramState::UniformKind::Integer, width,
+                UniformForm::Scalars, nullptr);
+        }
+        if (width != 2U && width != 4U) {
+            add_uniform("_glUniform" + digit + "fv",
+                GlesProgramState::UniformKind::Float, width,
+                UniformForm::Vector, nullptr);
+        }
+        add_uniform("_glUniform" + digit + "iv",
+            GlesProgramState::UniformKind::Integer, width, UniformForm::Vector,
+            nullptr);
+    }
+    for (std::size_t order = 2U; order <= 3U; ++order) {
+        add_uniform("_glUniformMatrix" + std::to_string(order) + "fv",
+            GlesProgramState::UniformKind::Matrix, order, UniformForm::Matrix,
+            nullptr);
+    }
+
     add("_glGetShaderiv", [this](UserlandHleCall& call) {
         const auto* shader = programs_.shader(call.argument(0));
         const auto output = call.argument(2);
@@ -492,7 +629,7 @@ void OpenGlesHle::register_programmable_gles(UserlandHleRegistry& registry)
             value = shader->delete_pending ? 1U : 0U;
             break;
         case gles_abi::info_log_length:
-            value = 1U;
+            value = log_length(shader->info_log);
             break;
         case gles_abi::shader_source_length:
             value = static_cast<std::uint32_t>(shader->source.size() + 1U);
@@ -521,16 +658,21 @@ void OpenGlesHle::register_programmable_gles(UserlandHleRegistry& registry)
             value = program->delete_pending ? 1U : 0U;
             break;
         case gles_abi::info_log_length:
-            value = 1U;
+            value = log_length(program->info_log);
             break;
         case gles_abi::attached_shaders:
             value = static_cast<std::uint32_t>(program->shaders.size());
             break;
         case gles_abi::active_uniforms:
-            value = static_cast<std::uint32_t>(program->uniforms.size());
+            value = static_cast<std::uint32_t>(
+                program->interpreted
+                    ? programs_.active_uniform_count(call.argument(0))
+                    : program->uniforms.size());
             break;
         case gles_abi::active_attributes:
-            value = static_cast<std::uint32_t>(program->attributes.size());
+            value = static_cast<std::uint32_t>(
+                program->interpreted ? program->linked_attributes.size()
+                                     : program->attributes.size());
             break;
         default:
             set_gl_error(call, gles_abi::invalid_enum);
@@ -540,16 +682,20 @@ void OpenGlesHle::register_programmable_gles(UserlandHleRegistry& registry)
             set_gl_error(call, gles_abi::invalid_value);
     });
     const auto get_info_log = [this](UserlandHleCall& call) {
-        const auto exists =
-            call.symbol() == "_glGetShaderInfoLog"
-                ? programs_.shader(call.argument(0)) != nullptr
-                : programs_.program(call.argument(0)) != nullptr;
-        if (!exists) {
+        const auto* shader = call.symbol() == "_glGetShaderInfoLog"
+                                 ? programs_.shader(call.argument(0))
+                                 : nullptr;
+        const auto* program = call.symbol() == "_glGetShaderInfoLog"
+                                  ? nullptr
+                                  : programs_.program(call.argument(0));
+        if (shader == nullptr && program == nullptr) {
             set_gl_error(call, gles_abi::invalid_value);
             return;
         }
-        if (!write_empty_log(
-                call, call.argument(1), call.argument(2), call.argument(3))) {
+        if (!write_log(call,
+                shader != nullptr ? std::string_view { shader->info_log }
+                                  : std::string_view { program->info_log },
+                call.argument(1), call.argument(2), call.argument(3))) {
             set_gl_error(call, gles_abi::invalid_value);
         }
     };

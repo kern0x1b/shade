@@ -567,6 +567,13 @@ std::uint32_t premultiply_argb(std::uint32_t pixel)
            (scale((pixel >> 8U) & 0xffU) << 8U) | scale(pixel & 0xffU);
 }
 
+std::uint32_t sample_raster_texture(const GlesRasterState& state,
+    const GlesRasterTextureUnit& unit, float s, float t,
+    const std::array<float, 4>& gradient)
+{
+    return sample_texture(state, unit, s, t, gradient);
+}
+
 bool GlesSoftwareRasterizer::draw(DisplayFrame& frame,
     std::span<const GlesRasterVertex> vertices, std::uint32_t mode,
     const GlesRasterState& state)

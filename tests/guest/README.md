@@ -11,7 +11,9 @@ purgeable state word.
 `sysctl_hw.c` reads the hw.* processor nodes and compares the counts with `host_info`.
 `coreimage.m` draws with Core Image (an EAGL context, the CPU renderer, the
 default renderer), including a Gaussian blur, and reads the pixels back.
-`gles2.m` makes an OpenGL ES 2 context and reads a framebuffer back with `glReadPixels`.
+`gles2.m` makes an OpenGL ES 2 context and checks `glReadPixels`, the compile and link of guest GLSL
+ES shaders (a varying the two shaders declare differently does not link), and what they draw: uniforms,
+interpolated varyings, `discard`, textures, blending.
 `longrun.c` stays for a given number of seconds, for looking at what the
 rest of a boot does meanwhile.
 
