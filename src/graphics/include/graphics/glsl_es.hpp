@@ -21,6 +21,11 @@ namespace shade::glsl {
 // hands it is cut at the same length).
 inline constexpr std::size_t maximum_source_bytes = 256U * 1024U;
 
+// What one invocation of main may spend (steps are loop iterations and calls),
+// and what all the invocations of one draw's shader may spend together.
+inline constexpr std::uint64_t maximum_steps = 4'000'000;
+inline constexpr std::uint64_t maximum_draw_steps = 200'000'000;
+
 enum class Stage : std::uint8_t {
     Vertex,
     Fragment,
@@ -135,11 +140,18 @@ public:
     [[nodiscard]] bool discarded() const { return discarded_; }
     [[nodiscard]] const std::string& error() const { return error_; }
 
+    // The steps (loop iterations and calls) every run of this instance has
+    // taken. A draw makes one instance per shader and runs it per vertex or
+    // pixel, so this is the draw's total: a run that would take it past
+    // maximum_draw_steps stops there and fails, and so does every run after.
+    [[nodiscard]] std::uint64_t total_steps() const { return total_steps_; }
+
 private:
     struct State;
     std::shared_ptr<const Module> module_;
     std::unique_ptr<State> state_;
     bool discarded_ { };
+    std::uint64_t total_steps_ { };
     std::string error_;
 };
 

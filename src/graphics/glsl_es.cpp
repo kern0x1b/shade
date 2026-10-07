@@ -1864,7 +1864,6 @@ namespace {
     }
 
     constexpr std::uint32_t maximum_depth = 32;
-    constexpr std::uint64_t maximum_steps = 4'000'000;
 
     // A reference to components of a stored value, for assignment.
     struct Reference {
@@ -1893,6 +1892,9 @@ struct Instance::State {
     std::vector<Value> stack;
     const TextureAccess* textures { };
     std::uint64_t steps { };
+    // What the run may take: the invocation's share, or what is left of the
+    // draw's.
+    std::uint64_t step_limit { maximum_steps };
     std::uint32_t base { };
     std::uint32_t top { };
     std::uint32_t depth { };
@@ -1927,8 +1929,9 @@ struct Instance::State {
 
     void tick(int line)
     {
-        if (++steps > maximum_steps)
-            fail(line, "the shader ran too long");
+        if (++steps > step_limit)
+            fail(line, step_limit < maximum_steps ? "the draw ran too long"
+                                                  : "the shader ran too long");
     }
 
     // Values -------------------------------------------------------------
@@ -3072,10 +3075,18 @@ bool Instance::run(const TextureAccess* textures)
     const auto& impl = module_->impl();
     state.textures = textures;
     state.steps = 0;
+    state.step_limit = std::min<std::uint64_t>(maximum_steps,
+        maximum_draw_steps - std::min(total_steps_, maximum_draw_steps));
     state.base = 0;
     state.top = 0;
     state.depth = 0;
     state.nesting = 0;
+    // However the run ends, its steps count against the draw.
+    struct Settle {
+        std::uint64_t& total;
+        const State& state;
+        ~Settle() { total += std::min(state.steps, state.step_limit); }
+    } const settle { total_steps_, state };
     for (const auto slot : impl.output_slots)
         state.globals[slot] = ast::make(state.globals[slot].type);
     try {

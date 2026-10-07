@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   shader of a few thousand parentheses, braces or terms is refused instead of overrunning the host
   thread's stack; a run nests at most 256 evaluations and statements, calls included.
   The globals of a shader (uniforms, varyings, plain globals) take at most 4096 values.
+  All the invocations of one draw's shaders may take 200 million steps (loop iterations and calls)
+  together; a draw that outruns that fails with GL_INVALID_OPERATION and draws nothing.
 
 ### Changed
 - The project is named Shade, and its JIT core Umbra: the namespace, build files,

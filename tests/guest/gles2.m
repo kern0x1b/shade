@@ -534,6 +534,24 @@ static void testDrawing(void)
     glUseProgram(uniformProgram);
     glUniform1f(glGetUniformLocation(uniformProgram, "add2"), 1.0f);
     check("glUniform1f on a vec2 is refused", glGetError() == GL_INVALID_OPERATION, "no GL_INVALID_OPERATION");
+
+    // A shader may spend 4 million steps (loop iterations, calls) in one invocation and 200
+    // million in all the invocations of one draw. This one spends 3.9 million at each of the 64
+    // pixels: the draw is stopped part way, fails, and draws nothing; the next draw works.
+    GLuint spin = build(plainVertex,
+        "precision mediump float;\nvoid main() {\n float s = 0.0;\n"
+        " for (int i = 0; i < 3900000; i++) { s += 1.0; }\n gl_FragColor = vec4(0.0, s, 0.0, 1.0);\n}\n",
+        log, sizeof log);
+    check("the program that spins links", spin != 0, log);
+    if (!spin) return;
+    clearTo(0, 0, 1, 1);
+    (void)glGetError();
+    drawQuad(spin);
+    check("a draw that outruns its budget is GL_INVALID_OPERATION", glGetError() == GL_INVALID_OPERATION,
+        "no GL_INVALID_OPERATION");
+    expectRead("and draws nothing", 3, 3, 0, 0, 255, 255);
+    drawQuad(uniformProgram);
+    expectDrawn("the next draw works", 3, 3, 204, 204, 204, 255);
 }
 
 int main(void)
