@@ -15,8 +15,6 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
 #import <OpenGLES/EAGL.h>
-#include <mach/mach.h>
-#include <unistd.h>
 
 static int failures;
 
@@ -197,29 +195,10 @@ static void expectBlur(const char *name, CIContext *context)
     check(name, middle[0] > 30 && middle[2] > 30, why);
 }
 
-// bootstrap_look_up is not in the SDK's public headers.
-extern kern_return_t bootstrap_look_up(mach_port_t bootstrap, const char *name, mach_port_t *service);
-
-// Core Image builds its OpenCL kernels through Core VM, whose daemon is a LaunchDaemon. A test the
-// emulator runner starts from launchd.conf can begin before launchd has loaded the daemons, and
-// then Core Image's lookup of com.apple.cvmsServ fails and its kernels are refused. A device
-// starts an application long after that, so the test waits for the service instead.
-static BOOL waitForService(const char *name, int seconds)
-{
-    for (int i = 0; i < seconds * 4; i++) {
-        mach_port_t port = MACH_PORT_NULL;
-        if (bootstrap_look_up(bootstrap_port, name, &port) == KERN_SUCCESS) return YES;
-        usleep(250000);
-    }
-    return NO;
-}
-
 int main(void)
 {
     @autoreleasepool {
         setenv("CL_LOG_ERRORS", "stdout", 1); // OpenCL names what it refuses, where it refuses it
-        printf("note com.apple.cvmsServ %s\n", waitForService("com.apple.cvmsServ", 120) ? "registered" : "never registered");
-        fflush(stdout);
 
         EAGLContext *es2 = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
         check("EAGLContext ES2", es2 != nil, "initWithAPI:kEAGLRenderingAPIOpenGLES2 answered nil");
